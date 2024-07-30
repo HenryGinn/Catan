@@ -30,9 +30,23 @@ An implementation of Explorers of Catan with AI computer player
 
 ## Implementation
 
+### Game State and Board State
+
 The game state needs to be handled in a way that is symmetrical. If the three other players were to be permuted then that input should be treated identically to the AI player. This will hopefully lead to better training of the AI player as it will be thinking about the game state directly and not whether it is player two or player three who owns something, it will just know that another player owns that thing. This means that any function taking in inputs from multiple players needs to have symmetry in its arguments. For example, $f(x, y, z) = x + y + z$ or $g(x, y, z) = xy + yz + zx$.
 
-Care needs to be taken when processing the board state. A particular position on the board is not important, the only relevant information is where it is relative to resources and structures on the board.
+Similar care needs to be taken when processing the board state. A particular position on the board is not important, the only relevant information is where it is relative to resources and structures on the board. A varient of polar coordinates is be used for the board where the angle is discretised. This is for three reasons.
+
+- The radius can be defined uniquelly by the shortest length to the centre hexagon. Rings of constant radius are not equal, and so are not needed to be handled symmetrically - the radius to the centre gives useful information to the player.
+- The neural network architecture can be made in such a way to respect the symmetry group of the hexagon, i.e. $D_{12}$. In a similar way to how the player data was handled symmetrically, the board state position can be as well by making all functions of board state symmetrical upon permuting the symmetrical board states. This still gives the network information about the relative position of everything on the board and so it can develop a notion of distance.
+- It is well adapted to a hexagonal board. The symmetrical and non-symmetrical coordinates have been perfectly decomposed into the azimuthal and radial components respectively.
+
+The particular nodes associated with each vertex/edge/face does not matter as any change in order is simply a permutation of the rows of the weight matrices in the first layer. The board is defined in terms of its vertices. Each edge is defined by two vertices, and each vertex has a list of hexagons associated with it. There are five parts to the board state. The first two are independent of players, but the last three will need to have a node for each player. They are as follows:
+
+- The resource type of a hexagon
+- The number associated with a hexagon
+- Whether a particular player owns a road on an edge
+- Whether a particular player owns a settlement on a vertex
+- Whether a particular player owns a city on a vertex
 
 ### AI Player
 
