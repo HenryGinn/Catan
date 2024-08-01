@@ -17,10 +17,9 @@ import numpy as np
 
 class Vertex():
 
-    basis = np.array([[0, 1], [np.sin(np.pi/3), np.cos(np.pi/3)]])
-
-    def __init__(self, vector):
+    def __init__(self, board, vector):
+        self.board = board
         self.vector = vector
 
     def set_position(self):
-        self.position = np.dot(self.vector, self.basis)
+        self.position = np.dot(self.vector, self.board.basis)

@@ -1,8 +1,8 @@
 {
-	"Ore": 4,
-	"Wheat": 4,
-	"Mud": 4,
-	"Sheep": 4,
-	"Wood": 4,
-	"Desert": 1
+	"Wheat": {"Count": 4, "Color": "#fdd255"},
+	"Sheep": {"Count": 4, "Color": "#72aa41"},
+	"Wood": {"Count": 4, "Color": "#385729"},
+	"Ore": {"Count": 3, "Color": "#686578"},
+	"Mud": {"Count": 3, "Color": "#9a5126"},
+	"Desert": {"Count": 1, "Color": "#d3b06e"}
 }
