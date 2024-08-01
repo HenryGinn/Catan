@@ -3,7 +3,9 @@ An implementation of Explorers of Catan with AI computer player
 
 ## Definitions
 
-- Board state. All information about the board. This includes what resources each tile is, what number it has, and where each player has pieces on the board.
+- Board state. A subset of the game state, this is all information about the board. This includes what resources each tile is, what number it has, and where each player has pieces on the board.
+
+- Board layout. A subset of the board state, this is all static information about the board. No player data is included, this is only the resource and number data for each hexagon.
 
 - Game state. All knowable information about the game at that point in time with respect to an individual player. This includes who owns what on each space on the board, where the robber is, and what cards each player could have. The results of some player interactions are not known to other players, such as robbing a random card from a player or getting a development card. This means for each player, their knowledge of other players cards will be stored as a range of possible values.
 
@@ -11,7 +13,7 @@ An implementation of Explorers of Catan with AI computer player
 
 - Structure. Anything placable on the board. These are roads, settlements, and cities.
 
-- Trade. Any change of game state agreed upon between players. This is not limited to being between just two players, and includes position of the robber, purchasing and non-purchasing of assets, placing and non-placing of structures. Trades are mutually exclusive with promises.
+- Trade. Any change of game state agreed upon between relevant players and the bank. This is not limited to being between just two players, and includes position of the robber, purchasing and non-purchasing of assets, placing and non-placing of structures. Trades are mutually exclusive with promises. The bank is included in this definition to allow actions such as two players collaborating to block another player, one who donates resources and the other that builds a road or settlement.
 
 - Promises. Any agreement between players that affects future game states. This includes but is not limited to trade embargoes, future robber placements, future card transactions, and alliances.
 
