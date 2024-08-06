@@ -8,8 +8,8 @@ import matplotlib.pyplot as plt
 from matplotlib.patches import Polygon
 from matplotlib.collections import PatchCollection
 
-from vertex import Vertex
-from tile import Tile
+from Board.vertex import Vertex
+from Board.tile import Tile
 
 
 class Board():

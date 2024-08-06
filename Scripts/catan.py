@@ -3,7 +3,8 @@ from os.path import join, dirname
 from hgutilities import defaults
 from hgutilities.utils import make_folder
 
-from board import Board
+from Board.board import Board
+from Players.players import Players
 
 
 class Catan():
@@ -27,3 +28,4 @@ class Catan():
 
     def create_objects(self):
         self.board = Board(self)
+        self.players = Players(self)
