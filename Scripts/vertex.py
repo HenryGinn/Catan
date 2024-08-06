@@ -17,9 +17,11 @@ import numpy as np
 
 class Vertex():
 
-    def __init__(self, board, vector):
+    def __init__(self, board, vector, ID):
         self.board = board
         self.vector = vector
+        self.ID = ID
+        self.set_position()
 
     def set_position(self):
         self.position = np.dot(self.vector, self.board.basis)
