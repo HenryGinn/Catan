@@ -4,7 +4,7 @@ from hgutilities import defaults
 from hgutilities.utils import make_folder
 
 from Board.board import Board
-from Players.players import Players
+from Players.player_regular import PlayerRegular
 
 
 class Catan():
@@ -28,4 +28,8 @@ class Catan():
 
     def create_objects(self):
         self.board = Board(self)
-        self.players = Players(self)
+        self.initialise_players()
+
+    def initialise_players(self):
+        self.players = [PlayerRegular(self, index)
+                        for index in range(4)]
