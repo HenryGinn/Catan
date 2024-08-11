@@ -98,6 +98,9 @@ class Board():
 
     def generate_layout(self, name=None):
         tile_types = self.get_generated_tile_types()
+        self.set_layout(tile_types, name)
+
+    def set_layout(self, tile_types, name=None):
         for tile, tile_type in zip(self.tiles, tile_types):
             tile.set_type(tile_type)
         self.save_layout(name)
@@ -117,6 +120,7 @@ class Board():
     def get_generated_layout_path(self, name):
         self.set_layout_name(name)
         layout_path = self.get_path_layout()
+        return layout_path
 
     def get_path_layout(self):
         file_name = f"{self.layout_name}.json"
@@ -174,12 +178,45 @@ class Board():
                            index, tile_data["Type"])
                       for index, tile_data in enumerate(tiles_data)]
 
+    def input_layout(self, name=None):
+        tile_types = self.get_input_tile_types()
+        self.set_layout(tile_types, name)
 
+    def get_input_tile_types(self):
+        print(tile_type_prompt)
+        tile_types = [self.get_tile_type_from_input()
+                      for index in range(19)]
+        return tile_types
 
+    def get_tile_type_from_input(self):
+        type_input = str(input())
+        if type_input.lower() in tile_type_input_dict:
+            return tile_type_input_dict[type_input.lower()].strip(" ")
+        else:
+            return "Desert"
 
+tile_type_input_keys = {
+    "Wheat ": ["1", "Wheat", "Crops", "W"],
+    "Sheep ": ["2", "Sheep", "Wool", "S"],
+    "Wood  ": ["3", "Wood", "Lumber",  "L"],
+    "Ore   ": ["4", "Ore", "Stone", "Rock", "O", "S", "R"],
+    "Mud   ": ["5", "Mud", "Clay", "Bricks", "M", "C", "B"],
+    "Desert": ["6", "Desert", "D"]}
 
+tile_type_keys_prompt = (
+    '\n'.join(f"{key}   {', '.join(values)}"
+              for key, values in tile_type_input_keys.items()))
 
+tile_type_prompt = (
+    "Enter the tile types going from left to right along the rows.\n"
+    "Start at the top and work downwards.\n"
+    "Use the following lookup:\n\n"
+    f"{tile_type_keys_prompt}\n")
 
+tile_type_input_dict = dict(
+    (key.lower(), value)
+    for value in tile_type_input_keys
+    for key in tile_type_input_keys[value])
 
 
 

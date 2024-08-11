@@ -9,7 +9,11 @@ An implementation of Explorers of Catan with AI computer player
 
 - Game state. All knowable information about the game at that point in time with respect to an individual player. This includes who owns what on each space on the board, where the robber is, and what cards each player could have. The results of some player interactions are not known to other players, such as robbing a random card from a player or getting a development card. This means for each player, their knowledge of other players cards will be stored as a range of possible values.
 
+- Real estate. Anything belonging to a player that has been placed on the board. These are roads, settlements, and cities
+
 - Asset. Anything purchasable by the player from the bank. Roads, settlements, cities, and development cards (both played and non-played) are all the possible assets.
+
+- Belongings. This is everything owned by a player, including assets and cards.
 
 - Structure. Anything placable on the board. These are roads, settlements, and cities.
 
@@ -29,6 +33,9 @@ An implementation of Explorers of Catan with AI computer player
 - Knowledge not known to other players is only shared to other players via public actions.
 - No probabalistic knowledge is encoded in the game state. If another player has lots of wheat for example and gets stolen from, the information that the stolen card was probably wheat would not be used.
 
+The definition of a trade is reasonably broad. The state includes the position of the robber, and as trades are described by resulting game states, trades including movement of the robber can be added to the list of trades. Trades such as "I will give you xyz if you do not build there" can also be implemented as building is also a change in state. After either of these types of trades had been handled, the list of trades would have to be updated, for example removing all trades that would move the robber again.
+
+Promises could still be implemented in this framework. A card similar to a development card could be conjured and then traded with another player, and this card acts like a contract. For example a card could represent, "I owe you one sheep", and then the receiver of this contract card would play the card on a later turn to gain a sheep. Every such promise would need to be implemented as its own card however so the scope would have to be limited. IOU cards could potentially be implemented, but this would increase the card type count by 50% alone and make the network harder to train. Promises such as trade embargos are subject to complicated social dynamics between the players and would be almost impossible to implement.
 
 ## Implementation
 
@@ -50,10 +57,14 @@ The particular nodes associated with each vertex/edge/face does not matter as an
 - Whether a particular player owns a settlement on a vertex
 - Whether a particular player owns a city on a vertex
 
-### AI Player
+### Implementatio and the Neural Network
 
-The central component of the AI player is a neural network that takes in a game state, evaluates the position, and gives a probability to each player based on how likely they are to win. Decisions are made by enumerating all reasonable possible options, evaluating the game state, and choosing the game state that results in the best chance to win. By implementing the AI like this, more complicated trades can be added without needing to retrain the network as the only input is the game state.
+The central component of the AI player is a neural network that takes in a state, evaluates the position, and gives a probability to each player based on how likely they are to win. Decisions are made by enumerating all reasonable possible options, evaluating the state, and choosing the state that results in the best chance to win. By implementing the AI like this, more complicated trades can be added without needing to retrain the network as the only input is the game state.
 
-For board state changes corresponding to trades, the corresponding board states of the other player involved are evaluated and only those where both consider themselves to improve are considered. These trades are then ranked by both players, and the trade where the minimum rank between players is maximised is performed.
+For board state changes corresponding to trades, the corresponding states of the other player involved are evaluated and only those where both consider themselves to improve are considered. These trades are then ranked by both players, and the trade where the minimum rank between players is maximised is performed.
 
-The definition of a trade is reasonably broad. The game state includes the position of the robber, and as trades are described by resulting game states, trades including movement of the robber can be added to the list of trades. Trades such as "I will give you xyz if you do not build there" can also be implemented as building is also a change in game state. After either of these types of trades had been handled, the list of trades would have to be updated, for example removing all trades that would move the robber again.
+The state that the neural networks takes as input needs to be defined in a more precise manner. It needs to be structured in a way that respects the player symmetry, board symmetry, player specific knowledge, and communal knowledge. For example from player A's perspective they might know that player B has a settlement on a particular vertex, but it would be unnecessary to also say that player A knows that player C knows that player B has a settlement on that particular vertex.
+
+What a player believes about a player's belongings (including themselves) can be called a player state. This has two parts, being their cards and their assets. The knowledge of their cards is dependent on the observer player, but the knowledge about their real estate is public. These two halfs also correspond exactly to the different symmetries that need to be obeyed, and are called the card state and the board state respectively. They are stored as two different structures to reflect the structure of the neural network. A game state is the collection of all the player states plus the position of the robber.
+
+There are two subclasses of player: A perspective player, and a regular player. A perspective player contains the knowledge of player A about what cards player B has. The card state is a dictionary stored as an attribute of a perspective player. A player's perspective about themselves is also handled by a perspective player. A regular player stores the real estate information corresponding to that player, and also a list of perspective player objects associated with themselves.

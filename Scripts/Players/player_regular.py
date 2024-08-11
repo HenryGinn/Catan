@@ -16,15 +16,12 @@ class PlayerRegular(Player):
     def initialise_player_perspectives(self):
         self.perspectives = [
             PlayerPerspective(index, self)
-            for index in range(4) if index != self.ID]
+            for index in range(4)]
 
-    def get_cards_dataframe_views(self):
-        df_self = self.get_cards_dataframe()
-        df_views = [perspective.get_cards_dataframe()
-                    for perspective in self.perspectives]
-        df = concat([df_self, *df_views], axis=1)
-        return df
+    def set_initial_states(self):
+        self.set_initial_board_state()
+        for perspective in self.perspectives:
+            perspective.initialise_card_state()
 
-    def __str__(self):
-        df = self.get_cards_dataframe_views()
-        return df.to_string()
+    def set_initial_board_state(self):
+        pass

@@ -15,7 +15,6 @@ class Catan():
         self.set_main_paths()
         self.create_folders()
         self.create_objects()
-        self.set_states()
 
     def set_main_paths(self):
         self.path_base = dirname(dirname(__file__))
@@ -31,19 +30,12 @@ class Catan():
     def create_objects(self):
         self.board = Board(self)
         self.initialise_players()
-        self.trades = Trades(self)
+        self.trade = Trade(self)
 
     def initialise_players(self):
         self.players = [PlayerRegular(self, index)
                         for index in range(4)]
 
-    def set_states(self):
+    def set_initial_states(self):
         for player in self.players:
-            player.set_state()
-        self.state = [player.state for player in self.players]
-
-    def save_state(self):
-        pass
-
-    def load_state(self):
-        pass
+            player.set_initial_states()
