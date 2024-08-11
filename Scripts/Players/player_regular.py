@@ -24,4 +24,18 @@ class PlayerRegular(Player):
             perspective.initialise_card_state()
 
     def set_initial_board_state(self):
-        pass
+        self.set_initial_settlement_state()
+        self.set_initial_city_state()
+        self.set_initial_road_state()
+
+    def set_initial_settlement_state(self):
+        self.state_settlement = [False
+            for vertex in self.catan.board.vertices}
+
+    def set_initial_city_state(self):
+        self.state_city = [False
+            for vertex in self.catan.board.vertices]
+
+    def set_initial_road_state(self):
+        self.road_state = [False
+            for vertex in self.catan.board.edges]

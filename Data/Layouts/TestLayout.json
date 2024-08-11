@@ -5,7 +5,7 @@
         4,
         -2
       ],
-      "Type": "Wheat",
+      "Type": "Sheep",
       "Vertices": [
         1,
         2,
@@ -20,7 +20,7 @@
         3,
         0
       ],
-      "Type": "Ore",
+      "Type": "Sheep",
       "Vertices": [
         3,
         4,
@@ -35,7 +35,7 @@
         2,
         2
       ],
-      "Type": "Wood",
+      "Type": "Ore",
       "Vertices": [
         5,
         6,
@@ -50,7 +50,7 @@
         3,
         -3
       ],
-      "Type": "Wood",
+      "Type": "Wheat",
       "Vertices": [
         8,
         9,
@@ -65,7 +65,7 @@
         2,
         -1
       ],
-      "Type": "Mud",
+      "Type": "Desert",
       "Vertices": [
         10,
         11,
@@ -95,7 +95,7 @@
         0,
         3
       ],
-      "Type": "Wheat",
+      "Type": "Ore",
       "Vertices": [
         14,
         15,
@@ -110,7 +110,7 @@
         2,
         -4
       ],
-      "Type": "Desert",
+      "Type": "Wheat",
       "Vertices": [
         17,
         18,
@@ -125,7 +125,7 @@
         1,
         -2
       ],
-      "Type": "Mud",
+      "Type": "Ore",
       "Vertices": [
         19,
         20,
@@ -140,7 +140,7 @@
         0,
         0
       ],
-      "Type": "Wood",
+      "Type": "Wheat",
       "Vertices": [
         21,
         22,
@@ -155,7 +155,7 @@
         -1,
         2
       ],
-      "Type": "Sheep",
+      "Type": "Wood",
       "Vertices": [
         23,
         24,
@@ -170,7 +170,7 @@
         -2,
         4
       ],
-      "Type": "Desert",
+      "Type": "Wood",
       "Vertices": [
         25,
         26,
@@ -185,7 +185,7 @@
         0,
         -3
       ],
-      "Type": "Mud",
+      "Type": "Sheep",
       "Vertices": [
         29,
         30,
@@ -200,7 +200,7 @@
         -1,
         -1
       ],
-      "Type": "Desert",
+      "Type": "Wood",
       "Vertices": [
         31,
         32,
@@ -215,7 +215,7 @@
         -2,
         1
       ],
-      "Type": "Wood",
+      "Type": "Wheat",
       "Vertices": [
         33,
         34,
@@ -230,7 +230,7 @@
         -3,
         3
       ],
-      "Type": "Wood",
+      "Type": "Sheep",
       "Vertices": [
         35,
         36,
@@ -245,7 +245,7 @@
         -2,
         -2
       ],
-      "Type": "Wood",
+      "Type": "Mud",
       "Vertices": [
         40,
         41,
@@ -260,7 +260,7 @@
         -3,
         0
       ],
-      "Type": "Wood",
+      "Type": "Mud",
       "Vertices": [
         42,
         43,
@@ -275,7 +275,7 @@
         -4,
         2
       ],
-      "Type": "Wood",
+      "Type": "Mud",
       "Vertices": [
         44,
         45,

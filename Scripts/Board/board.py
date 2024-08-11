@@ -21,19 +21,26 @@ class Board():
     def __init__(self, catan):
         self.catan = catan
         self.load_tile_data()
-        self.initialise_vertices()
-        self.initialise_tiles()
+        self.initialise_graph_components()
 
     def load_tile_data(self):
         path = join(self.catan.path_resources, "Tile Definitions.json")
         with open(path, "r") as file:
             self.tile_data = load(file)
 
+    def initialise_graph_components(self):
+        self.initialise_vertices()
+        self.initialise_tiles()
+        sefl.initialise_edges()
+
+
+    # Vertices
+
     def initialise_vertices(self):
         vertex_vectors = self.get_vertex_position_vectors()
         self.vertices = [Vertex(self, position_vector, index)
-                         for index, position_vector in enumerate(vertex_vectors)]
-        self.set_verticies_neighbours(vertex_vectors)
+                         for index, position_vector in
+                         enumerate(vertex_vectors)]
 
     def get_vertex_position_vectors(self):
         path = join(self.catan.path_resources, "Vertex Positions.json")
@@ -46,11 +53,14 @@ class Board():
             self.set_vertex_neighbours(vertex, vertex_vectors)
 
     def set_vertex_neighbours(self, vertex, vertex_vectors):
-        possible_neighbours = np.array([vertex.vector + [i, j]
-                                        for (i, j) in self.directions])
+        possible_neighbours = np.array(
+            [vertex.vector + [i, j] for (i, j) in self.directions])
         matching_values = (vertex_vectors[:, None] == possible_neighbours)
         neighbours = np.where(matching_values.all(axis=2))[0]
         vertex.neighbours = [self.vertices[index] for index in neighbours]
+
+
+    # Tiles
 
     def initialise_tiles(self):
         tile_vectors = self.get_tile_centre_position_vectors()
@@ -71,53 +81,22 @@ class Board():
         tile = Tile(self, tile_vector, vertices, index)
         return tile
 
-    def plot_tiles(self):
-        self.initialise_plot()
-        self.add_tiles_to_plot()
-        self.set_x_and_y_plot_limits()
-        plt.show()
 
-    def initialise_plot(self):
-        self.fig, self.ax = plt.subplots(1)
-        self.ax.set_aspect('equal')
-        self.ax.axis("off")
+    # Edges
 
-    def add_tiles_to_plot(self):
-        polygons = PatchCollection(
-            [Polygon([vertex.position for vertex in tile.vertices],
-                     closed=True, facecolor=tile.color, edgecolor="k")
-             for tile in self.tiles], match_original=True)
-        self.ax.add_collection(polygons)
+    def initialise_edges(self):
+        
 
-    def set_x_and_y_plot_limits(self):
-        vertex_positions = np.array([vertex.position for vertex in self.vertices])
-        min_x, min_y = np.min(vertex_positions, axis=0)*1.1
-        max_x, max_y = np.max(vertex_positions, axis=0)*1.1
-        self.ax.set_xlim(min_x, max_x)
-        self.ax.set_ylim(min_y, max_y)
 
-    def generate_layout(self, name=None):
-        tile_types = self.get_generated_tile_types()
-        self.set_layout(tile_types, name)
-
-    def set_layout(self, tile_types, name=None):
-        for tile, tile_type in zip(self.tiles, tile_types):
-            tile.set_type(tile_type)
-        self.save_layout(name)
-
-    def get_generated_tile_types(self):
-        tile_types = [tile_type for tile_type in self.tile_data
-                      for index in range(self.tile_data[tile_type]["Count"])]
-        shuffle(tile_types)
-        return tile_types
+    # Saving
 
     def save_layout(self, name):
-        path = self.get_generated_layout_path(name)
-        layout_json = self.get_generated_layout_json()
+        path = self.get_layout_path(name)
+        layout_json = self.get_layout_json()
         with open(path, "w+") as file:
             json.dump(layout_json, file, indent=2)
 
-    def get_generated_layout_path(self, name):
+    def get_layout_path(self, name):
         self.set_layout_name(name)
         layout_path = self.get_path_layout()
         return layout_path
@@ -133,7 +112,7 @@ class Board():
         else:
             self.layout_name = name    
 
-    def get_generated_layout_json(self):
+    def get_layout_json(self):
         tiles_json = self.get_tiles_json()
         vertices_json = self.get_vertices_json()
         layout_json = {"Tiles": tiles_json,
@@ -156,6 +135,9 @@ class Board():
         iterable = [int(i) for i in iterable]
         return iterable
 
+
+    # Loading
+
     def load_layout(self, name):
         self.layout_name = name
         layout_json = self.load_layout_json()
@@ -173,10 +155,29 @@ class Board():
                          for index, vector in enumerate(vertices_data)]
 
     def load_tiles(self, tiles_data):
-        self.tiles = [Tile(self, np.array(tile_data["Vector"], dtype="int8"),
-                           [self.vertices[index] for index in tile_data["Vertices"]],
-                           index, tile_data["Type"])
-                      for index, tile_data in enumerate(tiles_data)]
+        self.tiles = [
+            Tile(self, np.array(tile_data["Vector"], dtype="int8"),
+                 [self.vertices[index] for index in tile_data["Vertices"]],
+                 index, tile_data["Type"])
+            for index, tile_data in enumerate(tiles_data)]
+
+
+    # Produce layout
+
+    def generate_layout(self, name=None):
+        tile_types = self.get_generated_tile_types()
+        self.set_layout(tile_types, name)
+
+    def set_layout(self, tile_types, name=None):
+        for tile, tile_type in zip(self.tiles, tile_types):
+            tile.set_type(tile_type)
+        self.save_layout(name)
+
+    def get_generated_tile_types(self):
+        tile_types = [tile_type for tile_type in self.tile_data
+                      for index in range(self.tile_data[tile_type]["Count"])]
+        shuffle(tile_types)
+        return tile_types
 
     def input_layout(self, name=None):
         tile_types = self.get_input_tile_types()
@@ -194,6 +195,36 @@ class Board():
             return tile_type_input_dict[type_input.lower()].strip(" ")
         else:
             return "Desert"
+
+
+    # Plotting
+
+    def plot_board(self):
+        self.initialise_plot()
+        self.add_tiles_to_plot()
+        self.set_x_and_y_plot_limits()
+        plt.show()
+
+    def initialise_plot(self):
+        self.fig, self.ax = plt.subplots(1)
+        self.ax.set_aspect('equal')
+        self.ax.axis("off")
+
+    def add_tiles_to_plot(self):
+        polygons = PatchCollection(
+            [Polygon([vertex.position for vertex in tile.vertices],
+                     closed=True, facecolor=tile.color, edgecolor="k")
+             for tile in self.tiles], match_original=True)
+        self.ax.add_collection(polygons)
+
+    def set_x_and_y_plot_limits(self):
+        vertex_positions = np.array(
+            [vertex.position for vertex in self.vertices])
+        min_x, min_y = np.min(vertex_positions, axis=0)*1.1
+        max_x, max_y = np.max(vertex_positions, axis=0)*1.1
+        self.ax.set_xlim(min_x, max_x)
+        self.ax.set_ylim(min_y, max_y)
+
 
 tile_type_input_keys = {
     "Wheat ": ["1", "Wheat", "Crops", "W"],
