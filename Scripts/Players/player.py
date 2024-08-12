@@ -30,6 +30,6 @@ class Player():
 
     player_type = "General"
     
-    def __init__(self, players, ID):
-        self.players = players
+    def __init__(self, catan, ID):
+        self.catan = catan
         self.ID = ID

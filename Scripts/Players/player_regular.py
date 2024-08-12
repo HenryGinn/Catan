@@ -8,8 +8,8 @@ class PlayerRegular(Player):
 
     player_type = "Regular"
 
-    def __init__(self, players, ID):
-        super().__init__(players, ID)
+    def __init__(self, catan, ID):
+        super().__init__(catan, ID)
         self.name = f"{self.ID + 1}"
         self.initialise_player_perspectives()
 
@@ -30,7 +30,7 @@ class PlayerRegular(Player):
 
     def set_initial_settlement_state(self):
         self.state_settlement = [False
-            for vertex in self.catan.board.vertices}
+            for vertex in self.catan.board.vertices]
 
     def set_initial_city_state(self):
         self.state_city = [False
@@ -38,4 +38,4 @@ class PlayerRegular(Player):
 
     def set_initial_road_state(self):
         self.road_state = [False
-            for vertex in self.catan.board.edges]
+            for edge in self.catan.board.edges]

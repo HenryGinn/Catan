@@ -6,7 +6,7 @@ class PlayerPerspective(Player):
     player_type = "Perspective"
 
     def __init__(self, ID, player_base):
-        super().__init__(player_base.players, ID)
+        super().__init__(player_base.catan, ID)
         self.player_base = player_base
         self.name = f"{self.player_base.name} view {self.ID + 1}"
 

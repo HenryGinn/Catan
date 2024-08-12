@@ -31,7 +31,7 @@ class Board():
     def initialise_graph_components(self):
         self.initialise_vertices()
         self.initialise_tiles()
-        sefl.initialise_edges()
+        self.initialise_edges()
 
 
     # Vertices
@@ -47,17 +47,6 @@ class Board():
         with open(path, "r") as file:
             vertex_vectors = np.array(load(file), dtype="int8")
         return vertex_vectors
-
-    def set_verticies_neighbours(self, vertex_vectors):
-        for vertex in self.vertices:
-            self.set_vertex_neighbours(vertex, vertex_vectors)
-
-    def set_vertex_neighbours(self, vertex, vertex_vectors):
-        possible_neighbours = np.array(
-            [vertex.vector + [i, j] for (i, j) in self.directions])
-        matching_values = (vertex_vectors[:, None] == possible_neighbours)
-        neighbours = np.where(matching_values.all(axis=2))[0]
-        vertex.neighbours = [self.vertices[index] for index in neighbours]
 
 
     # Tiles
@@ -85,8 +74,16 @@ class Board():
     # Edges
 
     def initialise_edges(self):
-        
+        self.edges = []
+        for tile in self.tiles:
+            self.add_edges_around_tile(tile)
 
+    def add_edges_around_tile(self, tile):
+        vertex_offset = tile.vertices[1:] + [tile.vertices[0]]
+        edges = [sorted([vertex_1, vertex_2], key=lambda x: x.ID)
+                 for vertex_1, vertex_2 in zip(tile.vertices, vertex_offset)]
+        new_edges = [edge for edge in edges if edge not in self.edges]
+        self.edges = self.edges + new_edges
 
     # Saving
 
