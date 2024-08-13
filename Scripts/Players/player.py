@@ -23,7 +23,7 @@ robber vertices
 """
 
 
-import pandas as pd
+from hgutilities.utils import get_dict_string
 
 
 class Player():
@@ -33,3 +33,8 @@ class Player():
     def __init__(self, catan, ID):
         self.catan = catan
         self.ID = ID
+
+    def __str__(self):
+        state_dict = self.get_state_dict()
+        string = get_dict_string(state_dict)
+        return string

@@ -10,6 +10,7 @@ from matplotlib.collections import PatchCollection
 
 from Board.vertex import Vertex
 from Board.tile import Tile
+from Board.edge import Edge
 
 
 class Board():
@@ -80,10 +81,11 @@ class Board():
 
     def add_edges_around_tile(self, tile):
         vertex_offset = tile.vertices[1:] + [tile.vertices[0]]
-        edges = [sorted([vertex_1, vertex_2], key=lambda x: x.ID)
+        edges = [Edge(self, vertex_1, vertex_2)
                  for vertex_1, vertex_2 in zip(tile.vertices, vertex_offset)]
         new_edges = [edge for edge in edges if edge not in self.edges]
         self.edges = self.edges + new_edges
+
 
     # Saving
 
@@ -110,23 +112,11 @@ class Board():
             self.layout_name = name    
 
     def get_layout_json(self):
-        tiles_json = self.get_tiles_json()
-        vertices_json = self.get_vertices_json()
-        layout_json = {"Tiles": tiles_json,
-                       "Vertices": vertices_json}
-        return layout_json
-        
-    def get_tiles_json(self):
-        tile_json = [
+        layout_json = [
             {"Vector": self.json_iterable(tile.vector), "Type": tile.type,
              "Vertices": [vertex.ID for vertex in tile.vertices]}
             for tile in self.tiles]
-        return tile_json
-
-    def get_vertices_json(self):
-        vertices_json = [self.json_iterable(vertex.vector)
-                         for vertex in self.vertices]
-        return vertices_json
+        return layout_json
 
     def json_iterable(self, iterable):
         iterable = [int(i) for i in iterable]
@@ -138,8 +128,9 @@ class Board():
     def load_layout(self, name):
         self.layout_name = name
         layout_json = self.load_layout_json()
-        self.load_vertices(layout_json["Vertices"])
-        self.load_tiles(layout_json["Tiles"])
+        self.initialise_vertices()
+        self.load_tiles(layout_json)
+        self.initialise_edges()
 
     def load_layout_json(self):
         path = self.get_path_layout()
@@ -147,16 +138,12 @@ class Board():
             layout_json = json.load(file)
         return layout_json
 
-    def load_vertices(self, vertices_data):
-        self.vertices = [Vertex(self, np.array(vector, dtype="int8"), index)
-                         for index, vector in enumerate(vertices_data)]
-
-    def load_tiles(self, tiles_data):
+    def load_tiles(self, layout_json):
         self.tiles = [
             Tile(self, np.array(tile_data["Vector"], dtype="int8"),
                  [self.vertices[index] for index in tile_data["Vertices"]],
                  index, tile_data["Type"])
-            for index, tile_data in enumerate(tiles_data)]
+            for index, tile_data in enumerate(layout_json)]
 
 
     # Produce layout
@@ -221,6 +208,22 @@ class Board():
         max_x, max_y = np.max(vertex_positions, axis=0)*1.1
         self.ax.set_xlim(min_x, max_x)
         self.ax.set_ylim(min_y, max_y)
+
+
+    # Other
+
+    def vertex_list(self, state_vertex):
+        vertex_vectors = [
+            vertex.vector for indicator, vertex in
+            zip(state_vertex, self.vertices) if indicator]
+        return vertex_vectors
+
+    def edge_list(self, state_edge):
+        edge_vectors = [
+            (edge.vertex_1.vector, edge.vertex_2.vector)
+            for indicator, vertex in zip(state_edge, self.edges)
+            if indicator]
+        return edge_vectors
 
 
 tile_type_input_keys = {

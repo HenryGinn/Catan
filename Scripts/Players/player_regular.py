@@ -1,4 +1,6 @@
 from pandas import concat
+from pandas import DataFrame
+from hgutilities.utils import get_dict_string
 
 from Players.player import Player
 from Players.player_perspective import PlayerPerspective
@@ -37,5 +39,69 @@ class PlayerRegular(Player):
             for vertex in self.catan.board.vertices]
 
     def set_initial_road_state(self):
-        self.road_state = [False
+        self.state_road = [False
             for edge in self.catan.board.edges]
+
+    def get_state_dict(self):
+        state_dict = self.get_geometry_dict()
+        state_dict = self.add_perspective_states(state_dict)
+        return state_dict
+
+    def get_geometry_dict(self):
+        geometry_dict = {"Settlements": self.state_settlement,
+                         "Cities": self.state_city,
+                         "Roads": self.state_road}
+        return geometry_dict
+
+    def add_perspective_states(self, state_dict):
+        state_dict.update({
+            perspective.name: perspective.card_state
+            for perspective in self.perspectives})
+        return state_dict
+
+
+    # Output
+
+    def __str__(self):
+        geometry_data = self.get_geometry_data()
+        card_df = self.get_card_df()
+        string = (f"{get_dict_string(geometry_data)}\n\n"
+                  f"{card_df.to_string()}")
+        return string
+
+    def get_geometry_data(self):
+        board = self.catan.board
+        geometry_data = {
+            "Settlements": ", ".join(board.vertex_list(self.state_settlement)),
+            "Cities": ", ".join(board.vertex_list(self.state_city)),
+            "Roads": ", ".join(board.edge_list(self.state_road))}
+        return geometry_data
+
+    def get_card_df(self):
+        perspective_dfs = [perspective.get_card_df()
+                           for perspective in self.perspectives]
+        card_df = concat(perspective_dfs, axis=1)
+        return card_df
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
