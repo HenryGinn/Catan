@@ -182,7 +182,6 @@ class Board():
         self.initialise_plot()
         self.add_tiles_to_plot()
         self.set_x_and_y_plot_limits()
-        plt.show()
 
     def initialise_plot(self):
         self.fig, self.ax = plt.subplots(1)
@@ -204,7 +203,37 @@ class Board():
         self.ax.set_xlim(min_x, max_x)
         self.ax.set_ylim(min_y, max_y)
 
+    def show(self):
+        plt.show()
 
+    def plot_state(self):
+        self.plot_board()
+        self.plot_settlements()
+        self.plot_cities()
+        self.plot_roads()
+
+    def plot_settlements(self):
+        for player in self.catan.players:
+            self.plot_vertices(player.settlement_state,
+                               player.colour, 5)
+
+    def plot_cities(self):
+        for player in self.catan.players:
+            self.plot_vertices(player.city_state,
+                               player.colour, 10)
+
+    def plot_vertices(self, indicators, colour, size):
+        for vertex, indicator in zip(self.vertices, indicators):
+            if indicator:
+                self.plot_vertex(vertex, colour, size)
+
+    def plot_vertex(self, vertex, colour, size):
+        pass
+
+    def plot_roads(self):
+        pass
+
+    
     # Other
 
     def vertex_list(self, state_vertex):

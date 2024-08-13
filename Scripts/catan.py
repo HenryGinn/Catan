@@ -12,12 +12,12 @@ from utils import get_name
 
 class Catan():
 
-    def __init__(self, name=None, player_names=None):
+    def __init__(self, name=None, player_names=None, player_colours=None):
         self.name = name
         self.set_main_paths()
         self.create_folders()
         self.create_objects()
-        self.initialise_players(player_names)
+        self.initialise_players(player_names, player_colours)
 
     def set_main_paths(self):
         self.path_base = dirname(dirname(__file__))
@@ -38,8 +38,9 @@ class Catan():
         self.board = Board(self)
         self.trade = Trade(self)
 
-    def initialise_players(self, player_names):
+    def initialise_players(self, player_names, player_colours):
         player_names = self.get_player_names(player_names)
+        player_colours = self.player_colours(player_colours)
         self.players = [PlayerRegular(self, name)
                         for name in player_names]
         self.initialise_perspectives()
@@ -53,6 +54,10 @@ class Catan():
             return [1, 2, 3, 4]
         else:
             return player_names
+
+    def player_colours(self, player_colours):
+        if player_colours is None:
+            return []
 
     def set_initial_states(self):
         for player in self.players:
