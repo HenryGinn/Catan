@@ -4,7 +4,7 @@
       4,
       -2
     ],
-    "Type": "Ore",
+    "Type": "Mud",
     "Vertices": [
       1,
       2,
@@ -19,7 +19,7 @@
       3,
       0
     ],
-    "Type": "Sheep",
+    "Type": "Wheat",
     "Vertices": [
       3,
       4,
@@ -34,7 +34,7 @@
       2,
       2
     ],
-    "Type": "Mud",
+    "Type": "Ore",
     "Vertices": [
       5,
       6,
@@ -49,7 +49,7 @@
       3,
       -3
     ],
-    "Type": "Wheat",
+    "Type": "Wood",
     "Vertices": [
       8,
       9,
@@ -64,7 +64,7 @@
       2,
       -1
     ],
-    "Type": "Ore",
+    "Type": "Wood",
     "Vertices": [
       10,
       11,
@@ -79,7 +79,7 @@
       1,
       1
     ],
-    "Type": "Wood",
+    "Type": "Sheep",
     "Vertices": [
       12,
       13,
@@ -94,7 +94,7 @@
       0,
       3
     ],
-    "Type": "Wood",
+    "Type": "Mud",
     "Vertices": [
       14,
       15,
@@ -109,7 +109,7 @@
       2,
       -4
     ],
-    "Type": "Wheat",
+    "Type": "Wood",
     "Vertices": [
       17,
       18,
@@ -124,7 +124,7 @@
       1,
       -2
     ],
-    "Type": "Wood",
+    "Type": "Ore",
     "Vertices": [
       19,
       20,
@@ -169,7 +169,7 @@
       -2,
       4
     ],
-    "Type": "Wheat",
+    "Type": "Mud",
     "Vertices": [
       25,
       26,
@@ -184,7 +184,7 @@
       0,
       -3
     ],
-    "Type": "Mud",
+    "Type": "Ore",
     "Vertices": [
       29,
       30,
@@ -199,7 +199,7 @@
       -1,
       -1
     ],
-    "Type": "Sheep",
+    "Type": "Desert",
     "Vertices": [
       31,
       32,
@@ -244,7 +244,7 @@
       -2,
       -2
     ],
-    "Type": "Ore",
+    "Type": "Wheat",
     "Vertices": [
       40,
       41,
@@ -259,7 +259,7 @@
       -3,
       0
     ],
-    "Type": "Mud",
+    "Type": "Sheep",
     "Vertices": [
       42,
       43,
@@ -274,7 +274,7 @@
       -4,
       2
     ],
-    "Type": "Desert",
+    "Type": "Wheat",
     "Vertices": [
       44,
       45,

@@ -4,9 +4,9 @@
     "H": {
       "Geometry": {
         "Settlements": [
+          true,
           false,
-          false,
-          false,
+          true,
           false,
           false,
           false,
@@ -68,7 +68,7 @@
           false,
           false,
           false,
-          false,
+          true,
           false,
           false,
           false,
@@ -277,7 +277,7 @@
           "Harvest Min": 0,
           "Harvest Max": 0
         },
-        "H view V": {
+        "H view D": {
           "Wheat Min": 0,
           "Wheat Max": 0,
           "Sheep Min": 0,
@@ -348,7 +348,7 @@
           false,
           false,
           false,
-          false,
+          true,
           false,
           false,
           false,
@@ -423,7 +423,7 @@
           false,
           false,
           false,
-          false,
+          true,
           false,
           false,
           false,
@@ -599,7 +599,7 @@
           "Harvest Min": 0,
           "Harvest Max": 0
         },
-        "Y view V": {
+        "Y view D": {
           "Wheat Min": 0,
           "Wheat Max": 0,
           "Sheep Min": 0,
@@ -645,7 +645,7 @@
         }
       }
     },
-    "V": {
+    "D": {
       "Geometry": {
         "Settlements": [
           false,
@@ -690,7 +690,7 @@
           false,
           false,
           false,
-          false,
+          true,
           false,
           false,
           false,
@@ -873,11 +873,11 @@
           false,
           false,
           false,
-          false
+          true
         ]
       },
       "Perspectives": {
-        "V view H": {
+        "D view H": {
           "Wheat Min": 0,
           "Wheat Max": 0,
           "Sheep Min": 0,
@@ -899,7 +899,7 @@
           "Harvest Min": 0,
           "Harvest Max": 0
         },
-        "V view Y": {
+        "D view Y": {
           "Wheat Min": 0,
           "Wheat Max": 0,
           "Sheep Min": 0,
@@ -921,7 +921,7 @@
           "Harvest Min": 0,
           "Harvest Max": 0
         },
-        "V view V": {
+        "D view D": {
           "Wheat Min": 0,
           "Wheat Max": 0,
           "Sheep Min": 0,
@@ -943,7 +943,7 @@
           "Harvest Min": 0,
           "Harvest Max": 0
         },
-        "V view J": {
+        "D view J": {
           "Wheat Min": 0,
           "Wheat Max": 0,
           "Sheep Min": 0,
@@ -1079,7 +1079,7 @@
           false,
           false,
           false,
-          false
+          true
         ],
         "Roads": [
           false,
@@ -1243,7 +1243,7 @@
           "Harvest Min": 0,
           "Harvest Max": 0
         },
-        "J view V": {
+        "J view D": {
           "Wheat Min": 0,
           "Wheat Max": 0,
           "Sheep Min": 0,

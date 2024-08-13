@@ -178,15 +178,16 @@ class Board():
 
     # Plotting
 
-    def plot_board(self):
+    def plot_layout(self):
         self.initialise_plot()
         self.add_tiles_to_plot()
         self.set_x_and_y_plot_limits()
 
     def initialise_plot(self):
-        self.fig, self.ax = plt.subplots(1)
-        self.ax.set_aspect('equal')
+        self.fig, self.ax = plt.subplots(1, figsize=(12, 8))
+        self.ax.set_aspect("equal")
         self.ax.axis("off")
+        self.fig.patch.set_facecolor("#002240")
 
     def add_tiles_to_plot(self):
         polygons = PatchCollection(
@@ -207,20 +208,21 @@ class Board():
         plt.show()
 
     def plot_state(self):
-        self.plot_board()
+        self.plot_layout()
         self.plot_settlements()
         self.plot_cities()
         self.plot_roads()
+        self.show()
 
     def plot_settlements(self):
         for player in self.catan.players:
             self.plot_vertices(player.settlement_state,
-                               player.colour, 5)
+                               player.colour, 0.15)
 
     def plot_cities(self):
         for player in self.catan.players:
             self.plot_vertices(player.city_state,
-                               player.colour, 10)
+                               player.colour, 0.25)
 
     def plot_vertices(self, indicators, colour, size):
         for vertex, indicator in zip(self.vertices, indicators):
@@ -228,12 +230,29 @@ class Board():
                 self.plot_vertex(vertex, colour, size)
 
     def plot_vertex(self, vertex, colour, size):
-        pass
+        circle = plt.Circle(vertex.position, size, color=colour)
+        self.ax.add_patch(circle)
 
     def plot_roads(self):
-        pass
+        for player in self.catan.players:
+            self.plot_edges(player.road_state,
+                            player.colour)
 
-    
+    def plot_edges(self, indicators, colour):
+        for edge, indicator in zip(self.edges, indicators):
+            if indicator:
+                self.plot_edge(edge, colour)
+
+    def plot_edge(self, edge, colour):
+        values = [[vertex.position[i]
+                   for vertex in edge.vertices]
+                  for i in range(2)]
+        print([[vertex.vector[i]
+                   for vertex in edge.vertices]
+                  for i in range(2)])
+        self.ax.plot(*values, color=colour, linewidth=6)
+
+
     # Other
 
     def vertex_list(self, state_vertex):

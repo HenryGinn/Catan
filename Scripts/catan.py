@@ -12,12 +12,11 @@ from utils import get_name
 
 class Catan():
 
-    def __init__(self, name=None, player_names=None, player_colours=None):
+    def __init__(self, name=None):
         self.name = name
         self.set_main_paths()
         self.create_folders()
         self.create_objects()
-        self.initialise_players(player_names, player_colours)
 
     def set_main_paths(self):
         self.path_base = dirname(dirname(__file__))
@@ -38,26 +37,33 @@ class Catan():
         self.board = Board(self)
         self.trade = Trade(self)
 
-    def initialise_players(self, player_names, player_colours):
-        player_names = self.get_player_names(player_names)
-        player_colours = self.player_colours(player_colours)
-        self.players = [PlayerRegular(self, name)
-                        for name in player_names]
+    def initialise_players(self, names=None, colours=None):
+        names = self.get_player_names(names)
+        colours = self.get_player_colours(colours)
+        self.players = [PlayerRegular(self, name, colour)
+                        for name, colour in zip(names, colours)]
         self.initialise_perspectives()
 
     def initialise_perspectives(self):
         for player in self.players:
             player.initialise_perspectives()
 
-    def get_player_names(self, player_names):
-        if player_names is None:
+    def get_player_names(self, names):
+        if names is None:
             return [1, 2, 3, 4]
         else:
-            return player_names
+            return names
 
-    def player_colours(self, player_colours):
-        if player_colours is None:
-            return []
+    def get_player_colours(self, colours=None):
+        if colours is None:
+            return ["#E50000","#18E100", "#3FFF00", "#FF08FE"]
+        else:
+            return colours
+
+    def set_player_colours(self, colours=None):
+        colours = self.get_player_colours(colours)
+        for player, colour in zip(self.players, colours):
+            player.colour = colour
 
     def set_initial_states(self):
         for player in self.players:
@@ -79,6 +85,7 @@ class Catan():
         return game_state
 
     def load(self):
+        self.initialise_players()
         game_state = self.load_game_state()
         self.board.load_layout(game_state["Layout"])
         self.load_player_states_from_game_state(game_state)

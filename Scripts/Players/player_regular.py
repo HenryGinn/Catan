@@ -10,6 +10,10 @@ class PlayerRegular(Player):
 
     player_type = "Regular"
 
+    def __init__(self, catan, name, colour):
+        super().__init__(catan, name)
+        self.colour = colour
+
     def initialise_perspectives(self):
         self.perspectives = [
             PlayerPerspective(player.name, self)
@@ -26,15 +30,15 @@ class PlayerRegular(Player):
         self.set_initial_road_state()
 
     def set_initial_settlement_state(self):
-        self.state_settlement = [False
+        self.settlement_state = [False
             for vertex in self.catan.board.vertices]
 
     def set_initial_city_state(self):
-        self.state_city = [False
+        self.city_state = [False
             for vertex in self.catan.board.vertices]
 
     def set_initial_road_state(self):
-        self.state_road = [False
+        self.road_state = [False
             for edge in self.catan.board.edges]
 
     def get_state_dict(self):
@@ -45,9 +49,9 @@ class PlayerRegular(Player):
         return state_dict
 
     def get_geometry_dict(self):
-        geometry_dict = {"Settlements": self.state_settlement,
-                         "Cities": self.state_city,
-                         "Roads": self.state_road}
+        geometry_dict = {"Settlements": self.settlement_state,
+                         "Cities": self.city_state,
+                         "Roads": self.road_state}
         return geometry_dict
 
     def get_perspectives_dict(self):
@@ -84,9 +88,9 @@ class PlayerRegular(Player):
     def get_geometry_data(self):
         board = self.catan.board
         geometry_data = {
-            "Settlements": ", ".join(board.vertex_list(self.state_settlement)),
-            "Cities": ", ".join(board.vertex_list(self.state_city)),
-            "Roads": ", ".join(board.edge_list(self.state_road))}
+            "Settlements": ", ".join(board.vertex_list(self.settlement_state)),
+            "Cities": ", ".join(board.vertex_list(self.city_state)),
+            "Roads": ", ".join(board.edge_list(self.road_state))}
         return geometry_data
 
     def get_card_df(self):
