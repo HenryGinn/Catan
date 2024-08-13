@@ -19,13 +19,13 @@ class PlayerPerspective(Player):
             **resource_card_state, **development_card_state}
 
     def get_initial_resources(self):
-        resource_card_state = {(resource, bound): 0
+        resource_card_state = {f"{resource} {bound}": 0
                                for resource in resource_types
                                for bound in ["Min", "Max"]}
         return resource_card_state
 
     def get_initial_developments(self):
-        development_card_state = {(development, bound): 0
+        development_card_state = {f"{development} {bound}": 0
                                   for development in development_types
                                   for bound in ["Min", "Max"]}
         return development_card_state
@@ -38,8 +38,8 @@ class PlayerPerspective(Player):
 
     def get_card_dict(self):
         card_dict = [{"Card": card,
-                      "Min": self.card_state[(card, "Min")],
-                      "Max": self.card_state[(card, "Min")]}
+                      "Min": self.card_state[f"{card} Min"],
+                      "Max": self.card_state[f"{card} Max"]}
                      for card in card_types]
         return card_dict
 

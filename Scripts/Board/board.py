@@ -11,6 +11,7 @@ from matplotlib.collections import PatchCollection
 from Board.vertex import Vertex
 from Board.tile import Tile
 from Board.edge import Edge
+from utils import get_name
 
 
 class Board():
@@ -96,7 +97,7 @@ class Board():
             json.dump(layout_json, file, indent=2)
 
     def get_layout_path(self, name):
-        self.set_layout_name(name)
+        self.layout_name = get_name(name)
         layout_path = self.get_path_layout()
         return layout_path
 
@@ -104,12 +105,6 @@ class Board():
         file_name = f"{self.layout_name}.json"
         path = join(self.catan.path_layouts, file_name)
         return path
-
-    def set_layout_name(self, name):
-        if name is None:
-            self.layout_name = time.strftime("%Y_%M_%d__%H_%M")
-        else:
-            self.layout_name = name    
 
     def get_layout_json(self):
         layout_json = [
