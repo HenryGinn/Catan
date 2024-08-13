@@ -1,11 +1,14 @@
+import numpy as np
+
+
 class Tile():
 
-    def __init__(self, board, vector, vertices, ID, tile_type="Desert"):
+    def __init__(self, board, tile_data):
         self.board = board
-        self.vector = vector
-        self.vertices = vertices
-        self.ID = ID
-        self.set_type(tile_type)
+        self.vector = np.array(tile_data["Vector"]).astype("int8")
+        self.vertices = [board.vertices[index]
+                         for index in tile_data["Vertices"]]
+        self.set_type("Desert")
 
     def set_type(self, tile_type):
         self.type = tile_type

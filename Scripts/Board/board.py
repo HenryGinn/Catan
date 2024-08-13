@@ -10,6 +10,7 @@ from matplotlib.collections import PatchCollection
 
 from Board.vertex import Vertex
 from Board.tile import Tile
+from Board.port import Port
 from Board.edge import Edge
 from utils import get_name
 
@@ -33,6 +34,7 @@ class Board():
     def initialise_graph_components(self):
         self.initialise_vertices()
         self.initialise_tiles()
+        self.initialise_ports()
         self.initialise_edges()
 
 
@@ -54,23 +56,26 @@ class Board():
     # Tiles
 
     def initialise_tiles(self):
-        tile_vectors = self.get_tile_centre_position_vectors()
-        self.tiles = [self.get_tile(tile_vector, index)
-                      for index, tile_vector in enumerate(tile_vectors)]
+        tiles_data = self.load_tiles_data()
+        self.tiles = [Tile(self, tile_data)
+                      for tile_data in tiles_data]
 
-    def get_tile_centre_position_vectors(self):
-        path = join(self.catan.path_resources, "Tile Centres.json")
+    def load_tiles_data(self):
+        path = join(self.catan.path_resources, "Tiles Data.json")
         with open(path, "r") as file:
-            tile_vectors = np.array(load(file), dtype="int8")
-        return tile_vectors
+            tiles_data = load(file)
+        return tiles_data
 
-    def get_tile(self, tile_vector, index):
-        neighbours = tile_vector + self.directions
-        vertices = [vertex for neighbour in neighbours
-                    for vertex in self.vertices
-                    if np.all(vertex.vector == neighbour)]
-        tile = Tile(self, tile_vector, vertices, index)
-        return tile
+    def initialise_ports(self):
+        ports_data = self.get_ports_date()
+        self.ports = [Port(self, port_data)
+                      for port_data in ports_data]
+
+    def get_ports_date(self):
+        path = join(self.catan.path_resources, "Ports Data.json")
+        with open(path, "r") as file:
+            ports_data = json.load(file)
+        return ports_data
 
 
     # Edges
@@ -90,28 +95,22 @@ class Board():
 
     # Saving
 
-    def save_layout(self, name):
-        path = self.get_layout_path(name)
-        layout_json = self.get_layout_json()
+    def save_layout(self, name=None):
+        path = self.get_path_tile_types(name)
+        tile_types = [tile.type for tile in self.tiles]
         with open(path, "w+") as file:
-            json.dump(layout_json, file, indent=2)
+            json.dump(tile_types, file, indent=2)
 
-    def get_layout_path(self, name):
-        self.layout_name = get_name(name)
-        layout_path = self.get_path_layout()
-        return layout_path
-
-    def get_path_layout(self):
+    def get_path_tile_types(self, name=None):
+        self.set_layout_name(name)
         file_name = f"{self.layout_name}.json"
         path = join(self.catan.path_layouts, file_name)
         return path
 
-    def get_layout_json(self):
-        layout_json = [
-            {"Vector": self.json_iterable(tile.vector), "Type": tile.type,
-             "Vertices": [vertex.ID for vertex in tile.vertices]}
-            for tile in self.tiles]
-        return layout_json
+    def set_layout_name(self, name):
+        if (not hasattr(self, "layout_name")
+            or self.layout_name is None):
+            self.layout_name = get_name(name)
 
     def json_iterable(self, iterable):
         iterable = [int(i) for i in iterable]
@@ -122,35 +121,30 @@ class Board():
 
     def load_layout(self, name):
         self.layout_name = name
-        layout_json = self.load_layout_json()
-        self.initialise_vertices()
-        self.load_tiles(layout_json)
-        self.initialise_edges()
+        tile_types = self.load_tile_types()
+        self.set_tile_types(tile_types)
 
-    def load_layout_json(self):
-        path = self.get_path_layout()
+    def load_tile_types(self):
+        path = self.get_path_tile_types()
         with open(path, "r") as file:
-            layout_json = json.load(file)
-        return layout_json
+            tile_types = json.load(file)
+        return tile_types
 
-    def load_tiles(self, layout_json):
-        self.tiles = [
-            Tile(self, np.array(tile_data["Vector"], dtype="int8"),
-                 [self.vertices[index] for index in tile_data["Vertices"]],
-                 index, tile_data["Type"])
-            for index, tile_data in enumerate(layout_json)]
+    def set_tile_types(self, tile_types):
+        for tile, tile_type in zip(self.tiles, tile_types):
+            tile.set_type(tile_type)
 
 
     # Produce layout
 
     def generate_layout(self, name=None):
         tile_types = self.get_generated_tile_types()
-        self.set_layout(tile_types, name)
+        self.set_tile_types(tile_types)
+        self.save_layout(name)
 
     def set_layout(self, tile_types, name=None):
         for tile, tile_type in zip(self.tiles, tile_types):
             tile.set_type(tile_type)
-        self.save_layout(name)
 
     def get_generated_tile_types(self):
         tile_types = [tile_type for tile_type in self.tile_data
@@ -247,9 +241,6 @@ class Board():
         values = [[vertex.position[i]
                    for vertex in edge.vertices]
                   for i in range(2)]
-        print([[vertex.vector[i]
-                   for vertex in edge.vertices]
-                  for i in range(2)])
         self.ax.plot(*values, color=colour, linewidth=6)
 
 
