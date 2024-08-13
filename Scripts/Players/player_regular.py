@@ -43,8 +43,10 @@ class PlayerRegular(Player):
             for edge in self.catan.board.edges]
 
     def get_state_dict(self):
-        state_dict = self.get_geometry_dict()
-        state_dict = self.add_perspective_states(state_dict)
+        geometry_dict = self.get_geometry_dict()
+        perspectives_dict = self.get_perspectives_dict()
+        state_dict = {"Geometry": geometry_dict,
+                      "Perspectives": perspectives_dict}
         return state_dict
 
     def get_geometry_dict(self):
@@ -53,12 +55,27 @@ class PlayerRegular(Player):
                          "Roads": self.state_road}
         return geometry_dict
 
-    def add_perspective_states(self, state_dict):
-        state_dict.update({
+    def get_perspectives_dict(self):
+        perspectives_dict = {
             perspective.name: perspective.card_state
-            for perspective in self.perspectives})
-        return state_dict
+            for perspective in self.perspectives}
+        return perspectives_dict
 
+    def load_state_from_player_state(self, player_state):
+        self.catan.b = player_state
+        self.load_from_geometry_dict(player_state["Geometry"])
+        self.load_from_perspectives_dict(player_state["Perspectives"])
+
+    def load_from_geometry_dict(self, geometry_dict):
+        self.settlement_state = geometry_dict["Settlements"]
+        self.city_state = geometry_dict["Cities"]
+        self.road_state = geometry_dict["Roads"]
+
+    def load_from_perspectives_dict(self, card_states):
+        iterable = zip(self.perspectives, card_states.items())
+        for perspective, (name, card_state) in iterable:
+            perspective.name = name
+            perspective.card_state = card_state
 
     # Output
 
@@ -82,26 +99,3 @@ class PlayerRegular(Player):
                            for perspective in self.perspectives]
         card_df = concat(perspective_dfs, axis=1)
         return card_df
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        

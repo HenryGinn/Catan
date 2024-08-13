@@ -47,6 +47,9 @@ class Catan():
         for player in self.players:
             player.set_initial_states()
 
+
+    # Saving and loading
+
     def save(self):
         game_state = self.get_game_state()
         with open(self.path_game, "w+") as file:
@@ -58,3 +61,19 @@ class Catan():
         game_state = {"Layout": self.board.layout_name,
                       "Players": players_state}
         return game_state
+
+    def load(self):
+        game_state = self.load_game_state()
+        self.board.load_layout(game_state["Layout"])
+        self.load_player_states_from_game_state(game_state)
+
+    def load_game_state(self):
+        with open(self.path_game, "r") as file:
+            game_state = json.load(file)
+        return game_state
+
+    def load_player_states_from_game_state(self, game_state):
+        iterable = zip(self.players, game_state["Players"].items())
+        for player, (name, player_state) in iterable:
+            player.name = name
+            player.load_state_from_player_state(player_state)
