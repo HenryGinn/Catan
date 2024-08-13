@@ -10,15 +10,10 @@ class PlayerRegular(Player):
 
     player_type = "Regular"
 
-    def __init__(self, catan, ID):
-        super().__init__(catan, ID)
-        self.name = f"{self.ID + 1}"
-        self.initialise_player_perspectives()
-
-    def initialise_player_perspectives(self):
+    def initialise_perspectives(self):
         self.perspectives = [
-            PlayerPerspective(index, self)
-            for index in range(4)]
+            PlayerPerspective(player.name, self)
+            for player in self.catan.players]
 
     def set_initial_states(self):
         self.set_initial_board_state()
@@ -62,7 +57,6 @@ class PlayerRegular(Player):
         return perspectives_dict
 
     def load_state_from_player_state(self, player_state):
-        self.catan.b = player_state
         self.load_from_geometry_dict(player_state["Geometry"])
         self.load_from_perspectives_dict(player_state["Perspectives"])
 
@@ -76,6 +70,7 @@ class PlayerRegular(Player):
         for perspective, (name, card_state) in iterable:
             perspective.name = name
             perspective.card_state = card_state
+
 
     # Output
 

@@ -7,10 +7,10 @@ class PlayerPerspective(Player):
 
     player_type = "Perspective"
 
-    def __init__(self, ID, player_base):
-        super().__init__(player_base.catan, ID)
+    def __init__(self, perspective_name, player_base):
+        name = f"{player_base.name} view {perspective_name}"
+        super().__init__(player_base.catan, name)
         self.player_base = player_base
-        self.name = f"{self.player_base.name} view {self.ID + 1}"
 
     def initialise_card_state(self):
         resource_card_state = self.get_initial_resources()

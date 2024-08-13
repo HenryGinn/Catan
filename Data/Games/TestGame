@@ -1,7 +1,7 @@
 {
   "Layout": "TestLayout",
   "Players": {
-    "1": {
+    "H": {
       "Geometry": {
         "Settlements": [
           false,
@@ -233,7 +233,7 @@
         ]
       },
       "Perspectives": {
-        "1 view 1": {
+        "H view H": {
           "Wheat Min": 0,
           "Wheat Max": 0,
           "Sheep Min": 0,
@@ -255,7 +255,7 @@
           "Harvest Min": 0,
           "Harvest Max": 0
         },
-        "1 view 2": {
+        "H view Y": {
           "Wheat Min": 0,
           "Wheat Max": 0,
           "Sheep Min": 0,
@@ -277,7 +277,7 @@
           "Harvest Min": 0,
           "Harvest Max": 0
         },
-        "1 view 3": {
+        "H view V": {
           "Wheat Min": 0,
           "Wheat Max": 0,
           "Sheep Min": 0,
@@ -299,7 +299,7 @@
           "Harvest Min": 0,
           "Harvest Max": 0
         },
-        "1 view 4": {
+        "H view J": {
           "Wheat Min": 0,
           "Wheat Max": 0,
           "Sheep Min": 0,
@@ -323,7 +323,7 @@
         }
       }
     },
-    "2": {
+    "Y": {
       "Geometry": {
         "Settlements": [
           false,
@@ -555,7 +555,7 @@
         ]
       },
       "Perspectives": {
-        "2 view 1": {
+        "Y view H": {
           "Wheat Min": 0,
           "Wheat Max": 0,
           "Sheep Min": 0,
@@ -577,7 +577,7 @@
           "Harvest Min": 0,
           "Harvest Max": 0
         },
-        "2 view 2": {
+        "Y view Y": {
           "Wheat Min": 0,
           "Wheat Max": 0,
           "Sheep Min": 0,
@@ -599,7 +599,7 @@
           "Harvest Min": 0,
           "Harvest Max": 0
         },
-        "2 view 3": {
+        "Y view V": {
           "Wheat Min": 0,
           "Wheat Max": 0,
           "Sheep Min": 0,
@@ -621,7 +621,7 @@
           "Harvest Min": 0,
           "Harvest Max": 0
         },
-        "2 view 4": {
+        "Y view J": {
           "Wheat Min": 0,
           "Wheat Max": 0,
           "Sheep Min": 0,
@@ -645,7 +645,7 @@
         }
       }
     },
-    "3": {
+    "V": {
       "Geometry": {
         "Settlements": [
           false,
@@ -877,7 +877,7 @@
         ]
       },
       "Perspectives": {
-        "3 view 1": {
+        "V view H": {
           "Wheat Min": 0,
           "Wheat Max": 0,
           "Sheep Min": 0,
@@ -899,7 +899,7 @@
           "Harvest Min": 0,
           "Harvest Max": 0
         },
-        "3 view 2": {
+        "V view Y": {
           "Wheat Min": 0,
           "Wheat Max": 0,
           "Sheep Min": 0,
@@ -921,7 +921,7 @@
           "Harvest Min": 0,
           "Harvest Max": 0
         },
-        "3 view 3": {
+        "V view V": {
           "Wheat Min": 0,
           "Wheat Max": 0,
           "Sheep Min": 0,
@@ -943,7 +943,7 @@
           "Harvest Min": 0,
           "Harvest Max": 0
         },
-        "3 view 4": {
+        "V view J": {
           "Wheat Min": 0,
           "Wheat Max": 0,
           "Sheep Min": 0,
@@ -967,7 +967,7 @@
         }
       }
     },
-    "4": {
+    "J": {
       "Geometry": {
         "Settlements": [
           false,
@@ -1199,7 +1199,7 @@
         ]
       },
       "Perspectives": {
-        "4 view 1": {
+        "J view H": {
           "Wheat Min": 0,
           "Wheat Max": 0,
           "Sheep Min": 0,
@@ -1221,7 +1221,7 @@
           "Harvest Min": 0,
           "Harvest Max": 0
         },
-        "4 view 2": {
+        "J view Y": {
           "Wheat Min": 0,
           "Wheat Max": 0,
           "Sheep Min": 0,
@@ -1243,7 +1243,7 @@
           "Harvest Min": 0,
           "Harvest Max": 0
         },
-        "4 view 3": {
+        "J view V": {
           "Wheat Min": 0,
           "Wheat Max": 0,
           "Sheep Min": 0,
@@ -1265,7 +1265,7 @@
           "Harvest Min": 0,
           "Harvest Max": 0
         },
-        "4 view 4": {
+        "J view J": {
           "Wheat Min": 0,
           "Wheat Max": 0,
           "Sheep Min": 0,

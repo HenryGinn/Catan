@@ -30,9 +30,9 @@ class Player():
 
     player_type = "General"
     
-    def __init__(self, catan, ID):
+    def __init__(self, catan, name):
         self.catan = catan
-        self.ID = ID
+        self.name = name
 
     def __str__(self):
         state_dict = self.get_state_dict()
