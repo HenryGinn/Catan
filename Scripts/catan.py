@@ -12,6 +12,20 @@ from utils import get_name
 
 class Catan():
 
+    resource_types = ["Wheat",
+                      "Sheep",
+                      "Wood",
+                      "Ore",
+                      "Mud"]
+    development_types = ["Knight",
+                         "Victory",
+                         "Monopoly",
+                         "RoadBuilder",
+                         "Harvest"]
+    card_types = resource_types + development_types
+    card_trade_types = resource_types + ["Development"]
+    real_estate_types = ["Settlement", "City", "Road"]
+
     def __init__(self, name=None):
         self.name = name
         self.set_main_paths()
@@ -68,6 +82,11 @@ class Catan():
     def set_initial_states(self):
         for player in self.players:
             player.set_initial_states()
+
+    def get_player(self, player_name):
+        player = [player for player in self.players
+                  if player.name == player_name]
+        return player
 
 
     # Saving and loading

@@ -68,3 +68,9 @@ The state that the neural networks takes as input needs to be defined in a more 
 What a player believes about a player's belongings (including themselves) can be called a player state. This has two parts, being their cards and their assets. The knowledge of their cards is dependent on the observer player, but the knowledge about their real estate is public. These two halfs also correspond exactly to the different symmetries that need to be obeyed, and are called the card state and the board state respectively. They are stored as two different structures to reflect the structure of the neural network. A game state is the collection of all the player states plus the position of the robber.
 
 There are two subclasses of player: A perspective player, and a regular player. A perspective player contains the knowledge of player A about what cards player B has. The card state is a dictionary stored as an attribute of a perspective player. A player's perspective about themselves is also handled by a perspective player. A regular player stores the real estate information corresponding to that player, and also a list of perspective player objects associated with themselves.
+
+### Representation of Trades
+
+A trade is given as a dictionary of dictionaries, where the key is the player name and the value is what they gain of lose. The keys of these inside dictionaries are the types of asset being changed. For all players involved in a trade, they will take both dictionaries and convert it to a state. These states will be compared to their actual player state for each player to determine if it is valid. If this is the case then the trade states will be added to their respective player states.
+
+For the input of a trade, the cost of real estate will not be entered, and a preprocessing step will be done to the true gains and losses of the trade
