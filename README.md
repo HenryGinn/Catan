@@ -57,7 +57,7 @@ The particular nodes associated with each vertex/edge/face does not matter as an
 - Whether a particular player owns a settlement on a vertex
 - Whether a particular player owns a city on a vertex
 
-### Implementatio and the Neural Network
+### Implementation and the Neural Network
 
 The central component of the AI player is a neural network that takes in a state, evaluates the position, and gives a probability to each player based on how likely they are to win. Decisions are made by enumerating all reasonable possible options, evaluating the state, and choosing the state that results in the best chance to win. By implementing the AI like this, more complicated trades can be added without needing to retrain the network as the only input is the game state.
 

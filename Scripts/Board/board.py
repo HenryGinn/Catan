@@ -175,6 +175,7 @@ class Board():
     def plot_layout(self):
         self.initialise_plot()
         self.add_tiles_to_plot()
+        self.add_ports_to_plot()
         self.set_x_and_y_plot_limits()
 
     def initialise_plot(self):
@@ -190,11 +191,34 @@ class Board():
              for tile in self.tiles], match_original=True)
         self.ax.add_collection(polygons)
 
+    def add_ports_to_plot(self):
+        self.add_port_piers_to_plot()
+        self.add_port_circles_to_plot()
+        self.add_port_text_to_plot()
+
+    def add_port_piers_to_plot(self):
+        for port in self.ports:
+            for vertex in port.vertices:
+                values = list(zip(*[vertex.position, port.position]))
+                self.ax.plot(*values, color=port.color, linewidth=6, zorder=-1)
+
+    def add_port_circles_to_plot(self):
+        circles = PatchCollection(
+            [plt.Circle(port.position, 0.5, color=port.color)
+             for port in self.ports], match_original=True)
+        self.ax.add_collection(circles)
+
+    def add_port_text_to_plot(self):
+        for port in self.ports:
+            self.ax.add_artist(
+                plt.Text(*port.position, str(port.ratio),
+                         ha='center', va='center', fontsize=20))
+
     def set_x_and_y_plot_limits(self):
-        vertex_positions = np.array(
-            [vertex.position for vertex in self.vertices])
-        min_x, min_y = np.min(vertex_positions, axis=0)*1.1
-        max_x, max_y = np.max(vertex_positions, axis=0)*1.1
+        positions = np.array(
+            [obj.position for obj in self.vertices + self.ports])
+        min_x, min_y = np.min(positions, axis=0)*1.15
+        max_x, max_y = np.max(positions, axis=0)*1.15
         self.ax.set_xlim(min_x, max_x)
         self.ax.set_ylim(min_y, max_y)
 
@@ -211,37 +235,37 @@ class Board():
     def plot_settlements(self):
         for player in self.catan.players:
             self.plot_vertices(player.settlement_state,
-                               player.colour, 0.15)
+                               player.color, 0.15)
 
     def plot_cities(self):
         for player in self.catan.players:
             self.plot_vertices(player.city_state,
-                               player.colour, 0.25)
+                               player.color, 0.25)
 
-    def plot_vertices(self, indicators, colour, size):
+    def plot_vertices(self, indicators, color, size):
         for vertex, indicator in zip(self.vertices, indicators):
             if indicator:
-                self.plot_vertex(vertex, colour, size)
+                self.plot_vertex(vertex, color, size)
 
-    def plot_vertex(self, vertex, colour, size):
-        circle = plt.Circle(vertex.position, size, color=colour)
+    def plot_vertex(self, vertex, color, size):
+        circle = plt.Circle(vertex.position, size, color=color)
         self.ax.add_patch(circle)
 
     def plot_roads(self):
         for player in self.catan.players:
             self.plot_edges(player.road_state,
-                            player.colour)
+                            player.color)
 
-    def plot_edges(self, indicators, colour):
+    def plot_edges(self, indicators, color):
         for edge, indicator in zip(self.edges, indicators):
             if indicator:
-                self.plot_edge(edge, colour)
+                self.plot_edge(edge, color)
 
-    def plot_edge(self, edge, colour):
+    def plot_edge(self, edge, color):
         values = [[vertex.position[i]
                    for vertex in edge.vertices]
                   for i in range(2)]
-        self.ax.plot(*values, color=colour, linewidth=6)
+        self.ax.plot(*values, color=color, linewidth=6)
 
 
     # Other
@@ -258,6 +282,10 @@ class Board():
             for indicator, vertex in zip(state_edge, self.edges)
             if indicator]
         return edge_vectors
+
+    def get_position(self, vector):
+        position = np.dot(vector, self.basis)
+        return position
 
 
 tile_type_input_keys = {

@@ -10,9 +10,9 @@ class PlayerRegular(Player):
 
     player_type = "Regular"
 
-    def __init__(self, catan, name, colour):
+    def __init__(self, catan, name, color):
         super().__init__(catan, name)
-        self.colour = colour
+        self.color = color
 
     def initialise_perspectives(self):
         self.perspectives = [

@@ -1,3 +1,110 @@
 [
-	{"Vector": [5, -3], "Type": "Port", "Vertices": [2, 3], "PortType": "Any", "Ratio": 3}
+  {
+    "Vector": [
+      6,
+      -3
+    ],
+    "Type": "Variety",
+    "Vertices": [
+      0,
+      1
+    ],
+    "Ratio": 3
+  },
+  {
+    "Vector": [
+      4,
+      1
+    ],
+    "Type": "Wheat",
+    "Vertices": [
+      3,
+      4
+    ],
+    "Ratio": 2
+  },
+  {
+    "Vector": [
+      1,
+      4
+    ],
+    "Type": "Ore",
+    "Vertices": [
+      14,
+      15
+    ],
+    "Ratio": 2
+  },
+  {
+    "Vector": [
+      -3,
+      6
+    ],
+    "Type": "Variety",
+    "Vertices": [
+      26,
+      37
+    ],
+    "Ratio": 3
+  },
+  {
+    "Vector": [
+      -5,
+      4
+    ],
+    "Type": "Sheep",
+    "Vertices": [
+      46,
+      45
+    ],
+    "Ratio": 2
+  },
+  {
+    "Vector": [
+      -5,
+      1
+    ],
+    "Type": "Variety",
+    "Vertices": [
+      51,
+      50
+    ],
+    "Ratio": 3
+  },
+  {
+    "Vector": [
+      -3,
+      -3
+    ],
+    "Type": "Variety",
+    "Vertices": [
+      48,
+      47
+    ],
+    "Ratio": 3
+  },
+  {
+    "Vector": [
+      1,
+      -5
+    ],
+    "Type": "Mud",
+    "Vertices": [
+      38,
+      28
+    ],
+    "Ratio": 2
+  },
+  {
+    "Vector": [
+      4,
+      -5
+    ],
+    "Type": "Wood",
+    "Vertices": [
+      17,
+      7
+    ],
+    "Ratio": 2
+  }
 ]

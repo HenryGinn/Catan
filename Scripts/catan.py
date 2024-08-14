@@ -37,11 +37,11 @@ class Catan():
         self.board = Board(self)
         self.trade = Trade(self)
 
-    def initialise_players(self, names=None, colours=None):
+    def initialise_players(self, names=None, colors=None):
         names = self.get_player_names(names)
-        colours = self.get_player_colours(colours)
-        self.players = [PlayerRegular(self, name, colour)
-                        for name, colour in zip(names, colours)]
+        colors = self.get_player_colors(colors)
+        self.players = [PlayerRegular(self, name, color)
+                        for name, color in zip(names, colors)]
         self.initialise_perspectives()
 
     def initialise_perspectives(self):
@@ -54,16 +54,16 @@ class Catan():
         else:
             return names
 
-    def get_player_colours(self, colours=None):
-        if colours is None:
+    def get_player_colors(self, colors=None):
+        if colors is None:
             return ["#E50000","#18E100", "#3FFF00", "#FF08FE"]
         else:
-            return colours
+            return colors
 
-    def set_player_colours(self, colours=None):
-        colours = self.get_player_colours(colours)
-        for player, colour in zip(self.players, colours):
-            player.colour = colour
+    def set_player_colors(self, colors=None):
+        colors = self.get_player_colors(colors)
+        for player, color in zip(self.players, colors):
+            player.color = color
 
     def set_initial_states(self):
         for player in self.players:
