@@ -4,9 +4,9 @@
     "H": {
       "Geometry": {
         "Settlements": [
-          true,
           false,
-          true,
+          false,
+          false,
           false,
           false,
           false,
@@ -68,7 +68,7 @@
           false,
           false,
           false,
-          true,
+          false,
           false,
           false,
           false,
@@ -348,7 +348,7 @@
           false,
           false,
           false,
-          true,
+          false,
           false,
           false,
           false,
@@ -423,7 +423,7 @@
           false,
           false,
           false,
-          true,
+          false,
           false,
           false,
           false,
@@ -690,7 +690,7 @@
           false,
           false,
           false,
-          true,
+          false,
           false,
           false,
           false,
@@ -873,7 +873,7 @@
           false,
           false,
           false,
-          true
+          false
         ]
       },
       "Perspectives": {
@@ -1079,7 +1079,7 @@
           false,
           false,
           false,
-          true
+          false
         ],
         "Roads": [
           false,

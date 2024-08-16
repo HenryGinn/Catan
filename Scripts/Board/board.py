@@ -270,13 +270,26 @@ class Board():
 
     # Other
 
-    def vertex_list(self, state_vertex):
+    def get_vertex_string(self, state_vertex):
+        vertex_vectors = self.get_vertex_vectors(state_vertex)
+        string = ", ".join(f"({vector[0]}, {vector[1]})"
+                           for vector in vertex_vectors)
+        return string
+
+    def get_vertex_vectors(self, state_vertex):
         vertex_vectors = [
             vertex.vector for indicator, vertex in
             zip(state_vertex, self.vertices) if indicator]
         return vertex_vectors
 
-    def edge_list(self, state_edge):
+    def get_edge_string(self, state_edge):
+        edge_vector_pairs = self.get_edge_vector_pairs(state_edge)
+        string = ", ".join(f"(({pair[0][0]}, {pair[0][1]}),"
+                            f"({pair[1][0]}, {pair[1][1]}))"
+                           for pair in edge_vector_pairs)
+        return string
+
+    def get_edge_vector_pairs(self, state_edge):
         edge_vectors = [
             (edge.vertex_1.vector, edge.vertex_2.vector)
             for indicator, vertex in zip(state_edge, self.edges)

@@ -3,32 +3,24 @@ import pandas as pd
 
 class Trade():
 
-    costs = {
-        "Settlement": {"Wheat": 1,
-                       "Mud": 1,
-                       "Wood": 1,
-                       "Sheep": 1},
-        "Road": {"Mud": 1,
-                 "Wood": 1},
-        "City": {"Wheat": 2,
-                 "Ore": 3},
-        "Development": {"Wheat": 1,
-                        "Sheep": 1,
-                        "Ore": 1}}
-
     def __init__(self, catan):
         self.catan = catan
+        self.load_costs()
+
+    def load_costs(self):
+        path = join(self.catan.path_resources, "Costs.json")
+        with open(path, "r") as file:
+            costs = json.load(file)
+
+
+    # Converting trade inputs into complete trade dictionaries
 
     def __call__(self, trade):
         trade_states = self.get_trade_states_from_input(trade)
 
     def get_trade_states_from_input(self, trade):
-        self.output(trade)
         trade = self.preprocess_trade_from_input(trade)
-        self.output(trade)
-        trade_states = [
-            self.get_trade_state_from_dict(trade, player_name)
-            for player_name in trade.keys()]
+        trade_states = self.get_trade_states(trade)
         return trade_states
 
     def preprocess_trade_from_input(self, trade):
@@ -76,3 +68,45 @@ class Trade():
     def output(self, trade):
         print("")
         print(pd.DataFrame(trade).to_string())
+
+
+    # Converting trade dictionaries into trade states
+
+    def get_trade_states(self, trade):
+        trade_states = [
+            self.get_trade_state_from_trade(
+                trade, self.catan.get_player(player_name))
+            for player_name in trade]
+        return trade_states
+
+    def get_trade_state_from_trade(self, trade, player):
+        trade_real_estate = self.get_trade_real_estate(trade, player)
+        trade_state = {**trade_real_estate}
+        return trade_state
+
+    def get_trade_real_estate(self, trade, player):
+        trade_real_estate = {"Settlement": self.get_trade_settlement(trade, player)}
+        return trade_real_estate
+
+    def get_trade_settlement(self, trade, player):
+        pass
+        #settlement = [player_settlement and trade]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    

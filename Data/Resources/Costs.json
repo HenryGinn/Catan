@@ -1,0 +1,21 @@
+{
+  "Settlement": {
+    "Wheat": 1,
+    "Mud": 1,
+    "Wood": 1,
+    "Sheep": 1
+  },
+  "Road": {
+    "Mud": 1,
+    "Wood": 1
+  },
+  "City": {
+    "Wheat": 2,
+    "Ore": 3
+  },
+  "Development": {
+    "Wheat": 1,
+    "Sheep": 1,
+    "Ore": 1
+  }
+}

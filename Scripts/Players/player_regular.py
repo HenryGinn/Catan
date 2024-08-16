@@ -1,7 +1,3 @@
-from pandas import concat
-from pandas import DataFrame
-from hgutilities.utils import get_dict_string
-
 from Players.player import Player
 from Players.player_perspective import PlayerPerspective
 
@@ -79,22 +75,6 @@ class PlayerRegular(Player):
     # Output
 
     def __str__(self):
-        geometry_data = self.get_geometry_data()
-        card_df = self.get_card_df()
-        string = (f"{get_dict_string(geometry_data)}\n\n"
-                  f"{card_df.to_string()}")
+        state = self.get_state_dict()
+        string = self.catan.get_state_string(state)
         return string
-
-    def get_geometry_data(self):
-        board = self.catan.board
-        geometry_data = {
-            "Settlements": ", ".join(board.vertex_list(self.settlement_state)),
-            "Cities": ", ".join(board.vertex_list(self.city_state)),
-            "Roads": ", ".join(board.edge_list(self.road_state))}
-        return geometry_data
-
-    def get_card_df(self):
-        perspective_dfs = [perspective.get_card_df()
-                           for perspective in self.perspectives]
-        card_df = concat(perspective_dfs, axis=1)
-        return card_df
