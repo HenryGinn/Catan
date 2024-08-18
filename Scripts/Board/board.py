@@ -88,7 +88,8 @@ class Board():
     def add_edges_around_tile(self, tile):
         vertex_offset = tile.vertices[1:] + [tile.vertices[0]]
         edges = [Edge(self, vertex_1, vertex_2)
-                 for vertex_1, vertex_2 in zip(tile.vertices, vertex_offset)]
+                 for vertex_1, vertex_2 in zip(tile.vertices, vertex_offset)
+                 if vertex_1.ID < vertex_2.ID]
         new_edges = [edge for edge in edges if edge not in self.edges]
         self.edges = self.edges + new_edges
 
@@ -301,6 +302,12 @@ class Board():
             [vertex.vector in vectors
              for vertex in self.vertices])
         return vertex_state
+
+    def get_edge_state(self, edges):
+        edge_state = np.array(
+            [edge.get_vectors() in edges
+             for edge in self.edges])
+        return edge_state
 
     def get_position(self, vector):
         position = np.dot(np.array(vector), self.basis)

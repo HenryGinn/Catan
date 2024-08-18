@@ -12,5 +12,5 @@ class PlayerPerspective(Player):
 
     def initialise_card_state(self):
         self.card_state = {f"{card_type} {bound}": 0
-                           for card_type in self.catan.card_type
+                           for card_type in self.catan.card_types
                            for bound in ["Min", "Max"]}

@@ -1,6 +1,6 @@
 from os.path import join
-import json
 
+from hgutilities.utils import json
 import numpy as np
 import pandas as pd
 
@@ -30,6 +30,7 @@ class Trade():
     def preprocess_trade_from_input(self, trade):
         for player_name, player_trade in trade.items():
             player_trade = self.add_missing_keys(player_trade)
+            player_trade = self.convert_road_notation(player_trade)
             player_trade = self.subtract_real_estate_costs(player_trade)
             player_trade = self.subtract_development_costs(player_trade)
             trade[player_name] = player_trade
@@ -52,6 +53,13 @@ class Trade():
                 player_trade.update({real_estate: []})
         return player_trade
 
+    def convert_road_notation(self, player_trade):
+        roads = [edge.get_vectors() for edge in self.catan.board.edges
+                 for trade_edge in player_trade["Roads"]
+                 if edge.get_midpoint() == trade_edge]
+        player_trade["Roads"] = roads
+        return player_trade
+
     def subtract_real_estate_costs(self, player_trade):
         for real_estate in self.catan.real_estate_types:
             for resource, price in self.costs[real_estate].items():
@@ -72,10 +80,10 @@ class Trade():
     # Converting trade dictionaries into trade states
 
     def get_trade_states(self, trade):
-        trade_states = [
+        trade_states = {player_name:
             self.get_trade_state_from_trade(
                 trade, self.catan.get_player(player_name))
-            for player_name in trade]
+            for player_name in trade}
         return trade_states
 
     def get_trade_state_from_trade(self, trade, player):
@@ -84,16 +92,34 @@ class Trade():
         return trade_state
 
     def get_trade_real_estate(self, trade, player):
-        trade_real_estate = {"Settlements": self.get_settlement(trade, player)}
+        trade_real_estate = {
+            "Settlements": self.get_settlements(trade, player),
+            "Cities": self.get_cities(trade, player),
+            "Roads": self.get_roads(trade, player)}
         return trade_real_estate
 
-    def get_settlement(self, trade, player):
-        settlement = self.catan.board.get_vertex_state(
+    def get_settlements(self, trade, player):
+        settlements = self.catan.board.get_vertex_state(
             trade[player.name]["Settlements"])
-        settlement = settlement | player.settlement_state
-        return settlement
+        settlements = settlements | player.settlement_state
+        return settlements
 
+    def get_cities(self, trade, player):
+        cities = self.catan.board.get_vertex_state(
+            trade[player.name]["Cities"])
+        cities = cities | player.city_state
+        return cities
 
+    def get_roads(self, trade, player):
+        roads = self.catan.board.get_edge_state(
+            trade[player.name]["Roads"])
+        roads = roads | player.road_state
+        return roads
+
+    def output_states(self, states):
+        string = "\n\n".join(self.catan.get_state_string(state)
+                             for state in states)
+        return string
 
 
 

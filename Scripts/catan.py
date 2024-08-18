@@ -1,9 +1,8 @@
 from os.path import join, dirname
-import json
 
 from pandas import DataFrame, MultiIndex, concat
 from hgutilities import defaults
-from hgutilities.utils import get_dict_string, make_folder
+from hgutilities.utils import get_dict_string, make_folder, json
 
 from Board.board import Board
 from Players.player_regular import PlayerRegular
@@ -99,7 +98,7 @@ class Catan():
             json.dump(game_state, file, indent=2)
 
     def get_game_state(self):
-        players_state = {player.name: player.get_state_dict()
+        players_state = {player.name: player.get_state()
                          for player in self.players}
         game_state = {"Layout": self.board.layout_name,
                       "Players": players_state}

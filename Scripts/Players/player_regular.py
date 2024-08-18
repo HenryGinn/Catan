@@ -27,12 +27,12 @@ class PlayerRegular(Player):
         self.city_state = zeros(len(self.catan.board.vertices))
         self.road_state = zeros(len(self.catan.board.edges))
 
-    def get_state_dict(self):
+    def get_state(self):
         geometry_dict = self.get_geometry_dict()
         perspectives_dict = self.get_perspectives_dict()
-        state_dict = {"Geometry": geometry_dict,
-                      "Perspectives": perspectives_dict}
-        return state_dict
+        state = {"Geometry": geometry_dict,
+                 "Perspectives": perspectives_dict}
+        return state
 
     def get_geometry_dict(self):
         geometry_dict = {"Settlements": self.settlement_state,
@@ -65,6 +65,6 @@ class PlayerRegular(Player):
     # Output
 
     def __str__(self):
-        state = self.get_state_dict()
+        state = self.get_state()
         string = self.catan.get_state_string(state)
         return string
