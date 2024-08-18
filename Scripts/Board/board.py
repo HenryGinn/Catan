@@ -49,7 +49,7 @@ class Board():
     def get_vertex_position_vectors(self):
         path = join(self.catan.path_resources, "Vertex Positions.json")
         with open(path, "r") as file:
-            vertex_vectors = np.array(load(file), dtype="int8")
+            vertex_vectors = [tuple(vector) for vector in load(file)]
         return vertex_vectors
 
 
@@ -296,8 +296,14 @@ class Board():
             if indicator]
         return edge_vectors
 
+    def get_vertex_state(self, vectors):
+        vertex_state = np.array(
+            [vertex.vector in vectors
+             for vertex in self.vertices])
+        return vertex_state
+
     def get_position(self, vector):
-        position = np.dot(vector, self.basis)
+        position = np.dot(np.array(vector), self.basis)
         return position
 
 

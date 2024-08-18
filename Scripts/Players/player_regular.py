@@ -1,3 +1,5 @@
+from numpy import array, zeros
+
 from Players.player import Player
 from Players.player_perspective import PlayerPerspective
 
@@ -21,21 +23,9 @@ class PlayerRegular(Player):
             perspective.initialise_card_state()
 
     def set_initial_board_state(self):
-        self.set_initial_settlement_state()
-        self.set_initial_city_state()
-        self.set_initial_road_state()
-
-    def set_initial_settlement_state(self):
-        self.settlement_state = [False
-            for vertex in self.catan.board.vertices]
-
-    def set_initial_city_state(self):
-        self.city_state = [False
-            for vertex in self.catan.board.vertices]
-
-    def set_initial_road_state(self):
-        self.road_state = [False
-            for edge in self.catan.board.edges]
+        self.settlement_state = zeros(len(self.catan.board.vertices))
+        self.city_state = zeros(len(self.catan.board.vertices))
+        self.road_state = zeros(len(self.catan.board.edges))
 
     def get_state_dict(self):
         geometry_dict = self.get_geometry_dict()
@@ -61,9 +51,9 @@ class PlayerRegular(Player):
         self.load_from_perspectives_dict(player_state["Perspectives"])
 
     def load_from_geometry_dict(self, geometry_dict):
-        self.settlement_state = geometry_dict["Settlements"]
-        self.city_state = geometry_dict["Cities"]
-        self.road_state = geometry_dict["Roads"]
+        self.settlement_state = array(geometry_dict["Settlements"])
+        self.city_state = array(geometry_dict["Cities"])
+        self.road_state = array(geometry_dict["Roads"])
 
     def load_from_perspectives_dict(self, card_states):
         iterable = zip(self.perspectives, card_states.items())

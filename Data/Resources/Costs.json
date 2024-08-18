@@ -1,15 +1,15 @@
 {
-  "Settlement": {
+  "Settlements": {
     "Wheat": 1,
     "Mud": 1,
     "Wood": 1,
     "Sheep": 1
   },
-  "Road": {
+  "Roads": {
     "Mud": 1,
     "Wood": 1
   },
-  "City": {
+  "Cities": {
     "Wheat": 2,
     "Ore": 3
   },

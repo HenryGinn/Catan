@@ -25,7 +25,7 @@ class Catan():
                          "Harvest"]
     card_types = resource_types + development_types
     card_trade_types = resource_types + ["Development"]
-    real_estate_types = ["Settlement", "City", "Road"]
+    real_estate_types = ["Settlements", "Cities", "Roads"]
 
     def __init__(self, name=None):
         self.name = name

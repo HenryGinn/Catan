@@ -1,3 +1,7 @@
+from os.path import join
+import json
+
+import numpy as np
 import pandas as pd
 
 
@@ -10,13 +14,13 @@ class Trade():
     def load_costs(self):
         path = join(self.catan.path_resources, "Costs.json")
         with open(path, "r") as file:
-            costs = json.load(file)
+            self.costs = json.load(file)
 
 
     # Converting trade inputs into complete trade dictionaries
 
     def __call__(self, trade):
-        trade_states = self.get_trade_states_from_input(trade)
+        self.trade_states = self.get_trade_states_from_input(trade)
 
     def get_trade_states_from_input(self, trade):
         trade = self.preprocess_trade_from_input(trade)
@@ -60,11 +64,6 @@ class Trade():
             player_trade[resource] -= price*player_trade["Development"]
         return player_trade
 
-    def get_trade_state_from_dict(self, trade, player_name):
-        player = self.catan.get_player(player_name)
-        return None
-        #return trade_state
-
     def output(self, trade):
         print("")
         print(pd.DataFrame(trade).to_string())
@@ -85,12 +84,14 @@ class Trade():
         return trade_state
 
     def get_trade_real_estate(self, trade, player):
-        trade_real_estate = {"Settlement": self.get_trade_settlement(trade, player)}
+        trade_real_estate = {"Settlements": self.get_settlement(trade, player)}
         return trade_real_estate
 
-    def get_trade_settlement(self, trade, player):
-        pass
-        #settlement = [player_settlement and trade]
+    def get_settlement(self, trade, player):
+        settlement = self.catan.board.get_vertex_state(
+            trade[player.name]["Settlements"])
+        settlement = settlement | player.settlement_state
+        return settlement
 
 
 

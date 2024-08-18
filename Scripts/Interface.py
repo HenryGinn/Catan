@@ -13,5 +13,5 @@ catan.load()
 #catan.set_player_colours()
 a = catan.players[0]
 #catan.board.plot_state()
-catan.trade({"H": {"Settlement": [(3, -2)], "Wheat": 2, "Wood": -4},
+catan.trade({"H": {"Settlements": [(3, -2)], "Wheat": 2, "Wood": -4},
              "J": {"Wood": 4, "Wheat": -2}})
