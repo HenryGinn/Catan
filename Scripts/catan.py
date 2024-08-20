@@ -12,23 +12,12 @@ from utils import get_name
 
 class Catan():
 
-    resource_types = ["Wheat",
-                      "Sheep",
-                      "Wood",
-                      "Ore",
-                      "Mud"]
-    development_types = ["Knight",
-                         "Victory",
-                         "Monopoly",
-                         "RoadBuilder",
-                         "Harvest"]
-    card_types = resource_types + development_types
-    card_trade_types = resource_types + ["Development"]
     real_estate_types = ["Settlements", "Cities", "Roads"]
 
     def __init__(self, name=None):
         self.name = name
         self.set_main_paths()
+        self.load_card_types()
         self.create_folders()
         self.create_objects()
 
@@ -98,16 +87,25 @@ class Catan():
             json.dump(game_state, file, indent=2)
 
     def get_game_state(self):
+        meta_data = self.get_meta_data()
         players_state = {player.name: player.get_state()
                          for player in self.players}
-        game_state = {"Layout": self.board.layout_name,
+        game_state = {"MetaData": meta_data,
                       "Players": players_state}
         return game_state
 
+    def get_meta_data(self):
+        meta_data = {
+            "Layout": self.board.layout_name,
+            "Colors": {player.name: player.color
+                       for player in self.players}}
+        return meta_data
+
     def load(self):
-        self.initialise_players()
         game_state = self.load_game_state()
-        self.board.load_layout(game_state["Layout"])
+        names, colors = list(zip(*game_state["MetaData"]["Colors"].items()))
+        self.initialise_players(names=names, colors=colors)
+        self.board.load_layout(game_state["MetaData"]["Layout"])
         self.load_player_states_from_game_state(game_state)
 
     def load_game_state(self):
@@ -121,6 +119,19 @@ class Catan():
             player.name = name
             player.load_state_from_player_state(player_state)
 
+    def load_card_types(self):
+        self.load_card_data()
+        self.set_card_types_tradable()
+
+    def load_card_data(self):
+        path = join(self.path_resources, "Card Data.json")
+        with open(path, "r") as file:
+            self.card_data = json.load(file)
+
+    def set_card_types_tradable(self):
+        self.card_types_tradable = [
+            card for card in self.card_data
+            if self.card_data[card]["Tradable"]]
 
     # Output state
 
@@ -157,7 +168,7 @@ class Catan():
             {"Card": card,
              "Min": perspective_state[f"{card} Min"],
              "Max": perspective_state[f"{card} Max"]}
-            for card in self.card_types]
+            for card in self.card_data]
         return perspective_dict
 
     def set_df_multi_index(self, name, perspective_df):
@@ -165,3 +176,6 @@ class Catan():
         perspective_df.columns = MultiIndex.from_arrays(
             indexes, names=("Player", "Amount"))
         return perspective_df
+
+    def o(self):
+        print(self.trade.output_states(self.trade.trade_states))

@@ -1,4 +1,5 @@
 from os.path import join
+from random import shuffle
 
 from hgutilities.utils import json
 import numpy as np
@@ -10,11 +11,19 @@ class Trade():
     def __init__(self, catan):
         self.catan = catan
         self.load_costs()
+        self.set_development_deck()
 
     def load_costs(self):
         path = join(self.catan.path_resources, "Costs.json")
         with open(path, "r") as file:
             self.costs = json.load(file)
+
+    def set_development_deck(self):
+        self.development_deck = ([
+            card for card, data in self.catan.card_data.items()
+            for count in range(data["Count"])
+            if data["Type"] == "Development"])
+        shuffle(self.development_deck)
 
 
     # Converting trade inputs into complete trade dictionaries
@@ -42,7 +51,7 @@ class Trade():
         return player_trade
 
     def add_missing_card_keys(self, player_trade):
-        for card_type in self.catan.card_trade_types:
+        for card_type in self.catan.card_data:
             if card_type not in player_trade:
                 player_trade.update({card_type: 0})
         return player_trade
@@ -87,8 +96,9 @@ class Trade():
         return trade_states
 
     def get_trade_state_from_trade(self, trade, player):
-        trade_real_estate = self.get_trade_real_estate(trade, player)
-        trade_state = {**trade_real_estate}
+        trade_state = {
+            "Geometry": self.get_trade_real_estate(trade, player),
+            "Perspectives": self.get_trade_perspectives(trade, player)}
         return trade_state
 
     def get_trade_real_estate(self, trade, player):
@@ -116,9 +126,44 @@ class Trade():
         roads = roads | player.road_state
         return roads
 
+    def get_trade_perspectives(self, trade, player):
+        trade_perspectives = {
+            perspective.name: self.get_trade_perspective(
+                trade, player, perspective)
+            for perspective in player.perspectives}
+        return trade_perspectives
+
+    def get_trade_perspective(self, trade, player, perspective):
+        if perspective.view == player.name:
+            return self.get_trade_perspective_self(
+                perspective, player, trade)
+        elif perspective.name in trade:
+            return self.get_trade_perspective_other(
+                perspective, player, trade)
+        else:
+            return perspective.card_state
+
+    def get_trade_perspective_self(self, perspective, player, trade):
+        perspective_trade = trade[perspective.view]
+        card_state = {
+            f"{key} {bound}": value - perspective.card_state[f"{key} {bound}"]
+            for key, value in perspective_trade.items()
+            for bound in ["Min", "Max"]
+            if key in self.catan.card_data}
+        return card_state
+
+    def get_trade_perspective_other(self, perspective, player, trade):
+        perspective_trade = trade[perspective.view]
+        card_state = {
+            "{key} {bound}": min(0, value - perspective_trade[card_name])
+            for key, value in card_state.items
+            for bound in ["Min", "Max"]}
+        return card_state
+        
+
     def output_states(self, states):
         string = "\n\n".join(self.catan.get_state_string(state)
-                             for state in states)
+                             for state in states.values())
         return string
 
 

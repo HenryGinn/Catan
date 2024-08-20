@@ -5,12 +5,13 @@ class PlayerPerspective(Player):
 
     player_type = "Perspective"
 
-    def __init__(self, perspective_name, player_base):
-        name = f"{player_base.name} view {perspective_name}"
-        super().__init__(player_base.catan, name)
-        self.player_base = player_base
+    def __init__(self, perspective, base):
+        name = f"{base.name} view {perspective.name}"
+        self.view = f"{perspective.name}"
+        super().__init__(base.catan, name)
+        self.player = base
 
     def initialise_card_state(self):
         self.card_state = {f"{card_type} {bound}": 0
-                           for card_type in self.catan.card_types
+                           for card_type in self.catan.card_data
                            for bound in ["Min", "Max"]}

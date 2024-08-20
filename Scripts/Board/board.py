@@ -292,8 +292,8 @@ class Board():
 
     def get_edge_vector_pairs(self, state_edge):
         edge_vectors = [
-            (edge.vertex_1.vector, edge.vertex_2.vector)
-            for indicator, vertex in zip(state_edge, self.edges)
+            tuple([vertex.vector for vertex in edge.vertices])
+            for indicator, edge in zip(state_edge, self.edges)
             if indicator]
         return edge_vectors
 

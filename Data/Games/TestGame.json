@@ -1,11 +1,19 @@
 {
-  "Layout": "TestLayout",
+  "MetaData": {
+    "Layout": "TestLayout",
+    "Colors": {
+      "H": "blue",
+      "Y": "green",
+      "D": "red",
+      "J": "yellow"
+    }
+  },
   "Players": {
     "H": {
       "Geometry": {
-        "Settlements": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        "Cities": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        "Roads": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        "Settlements": [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
+        "Cities": [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
+        "Roads": [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false]
       },
       "Perspectives": {
         "H view H": {
@@ -19,16 +27,18 @@
           "Ore Max": 0,
           "Mud Min": 0,
           "Mud Max": 0,
-          "Knight Min": 0,
-          "Knight Max": 0,
-          "Victory Min": 0,
-          "Victory Max": 0,
           "Monopoly Min": 0,
           "Monopoly Max": 0,
           "RoadBuilder Min": 0,
           "RoadBuilder Max": 0,
+          "Victory Min": 0,
+          "Victory Max": 0,
           "Harvest Min": 0,
-          "Harvest Max": 0
+          "Harvest Max": 0,
+          "Knight Min": 0,
+          "Knight Max": 0,
+          "Development Min": 0,
+          "Development Max": 0
         },
         "H view Y": {
           "Wheat Min": 0,
@@ -41,16 +51,18 @@
           "Ore Max": 0,
           "Mud Min": 0,
           "Mud Max": 0,
-          "Knight Min": 0,
-          "Knight Max": 0,
-          "Victory Min": 0,
-          "Victory Max": 0,
           "Monopoly Min": 0,
           "Monopoly Max": 0,
           "RoadBuilder Min": 0,
           "RoadBuilder Max": 0,
+          "Victory Min": 0,
+          "Victory Max": 0,
           "Harvest Min": 0,
-          "Harvest Max": 0
+          "Harvest Max": 0,
+          "Knight Min": 0,
+          "Knight Max": 0,
+          "Development Min": 0,
+          "Development Max": 0
         },
         "H view D": {
           "Wheat Min": 0,
@@ -63,16 +75,18 @@
           "Ore Max": 0,
           "Mud Min": 0,
           "Mud Max": 0,
-          "Knight Min": 0,
-          "Knight Max": 0,
-          "Victory Min": 0,
-          "Victory Max": 0,
           "Monopoly Min": 0,
           "Monopoly Max": 0,
           "RoadBuilder Min": 0,
           "RoadBuilder Max": 0,
+          "Victory Min": 0,
+          "Victory Max": 0,
           "Harvest Min": 0,
-          "Harvest Max": 0
+          "Harvest Max": 0,
+          "Knight Min": 0,
+          "Knight Max": 0,
+          "Development Min": 0,
+          "Development Max": 0
         },
         "H view J": {
           "Wheat Min": 0,
@@ -85,24 +99,26 @@
           "Ore Max": 0,
           "Mud Min": 0,
           "Mud Max": 0,
-          "Knight Min": 0,
-          "Knight Max": 0,
-          "Victory Min": 0,
-          "Victory Max": 0,
           "Monopoly Min": 0,
           "Monopoly Max": 0,
           "RoadBuilder Min": 0,
           "RoadBuilder Max": 0,
+          "Victory Min": 0,
+          "Victory Max": 0,
           "Harvest Min": 0,
-          "Harvest Max": 0
+          "Harvest Max": 0,
+          "Knight Min": 0,
+          "Knight Max": 0,
+          "Development Min": 0,
+          "Development Max": 0
         }
       }
     },
     "Y": {
       "Geometry": {
-        "Settlements": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        "Cities": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        "Roads": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        "Settlements": [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
+        "Cities": [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
+        "Roads": [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false]
       },
       "Perspectives": {
         "Y view H": {
@@ -116,16 +132,18 @@
           "Ore Max": 0,
           "Mud Min": 0,
           "Mud Max": 0,
-          "Knight Min": 0,
-          "Knight Max": 0,
-          "Victory Min": 0,
-          "Victory Max": 0,
           "Monopoly Min": 0,
           "Monopoly Max": 0,
           "RoadBuilder Min": 0,
           "RoadBuilder Max": 0,
+          "Victory Min": 0,
+          "Victory Max": 0,
           "Harvest Min": 0,
-          "Harvest Max": 0
+          "Harvest Max": 0,
+          "Knight Min": 0,
+          "Knight Max": 0,
+          "Development Min": 0,
+          "Development Max": 0
         },
         "Y view Y": {
           "Wheat Min": 0,
@@ -138,16 +156,18 @@
           "Ore Max": 0,
           "Mud Min": 0,
           "Mud Max": 0,
-          "Knight Min": 0,
-          "Knight Max": 0,
-          "Victory Min": 0,
-          "Victory Max": 0,
           "Monopoly Min": 0,
           "Monopoly Max": 0,
           "RoadBuilder Min": 0,
           "RoadBuilder Max": 0,
+          "Victory Min": 0,
+          "Victory Max": 0,
           "Harvest Min": 0,
-          "Harvest Max": 0
+          "Harvest Max": 0,
+          "Knight Min": 0,
+          "Knight Max": 0,
+          "Development Min": 0,
+          "Development Max": 0
         },
         "Y view D": {
           "Wheat Min": 0,
@@ -160,16 +180,18 @@
           "Ore Max": 0,
           "Mud Min": 0,
           "Mud Max": 0,
-          "Knight Min": 0,
-          "Knight Max": 0,
-          "Victory Min": 0,
-          "Victory Max": 0,
           "Monopoly Min": 0,
           "Monopoly Max": 0,
           "RoadBuilder Min": 0,
           "RoadBuilder Max": 0,
+          "Victory Min": 0,
+          "Victory Max": 0,
           "Harvest Min": 0,
-          "Harvest Max": 0
+          "Harvest Max": 0,
+          "Knight Min": 0,
+          "Knight Max": 0,
+          "Development Min": 0,
+          "Development Max": 0
         },
         "Y view J": {
           "Wheat Min": 0,
@@ -182,24 +204,26 @@
           "Ore Max": 0,
           "Mud Min": 0,
           "Mud Max": 0,
-          "Knight Min": 0,
-          "Knight Max": 0,
-          "Victory Min": 0,
-          "Victory Max": 0,
           "Monopoly Min": 0,
           "Monopoly Max": 0,
           "RoadBuilder Min": 0,
           "RoadBuilder Max": 0,
+          "Victory Min": 0,
+          "Victory Max": 0,
           "Harvest Min": 0,
-          "Harvest Max": 0
+          "Harvest Max": 0,
+          "Knight Min": 0,
+          "Knight Max": 0,
+          "Development Min": 0,
+          "Development Max": 0
         }
       }
     },
     "D": {
       "Geometry": {
-        "Settlements": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        "Cities": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        "Roads": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        "Settlements": [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
+        "Cities": [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
+        "Roads": [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false]
       },
       "Perspectives": {
         "D view H": {
@@ -213,16 +237,18 @@
           "Ore Max": 0,
           "Mud Min": 0,
           "Mud Max": 0,
-          "Knight Min": 0,
-          "Knight Max": 0,
-          "Victory Min": 0,
-          "Victory Max": 0,
           "Monopoly Min": 0,
           "Monopoly Max": 0,
           "RoadBuilder Min": 0,
           "RoadBuilder Max": 0,
+          "Victory Min": 0,
+          "Victory Max": 0,
           "Harvest Min": 0,
-          "Harvest Max": 0
+          "Harvest Max": 0,
+          "Knight Min": 0,
+          "Knight Max": 0,
+          "Development Min": 0,
+          "Development Max": 0
         },
         "D view Y": {
           "Wheat Min": 0,
@@ -235,16 +261,18 @@
           "Ore Max": 0,
           "Mud Min": 0,
           "Mud Max": 0,
-          "Knight Min": 0,
-          "Knight Max": 0,
-          "Victory Min": 0,
-          "Victory Max": 0,
           "Monopoly Min": 0,
           "Monopoly Max": 0,
           "RoadBuilder Min": 0,
           "RoadBuilder Max": 0,
+          "Victory Min": 0,
+          "Victory Max": 0,
           "Harvest Min": 0,
-          "Harvest Max": 0
+          "Harvest Max": 0,
+          "Knight Min": 0,
+          "Knight Max": 0,
+          "Development Min": 0,
+          "Development Max": 0
         },
         "D view D": {
           "Wheat Min": 0,
@@ -257,16 +285,18 @@
           "Ore Max": 0,
           "Mud Min": 0,
           "Mud Max": 0,
-          "Knight Min": 0,
-          "Knight Max": 0,
-          "Victory Min": 0,
-          "Victory Max": 0,
           "Monopoly Min": 0,
           "Monopoly Max": 0,
           "RoadBuilder Min": 0,
           "RoadBuilder Max": 0,
+          "Victory Min": 0,
+          "Victory Max": 0,
           "Harvest Min": 0,
-          "Harvest Max": 0
+          "Harvest Max": 0,
+          "Knight Min": 0,
+          "Knight Max": 0,
+          "Development Min": 0,
+          "Development Max": 0
         },
         "D view J": {
           "Wheat Min": 0,
@@ -279,24 +309,26 @@
           "Ore Max": 0,
           "Mud Min": 0,
           "Mud Max": 0,
-          "Knight Min": 0,
-          "Knight Max": 0,
-          "Victory Min": 0,
-          "Victory Max": 0,
           "Monopoly Min": 0,
           "Monopoly Max": 0,
           "RoadBuilder Min": 0,
           "RoadBuilder Max": 0,
+          "Victory Min": 0,
+          "Victory Max": 0,
           "Harvest Min": 0,
-          "Harvest Max": 0
+          "Harvest Max": 0,
+          "Knight Min": 0,
+          "Knight Max": 0,
+          "Development Min": 0,
+          "Development Max": 0
         }
       }
     },
     "J": {
       "Geometry": {
-        "Settlements": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        "Cities": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        "Roads": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        "Settlements": [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
+        "Cities": [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
+        "Roads": [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false]
       },
       "Perspectives": {
         "J view H": {
@@ -310,16 +342,18 @@
           "Ore Max": 0,
           "Mud Min": 0,
           "Mud Max": 0,
-          "Knight Min": 0,
-          "Knight Max": 0,
-          "Victory Min": 0,
-          "Victory Max": 0,
           "Monopoly Min": 0,
           "Monopoly Max": 0,
           "RoadBuilder Min": 0,
           "RoadBuilder Max": 0,
+          "Victory Min": 0,
+          "Victory Max": 0,
           "Harvest Min": 0,
-          "Harvest Max": 0
+          "Harvest Max": 0,
+          "Knight Min": 0,
+          "Knight Max": 0,
+          "Development Min": 0,
+          "Development Max": 0
         },
         "J view Y": {
           "Wheat Min": 0,
@@ -332,16 +366,18 @@
           "Ore Max": 0,
           "Mud Min": 0,
           "Mud Max": 0,
-          "Knight Min": 0,
-          "Knight Max": 0,
-          "Victory Min": 0,
-          "Victory Max": 0,
           "Monopoly Min": 0,
           "Monopoly Max": 0,
           "RoadBuilder Min": 0,
           "RoadBuilder Max": 0,
+          "Victory Min": 0,
+          "Victory Max": 0,
           "Harvest Min": 0,
-          "Harvest Max": 0
+          "Harvest Max": 0,
+          "Knight Min": 0,
+          "Knight Max": 0,
+          "Development Min": 0,
+          "Development Max": 0
         },
         "J view D": {
           "Wheat Min": 0,
@@ -354,16 +390,18 @@
           "Ore Max": 0,
           "Mud Min": 0,
           "Mud Max": 0,
-          "Knight Min": 0,
-          "Knight Max": 0,
-          "Victory Min": 0,
-          "Victory Max": 0,
           "Monopoly Min": 0,
           "Monopoly Max": 0,
           "RoadBuilder Min": 0,
           "RoadBuilder Max": 0,
+          "Victory Min": 0,
+          "Victory Max": 0,
           "Harvest Min": 0,
-          "Harvest Max": 0
+          "Harvest Max": 0,
+          "Knight Min": 0,
+          "Knight Max": 0,
+          "Development Min": 0,
+          "Development Max": 0
         },
         "J view J": {
           "Wheat Min": 0,
@@ -376,16 +414,18 @@
           "Ore Max": 0,
           "Mud Min": 0,
           "Mud Max": 0,
-          "Knight Min": 0,
-          "Knight Max": 0,
-          "Victory Min": 0,
-          "Victory Max": 0,
           "Monopoly Min": 0,
           "Monopoly Max": 0,
           "RoadBuilder Min": 0,
           "RoadBuilder Max": 0,
+          "Victory Min": 0,
+          "Victory Max": 0,
           "Harvest Min": 0,
-          "Harvest Max": 0
+          "Harvest Max": 0,
+          "Knight Min": 0,
+          "Knight Max": 0,
+          "Development Min": 0,
+          "Development Max": 0
         }
       }
     }
