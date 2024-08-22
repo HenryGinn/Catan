@@ -9,7 +9,7 @@ class PlayerPerspective(Player):
         name = f"{base.name} view {perspective.name}"
         self.view = f"{perspective.name}"
         super().__init__(base.catan, name)
-        self.player = base
+        self.base = base
 
     def initialise_card_state(self):
         self.card_state = {f"{card_type} {bound}": 0

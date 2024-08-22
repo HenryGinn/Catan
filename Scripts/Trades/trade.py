@@ -30,6 +30,7 @@ class Trade():
 
     def __call__(self, trade):
         self.trade_states = self.get_trade_states_from_input(trade)
+        self.execute_trade(self.trade_states)
 
     def get_trade_states_from_input(self, trade):
         trade = self.preprocess_trade_from_input(trade)
@@ -137,7 +138,7 @@ class Trade():
         if perspective.view == player.name:
             return self.get_trade_perspective_self(
                 perspective, player, trade)
-        elif perspective.name in trade:
+        elif perspective.view in trade:
             return self.get_trade_perspective_other(
                 perspective, player, trade)
         else:
@@ -146,7 +147,8 @@ class Trade():
     def get_trade_perspective_self(self, perspective, player, trade):
         perspective_trade = trade[perspective.view]
         card_state = {
-            f"{key} {bound}": value - perspective.card_state[f"{key} {bound}"]
+            f"{key} {bound}":
+            value - perspective.card_state[f"{key} {bound}"]
             for key, value in perspective_trade.items()
             for bound in ["Min", "Max"]
             if key in self.catan.card_data}
@@ -155,12 +157,61 @@ class Trade():
     def get_trade_perspective_other(self, perspective, player, trade):
         perspective_trade = trade[perspective.view]
         card_state = {
-            "{key} {bound}": min(0, value - perspective_trade[card_name])
-            for key, value in card_state.items
-            for bound in ["Min", "Max"]}
+            f"{key} {bound}":
+            max(0, value - perspective.card_state[f"{key} {bound}"])
+            for key, value in perspective_trade.items()
+            for bound in ["Min", "Max"]
+            if key in self.catan.card_data}
         return card_state
-        
 
+    def execute_trade(self, trade_states):
+        self.pick_up_development_cards(trade_states)
+        for player_name, trade_state in trade_states.items():
+            player = self.catan.get_player(player_name)
+            player.update_state(trade_state)
+
+    def pick_up_development_cards(self, trade_states):
+        for player_name, trade_state in trade_states.items():
+            perspective_state = trade_state["Perspectives"]
+            self.pick_up_developments_player(
+                player_name, perspective_state)
+
+    def pick_up_developments_player(self, player_name, state):
+        self.perspective_name = f"{player_name} view {player_name}"
+        self.player = self.catan.get_player(player_name)
+        to_pick_up = state[self.perspective_name]["Development Min"]
+        self.pick_up_developments_others(to_pick_up, state)
+        development_cards = self.get_development_cards(to_pick_up)
+        self.pick_up_developments_self(state)
+        self.remove_development_cards(state)
+
+    def pick_up_developments_others(self, to_pick_up, state):
+        for perspective in self.player.perspectives:
+            if perspective.name != self.perspective_name:
+                self.pick_up_development_other(
+                    perspective, to_pick_up, state)
+
+    def pick_up_development_other(self, perspective, to_pick_up, state):
+        for card in self.catan.card_types_development:
+            for bound in ["Min", "Max"]:
+                state[perspective.name][f"{card} {bound}"] += to_pick_up
+
+    def get_development_cards(self, to_pick_up):
+        development_cards = []
+        while len(self.development_deck) > 0 and to_pick_up > 0:
+            development_cards.append(self.development_deck.pop(0))
+            to_pick_up -= 1
+        return development_cards
+        
+    def pick_up_developments_self(self, state):
+        pass
+
+    def remove_development_cards(self, state):
+        for perspective in self.player.perspectives:
+            state[perspective.name]["Development Min"] = 0
+            state[perspective.name]["Development Max"] = 0
+
+    
     def output_states(self, states):
         string = "\n\n".join(self.catan.get_state_string(state)
                              for state in states.values())

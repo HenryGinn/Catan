@@ -16,6 +16,12 @@ class PlayerRegular(Player):
         self.perspectives = [
             PlayerPerspective(player, self)
             for player in self.catan.players]
+        self.set_self_perspective()
+
+    def set_self_perspective(self):
+        self.self_perspective = [
+            perspective for perspective in self.perspectives
+            if perspective.view is self.name][0]
 
     def set_initial_states(self):
         self.set_initial_board_state()
@@ -47,7 +53,7 @@ class PlayerRegular(Player):
             for perspective in self.perspectives}
         return perspectives_state
 
-    def load_state_from_player_state(self, player_state):
+    def update_state(self, player_state):
         self.load_from_geometry_dict(player_state["Geometry"])
         self.load_from_perspectives_dict(player_state["Perspectives"])
 
@@ -66,7 +72,6 @@ class PlayerRegular(Player):
         perspective = [persective for perspective in self.perspectives
                        if perspective.name == player_name][0]
         return perspective.card_state
-
 
     # Output
 

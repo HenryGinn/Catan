@@ -6,7 +6,8 @@
       "Y": "green",
       "D": "red",
       "J": "yellow"
-    }
+    },
+    "Development Card Deck": ["RoadBuilder", "Knight", "Victory", "Knight", "Knight", "Knight", "Victory", "Monopoly", "Harvest", "Monopoly", "Harvest", "Knight", "Knight", "Knight", "RoadBuilder", "Knight", "Knight", "Victory", "Knight", "Victory", "Victory"]
   },
   "Players": {
     "H": {

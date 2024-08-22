@@ -98,15 +98,21 @@ class Catan():
         meta_data = {
             "Layout": self.board.layout_name,
             "Colors": {player.name: player.color
-                       for player in self.players}}
+                       for player in self.players},
+            "Development Card Deck": self.trade.development_deck}
         return meta_data
 
     def load(self):
         game_state = self.load_game_state()
+        self.load_meta_data(game_state)
+        self.load_player_states_from_game_state(game_state)
+
+    def load_meta_data(self, game_state):
+        self.board.load_layout(game_state["MetaData"]["Layout"])
         names, colors = list(zip(*game_state["MetaData"]["Colors"].items()))
         self.initialise_players(names=names, colors=colors)
-        self.board.load_layout(game_state["MetaData"]["Layout"])
-        self.load_player_states_from_game_state(game_state)
+        self.trade.development_deck = (
+            game_state["MetaData"]["Development Card Deck"])
 
     def load_game_state(self):
         with open(self.path_game, "r") as file:
@@ -117,11 +123,12 @@ class Catan():
         iterable = zip(self.players, game_state["Players"].items())
         for player, (name, player_state) in iterable:
             player.name = name
-            player.load_state_from_player_state(player_state)
+            player.update_state(player_state)
 
     def load_card_types(self):
         self.load_card_data()
         self.set_card_types_tradable()
+        self.set_ownable_development_cards()
 
     def load_card_data(self):
         path = join(self.path_resources, "Card Data.json")
@@ -132,6 +139,12 @@ class Catan():
         self.card_types_tradable = [
             card for card in self.card_data
             if self.card_data[card]["Tradable"]]
+
+    def set_ownable_development_cards(self):
+        self.card_types_development = [
+            card for card in self.card_data
+            if self.card_data[card]["Type"] == "Development"]
+
 
     # Output state
 

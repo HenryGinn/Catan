@@ -17,5 +17,8 @@ a = catan.players[0]
 #catan.board.plot_state()
 catan.trade({"H": {"Settlements": [(3, -2)],
                    "Roads": [(-0.5, 2.5)],
-                   "Wheat": 2, "Wood": -4},
-             "J": {"Wood": 4, "Wheat": -2}})
+                   "Wheat": 4, "Wood": 4,
+                   "Mud": 5, "Sheep": 3,
+                   "Development": 2},
+             "J": {"Wood": 4, "Wheat": 2,
+                   "Ore": 3}})
