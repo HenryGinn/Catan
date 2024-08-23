@@ -24,54 +24,46 @@ class PlayerRegular(Player):
             if perspective.view is self.name][0]
 
     def set_initial_states(self):
-        self.set_initial_board_state()
+        self.set_initial_geometry_state()
         for perspective in self.perspectives:
-            perspective.initialise_card_state()
+            perspective.card_state = zeros(len(self.catan.card_lookup))
 
-    def set_initial_board_state(self):
-        self.settlement_state = zeros(len(self.catan.board.vertices)).astype("bool")
-        self.city_state = zeros(len(self.catan.board.vertices)).astype("bool")
-        self.road_state = zeros(len(self.catan.board.edges)).astype("bool")
+    def set_initial_geometry_state(self):
+        self.geometry_state = {
+            "Settlements": zeros(len(self.catan.board.vertices)),
+            "Cities": zeros(len(self.catan.board.vertices)),
+            "Roads": zeros(len(self.catan.board.edges))}
 
     def get_state(self):
-        geometry_state = self.get_geometry_state()
-        perspectives_state = self.get_perspectives_state()
-        state = {"Geometry": geometry_state,
-                 "Perspectives": perspectives_state}
+        perspective_states = self.get_perspective_states()
+        state = {**self.geometry_state,
+                 **perspective_states}
         return state
 
-    def get_geometry_state(self):
-        geometry_state = {
-            "Settlements": self.settlement_state,
-            "Cities": self.city_state,
-            "Roads": self.road_state}
-        return geometry_state
-
-    def get_perspectives_state(self):
-        perspectives_state = {
+    def get_perspective_states(self):
+        perspective_states = {
             perspective.name: perspective.card_state
             for perspective in self.perspectives}
-        return perspectives_state
+        return perspective_states
 
-    def update_state(self, player_state):
-        self.load_from_geometry_dict(player_state["Geometry"])
-        self.load_from_perspectives_dict(player_state["Perspectives"])
+    def update_state(self, state):
+        self.load_geometry_from_state(state)
+        self.load_perspectives_from_state(state)
 
-    def load_from_geometry_dict(self, geometry_dict):
-        self.settlement_state = array(geometry_dict["Settlements"]).astype("bool")
-        self.city_state = array(geometry_dict["Cities"]).astype("bool")
-        self.road_state = array(geometry_dict["Roads"]).astype("bool")
-
-    def load_from_perspectives_dict(self, card_states):
-        iterable = zip(self.perspectives, card_states.items())
-        for perspective, (name, card_state) in iterable:
-            perspective.name = name
-            perspective.card_state = card_state
+    def load_geometry_from_state(self, state):
+        self.geometry_state = {
+            key: array(state[key])
+            for key in ["Settlements", "Cities", "Roads"]}
+    
+    def load_perspectives_from_state(self, state):
+        for perspective in self.perspectives:
+            perspective.card_state = array(state[perspective.name])
 
     def get_perspective_state(self, player_name):
         perspective = [persective for perspective in self.perspectives
                        if perspective.name == player_name][0]
         return perspective.card_state
+
 
     # Output
 

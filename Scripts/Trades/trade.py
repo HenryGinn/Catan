@@ -144,24 +144,12 @@ class Trade():
         else:
             return perspective.card_state
 
-    def get_trade_perspective_self(self, perspective, player, trade):
+    def get_trade_perspective_self(self, perspective, trade, trade_function):
         perspective_trade = trade[perspective.view]
         card_state = {
-            f"{key} {bound}":
-            value - perspective.card_state[f"{key} {bound}"]
-            for key, value in perspective_trade.items()
-            for bound in ["Min", "Max"]
-            if key in self.catan.card_data}
-        return card_state
-
-    def get_trade_perspective_other(self, perspective, player, trade):
-        perspective_trade = trade[perspective.view]
-        card_state = {
-            f"{key} {bound}":
-            max(0, value - perspective.card_state[f"{key} {bound}"])
-            for key, value in perspective_trade.items()
-            for bound in ["Min", "Max"]
-            if key in self.catan.card_data}
+            card: trade_funcion(quantity, perspective.card_state[card])
+            for card, quantity in perspective_trade.items()
+            if card in self.catan.card_data}
         return card_state
 
     def execute_trade(self, trade_states):
@@ -191,25 +179,12 @@ class Trade():
                 self.pick_up_development_other(
                     perspective, to_pick_up, state)
 
-    def pick_up_development_other(self, perspective, to_pick_up, state):
-        for card in self.catan.card_types_development:
-            for bound in ["Min", "Max"]:
-                state[perspective.name][f"{card} {bound}"] += to_pick_up
-
     def get_development_cards(self, to_pick_up):
         development_cards = []
         while len(self.development_deck) > 0 and to_pick_up > 0:
             development_cards.append(self.development_deck.pop(0))
             to_pick_up -= 1
         return development_cards
-        
-    def pick_up_developments_self(self, state):
-        pass
-
-    def remove_development_cards(self, state):
-        for perspective in self.player.perspectives:
-            state[perspective.name]["Development Min"] = 0
-            state[perspective.name]["Development Max"] = 0
 
     
     def output_states(self, states):
@@ -217,7 +192,15 @@ class Trade():
                              for state in states.values())
         return string
 
+def trade_function_self(trade_value, perspective_value):
+    return trade_value + perspective_value
 
+def trade_function_other(trade_value, perspective_value):
+    return max(0, trade_value + perspective_value)
+
+trade_functions = {
+    "Self": trade_function_self,
+    "Other": trade_function_other}
 
 
 

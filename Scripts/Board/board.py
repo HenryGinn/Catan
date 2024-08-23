@@ -271,6 +271,11 @@ class Board():
 
     # Other
 
+    def get_string(self, state, structure_type):
+        match structure_type:
+            case "Vertex": return self.get_vertex_string(state)
+            case "Edge"  : return self.get_edge_string(state)
+
     def get_vertex_string(self, state_vertex):
         vertex_vectors = self.get_vertex_vectors(state_vertex)
         string = ", ".join(f"({vector[0]}, {vector[1]})"
