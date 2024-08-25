@@ -111,8 +111,8 @@ class Trade():
 
     def get_trade_state_from_trade(self, trade, player):
         trade_state = {
-            "Geometry": self.get_trade_real_estate(trade, player),
-            "Perspectives": self.get_trade_perspectives(trade, player)}
+            **self.get_trade_real_estate(trade, player),
+            **self.get_trade_perspectives(trade, player)}
         return trade_state
 
     def get_trade_real_estate(self, trade, player):
@@ -142,46 +142,37 @@ class Trade():
             trade, perspective, trade_function)
 
     def get_trade_perspective_self(self, trade, perspective, trade_function):
-        card_state = {
-            card: trade_function(trade[perspective.view][card],
-                                 perspective.card_state[index])
-            for card, index in self.catan.card_lookup.items()}
+        card_state = [
+            trade_function(trade[perspective.view][card],
+                           perspective.card_state[index])
+            for card, index in self.catan.card_lookup.items()]
         return card_state
 
     def execute_trade(self, trade_states):
-        self.pick_up_development_cards(trade_states)
+        self.pick_up_developments(trade_states)
         for player_name, trade_state in trade_states.items():
             player = self.catan.get_player(player_name)
             player.update_state(trade_state)
 
-    def pick_up_development_cards(self, trade_states):
+    def pick_up_developments(self, trade_states):
         for player_name, trade_state in trade_states.items():
-            perspective_state = trade_state["Perspectives"]
             self.pick_up_developments_player(
-                player_name, perspective_state)
+                player_name, trade_state)
 
     def pick_up_developments_player(self, player_name, state):
-        self.perspective_name = f"{player_name} view {player_name}"
-        self.player = self.catan.get_player(player_name)
-        to_pick_up = state[self.perspective_name]["Development"]
-        self.pick_up_developments_others(to_pick_up, state)
-        development_cards = self.get_development_cards(to_pick_up)
-        self.pick_up_developments_self(state)
-        self.remove_development_cards(state)
+        perspective_name = f"{player_name} view {player_name}"
+        development_index = self.catan.card_lookup["Development"]
+        to_pick_up = state[perspective_name][development_index]
+        while to_pick_up > 0 and len(self.development_deck) > 0:
+            to_pick_up = self.pick_up_development(
+                perspective_name, state, to_pick_up)
 
-    def pick_up_developments_others(self, to_pick_up, state):
-        for perspective in self.player.perspectives:
-            if perspective.name != self.perspective_name:
-                self.pick_up_development_other(
-                    perspective, to_pick_up, state)
-
-    def get_development_cards(self, to_pick_up):
-        development_cards = []
-        while len(self.development_deck) > 0 and to_pick_up > 0:
-            development_cards.append(self.development_deck.pop(0))
-            to_pick_up -= 1
-        return development_cards
-
+    def pick_up_development(self, perspective_name, state, to_pick_up):
+        card = self.development_deck.pop(0)
+        state[perspective_name][self.catan.card_lookup[card]] += 1
+        state[perspective_name][self.catan.card_lookup["Development"]] -= 1
+        to_pick_up -= 1
+        return to_pick_up
     
     def output_states(self, states):
         string = "\n\n".join(self.catan.get_state_string(state)
