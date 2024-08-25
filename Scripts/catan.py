@@ -12,7 +12,10 @@ from utils import get_name
 
 class Catan():
 
-    real_estate_types = ["Settlements", "Cities", "Roads"]
+    real_estate = {
+        "Settlements": "Vertex",
+        "Cities": "Vertex",
+        "Roads": "Edge"}
 
     def __init__(self, name=None):
         self.name = name
@@ -170,13 +173,13 @@ class Catan():
     def get_geometry_string(self, state):
         geometry_string = get_dict_string({
             key: self.board.get_string(state[key], structure)
-            for key, structure in real_estate.items()})
+            for key, structure in self.real_estate.items()})
         return geometry_string
 
     def get_card_df(self, state):
         perspective_dfs = [
             self.get_perspective_df(name, state[name])
-            for name in state if name not in real_estate]
+            for name in state if name not in self.real_estate]
         card_df = concat(perspective_dfs, axis=1)
         return card_df
 
@@ -189,8 +192,3 @@ class Catan():
     
     def o(self):
         print(self.trade.output_states(self.trade.trade_states))
-
-real_estate = {
-    "Settlements": "Vertex",
-    "Cities": "Vertex",
-    "Roads": "Edge"}
