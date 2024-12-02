@@ -30,9 +30,9 @@ class PlayerRegular(Player):
 
     def set_initial_geometry_state(self):
         self.geometry_state = {
-            "Settlements": zeros(len(self.catan.board.vertices)),
-            "Cities": zeros(len(self.catan.board.vertices)),
-            "Roads": zeros(len(self.catan.board.edges))}
+            "Settlements": zeros(len(self.catan.board.vertices)).astype("int8"),
+            "Cities": zeros(len(self.catan.board.vertices)).astype("int8"),
+            "Roads": zeros(len(self.catan.board.edges)).astype("int8")}
 
     def get_state(self):
         perspective_states = self.get_perspective_states()
@@ -65,6 +65,46 @@ class PlayerRegular(Player):
         return perspective.card_state
 
 
+    def update_development_trades(self):
+        self.precompute_harvest()
+        self.precompute_road_builder()
+        self.precompute_knights()
+        
+    def precompute_harvest(self):
+        harvest_different = self.get_harvest_different()
+        harvest_same = self.get_harvest_same()
+        self.harvest_trades = harvest_different + harvest_same
+
+    def get_harvest_different(self):
+        harvest_different = [
+            {self.name: {resource_1: 1, resource_2: 1}}
+            for index, resource_1 in enumerate(self.catan.resources)
+            for resource_2 in self.catan.resources[index+1:]]
+        return harvest_different
+
+    def get_harvest_same(self):
+        harvest_same = [{resource: 2}
+                        for resource in self.catan.resources]
+        return harvest_same
+        
+    def precompute_road_builder(self):
+        self.road_builder_trades = [
+            {self.name: {"Roads": [edge_1.get_midpoint(), edge_2.get_midpoint()]}}
+            for index, edge_1 in enumerate(self.catan.board.edges)
+            for edge_2 in self.catan.board.edges[index+1:]]
+
+    def precompute_knights(self):
+        self.knight_trades = [
+            {"Robber": tile.vector, "Players": {
+                self.name: {f"Random {other_player.name}": 1},
+                other_player.name: {f"Random {self.name}": -1}}}
+            for tile in self.board.tiles
+            for other_player in self.players
+            if other_player != self]
+        for i in self.knight_trades:
+            print(i)
+
+            
     # Output
 
     def __str__(self):

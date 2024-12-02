@@ -5,8 +5,10 @@ from hgutilities.utils import json
 import numpy as np
 import pandas as pd
 
+from Trades.development import Development
 
-class Trade():
+
+class Trade(Development):
 
     def __init__(self, catan):
         self.catan = catan
@@ -61,12 +63,6 @@ class Trade():
             if card_type not in player_trade:
                 player_trade.update({card_type: 0})
 
-    def card_type_is_missing(self, player_trade, card_type):
-        not_in_trade = (card_type not in player_trade)
-        is_tradable = self.catan.card_data[card_type]["Tradable"]
-        is_missing = (not_in_trade and is_tradable)
-        return is_missing
-
     def add_missing_real_estate_keys(self, player_trade):
         for real_estate in self.catan.real_estate:
             if real_estate not in player_trade:
@@ -92,7 +88,8 @@ class Trade():
         for resource, data in self.catan.card_data.items():
             if data["Type"] == "Resource":
                 for bound in ["Min", "Max"]:
-                    player_trade.update({f"{resource} {bound}": player_trade[resource]})
+                    player_trade.update({f"{resource} {bound}":
+                                         player_trade[resource]})
                 del player_trade[resource]
 
     def output(self, trade):
@@ -178,6 +175,7 @@ class Trade():
         string = "\n\n".join(self.catan.get_state_string(state)
                              for state in states.values())
         return string
+
 
 def trade_function_self(trade_value, perspective_value):
     return trade_value + perspective_value

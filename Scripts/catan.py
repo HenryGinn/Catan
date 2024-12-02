@@ -1,6 +1,7 @@
 from os.path import join, dirname
 
 from pandas import DataFrame, MultiIndex, concat
+import numpy as np
 from hgutilities import defaults
 from hgutilities.utils import get_dict_string, make_folder, json
 
@@ -72,6 +73,7 @@ class Catan():
         game_state = self.load_game_state()
         self.load_meta_data(game_state)
         self.load_player_states_from_game_state(game_state)
+        self.add_random_cards_to_card_data()
 
     def load_meta_data(self, game_state):
         self.board.load_layout(game_state["MetaData"]["Layout"])
@@ -93,6 +95,7 @@ class Catan():
 
     def load_card_types(self):
         self.load_card_data()
+        self.set_resource_cards()
         self.set_card_types_tradable()
         self.set_ownable_development_cards()
 
@@ -101,13 +104,26 @@ class Catan():
         with open(path, "r") as file:
             self.card_data = json.load(file)
 
+    def add_random_cards_to_card_data(self):
+        for index, player in enumerate(self.players):
+            card_name = f"Random {player.name}"
+            self.card_data.update({card_name:
+                {"Type": "Special", "Count": np.inf,
+                 "Tradable": True, "Ownable": False}})
+            self.card_lookup.update({card_name: index})
+
+    def set_resource_cards(self):
+        self.resources = [
+            card for card in self.card_data
+            if self.card_data[card]["Type"] == "Resource"]
+
     def set_card_types_tradable(self):
-        self.card_types_tradable = [
+        self.tradables = [
             card for card in self.card_data
             if self.card_data[card]["Tradable"]]
 
     def set_ownable_development_cards(self):
-        self.card_types_development = [
+        self.developments = [
             card for card in self.card_data
             if self.card_data[card]["Type"] == "Development"]
 
@@ -128,6 +144,7 @@ class Catan():
         colors = self.get_player_colors(colors)
         self.players = [PlayerRegular(self, name, color)
                         for name, color in zip(names, colors)]
+        self.add_random_cards_to_card_data()
         self.initialise_perspectives()
 
     def initialise_perspectives(self):

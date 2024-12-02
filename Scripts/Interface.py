@@ -12,7 +12,7 @@ catan = Catan("TestGame")
 #catan.set_initial_states()
 catan.load()
 a = catan.players[0]
-#print(a)
+print(a)
 #catan.save()
 #catan.set_player_colours()
 #catan.board.plot_state()
