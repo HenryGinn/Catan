@@ -1,5 +1,4 @@
 from os.path import join
-from json import load
 from random import shuffle
 import json
 
@@ -29,7 +28,7 @@ class Board():
     def load_tile_data(self):
         path = join(self.catan.path_resources, "Tile Definitions.json")
         with open(path, "r") as file:
-            self.tile_data = load(file)
+            self.tile_data = json.load(file)
 
     def initialise_graph_components(self):
         self.initialise_vertices()
@@ -49,7 +48,7 @@ class Board():
     def get_vertex_position_vectors(self):
         path = join(self.catan.path_resources, "Vertex Positions.json")
         with open(path, "r") as file:
-            vertex_vectors = [tuple(vector) for vector in load(file)]
+            vertex_vectors = [tuple(vector) for vector in json.load(file)]
         return vertex_vectors
 
 
@@ -63,7 +62,7 @@ class Board():
     def load_tiles_data(self):
         path = join(self.catan.path_resources, "Tiles Data.json")
         with open(path, "r") as file:
-            tiles_data = load(file)
+            tiles_data = json.load(file)
         return tiles_data
 
     def initialise_ports(self):

@@ -1,10 +1,11 @@
 # Catan
-An implementation of Explorers of Catan with AI computer player
+An implementation of Explorers of Catan with a neural network computer player.
 
 ## Definitions
 
-- Board state. A subset of the game state, this is all information about the board. This includes what resource each tile is, what number it has, and where each player has pieces on the board.
+- Board state. A subset of the game state which is all information about the board. This includes what resources each tile is, what number it has, and where each player has pieces on the board.
 
+- Board layout. A subset of the board state, this is all static information about the board. No player data is included, this is only the resource and number data for each tile.
 - Board layout. A subset of the board state, this is all static information about the board. No player data is included, this is only the resource and number data for each tile.
 
 - Game state. All knowable information about the game at that point in time with respect to an individual player. This includes who owns what on each space on the board, where the robber is, and what cards each player could have. The results of some player interactions are not known to other players, such as robbing a random card from a player or getting a development card. This means for each player, their knowledge of other players cards will be stored as a range of possible values.
@@ -49,7 +50,7 @@ Similar care needs to be taken when processing the board state. A particular pos
 - The neural network architecture can be made in such a way to respect the symmetry group of the hexagon, i.e., $D_{12}$. In a similar way to how the player data was handled symmetrically, the board state position can be as well by making all functions of board state symmetrical upon permuting the symmetrical board states. This still gives the network information about the relative position of everything on the board and so it can develop a notion of distance.
 - It is well adapted to a hexagonal board. The symmetrical and non-symmetrical coordinates have been perfectly decomposed into the azimuthal and radial components respectively.
 
-The particular nodes associated with each vertex/edge/face does not matter as any change in order is simply a permutation of the rows of the weight matrices in the first layer. The board is defined in terms of its vertices. Each edge is defined by two vertices. There are five parts to the board state. The first two are independent of players, but the last three will need to have a node for each player. They are as follows:
+The particular nodes associated with each vertex/edge/face does not matter as any change in order is simply a permutation of the rows of the weight matrices in the first layer. The board is defined in terms of its vertices. Each edge is defined by two vertices, and each vertex has a list of tiles associated with it. There are five parts to the board state. The first two are independent of players, but the last three will need to have a node for each player. They are as follows:
 
 - The resource type of a hexagon
 - The number associated with a hexagon
@@ -61,7 +62,7 @@ The particular nodes associated with each vertex/edge/face does not matter as an
 
 The central component of the AI player is a neural network that takes in a state, evaluates the position, and gives a probability to each player based on how likely they are to win. Decisions are made by enumerating all reasonable possible options, evaluating the state, and choosing the state that results in the best chance to win. By implementing the AI like this, more complicated trades can be added without needing to retrain the network as the only input is the game state.
 
-For board state changes corresponding to trades, the corresponding states of the other player involved are evaluated and only those where both consider themselves to improve are considered. These trades are then ranked by both players, and the trade where the minimum rank between players is maximised is executed.
+For board state changes corresponding to trades, the corresponding states of the other player involved are evaluated and only those where both consider themselves to improve are considered. These trades are then ranked by both players, and the trade where the minimum rank between players is maximised is performed. If player B views a trade favourably for them when player A believes it will not be preferable for B, then player A could gain information about what cards player A has. This information is not used.
 
 The state that the neural network takes as input needs to be defined in a more precise manner. It needs to be structured in a way that respects the player symmetry, board symmetry, player specific knowledge, and public knowledge. For example player A might know that player B has a settlement on a particular vertex, but it would be unnecessary to also say that player A knows that player C knows that player B has a settlement on that particular vertex.
 
