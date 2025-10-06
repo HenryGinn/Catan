@@ -1,4 +1,5 @@
-from os.path import join, dirname
+import os
+from random import shuffle
 
 from pandas import DataFrame, MultiIndex, concat
 import numpy as np
@@ -9,41 +10,31 @@ from Board.board import Board
 from Players.player_regular import PlayerRegular
 from Trades.trade import Trade
 from utils import get_name
-
+from output_state import plot_card_state
 
 class Catan():
-
-    real_estate = {
-        "Settlements": "Vertex",
-        "Cities": "Vertex",
-        "Roads": "Edge"}
 
     def __init__(self, name=None):
         self.name = name
         self.set_main_paths()
         self.create_folders()
-        self.load_resources()
         self.create_objects()
 
     def set_main_paths(self):
-        self.path_base = dirname(dirname(__file__))
-        self.path_data = join(self.path_base, "Data")
-        self.path_resources = join(self.path_data, "Resources")
-        self.path_layouts = join(self.path_data, "Layouts")
+        self.path_base = os.path.dirname(os.path.dirname(__file__))
+        self.path_data = os.path.join(self.path_base, "Data")
+        self.path_resources = os.path.join(self.path_data, "Resources")
+        self.path_layouts = os.path.join(self.path_data, "Layouts")
         self.set_path_game()
 
     def set_path_game(self):
         self.name = get_name(self.name)
-        self.path_game = join(self.path_data,
-                              "Games", f"{self.name}.json")
+        self.path_game = os.path.join(
+            self.path_data, "Games", f"{self.name}.json")
 
     def create_folders(self):
         make_folder(self.path_layouts)
-        make_folder(dirname(self.path_game))
-
-    def load_resources(self):
-        self.load_card_types()
-        self.load_card_lookup()
+        make_folder(os.path.dirname(self.path_game))
 
         
     # Saving and loading
@@ -66,7 +57,7 @@ class Catan():
             "Layout": self.board.layout_name,
             "Colors": {player.name: player.color
                        for player in self.players},
-            "Development Card Deck": self.trade.development_deck}
+            "Development Card Deck": self.development_deck}
         return meta_data
 
     def load(self):
@@ -93,45 +84,6 @@ class Catan():
             player.name = name
             player.update_state(player_state)
 
-    def load_card_types(self):
-        self.load_card_data()
-        self.set_resource_cards()
-        self.set_card_types_tradable()
-        self.set_ownable_development_cards()
-
-    def load_card_data(self):
-        path = join(self.path_resources, "Card Data.json")
-        with open(path, "r") as file:
-            self.card_data = json.load(file)
-
-    def add_random_cards_to_card_data(self):
-        for index, player in enumerate(self.players):
-            card_name = f"Random {player.name}"
-            self.card_data.update({card_name:
-                {"Type": "Special", "Count": np.inf,
-                 "Tradable": True, "Ownable": False}})
-            self.card_lookup.update({card_name: index})
-
-    def set_resource_cards(self):
-        self.resources = [
-            card for card in self.card_data
-            if self.card_data[card]["Type"] == "Resource"]
-
-    def set_card_types_tradable(self):
-        self.tradables = [
-            card for card in self.card_data
-            if self.card_data[card]["Tradable"]]
-
-    def set_ownable_development_cards(self):
-        self.developments = [
-            card for card in self.card_data
-            if self.card_data[card]["Type"] == "Development"]
-
-    def load_card_lookup(self):
-        path = join(self.path_resources, "Card Lookup.json")
-        with open(path, "r") as file:
-            self.card_lookup = json.load(file)
-
 
     # Players and state manipulations
 
@@ -144,7 +96,6 @@ class Catan():
         colors = self.get_player_colors(colors)
         self.players = [PlayerRegular(self, name, color)
                         for name, color in zip(names, colors)]
-        self.add_random_cards_to_card_data()
         self.initialise_perspectives()
 
     def initialise_perspectives(self):
@@ -169,13 +120,21 @@ class Catan():
             player.color = color
 
     def set_initial_states(self):
+        self.initialise_development_deck()
         for player in self.players:
             player.set_initial_states()
 
+    def initialise_development_deck(self):
+        development_path = os.path.join(
+            self.path_resources, "Development Deck.json")
+        with open(development_path, "r") as file:
+            self.development_deck = json.load(file)
+        shuffle(self.development_deck)
+
     def get_player(self, player_name):
-        players = [player for player in self.players
-                  if player.name == player_name]
-        player = players[0]
+        player = [
+            player for player in self.players
+            if player.name == player_name][0]
         return player
 
 
@@ -210,3 +169,8 @@ class Catan():
     
     def o(self):
         print(self.trade.output_states(self.trade.trade_states))
+
+    def plot_card_state(self, player_name, perspective_name):
+        player = self.get_player(player_name)
+        perspective = player.get_perspective(perspective_name)
+        plot_card_state(perspective)

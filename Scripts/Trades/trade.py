@@ -1,5 +1,4 @@
 from os.path import join
-from random import shuffle
 
 from hgutilities.utils import json
 import numpy as np
@@ -13,19 +12,11 @@ class Trade(Development):
     def __init__(self, catan):
         self.catan = catan
         self.load_costs()
-        self.set_development_deck()
 
     def load_costs(self):
         path = join(self.catan.path_resources, "Costs.json")
         with open(path, "r") as file:
             self.costs = json.load(file)
-
-    def set_development_deck(self):
-        self.development_deck = ([
-            card for card, data in self.catan.card_data.items()
-            for count in range(data["Count"])
-            if data["Type"] == "Development"])
-        shuffle(self.development_deck)
 
 
     # Converting trade inputs into complete trade dictionaries
