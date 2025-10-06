@@ -3,6 +3,8 @@ from numpy import array, zeros
 from Players.player import Player
 from Players.player_perspective import PlayerPerspective
 
+from global_variables import initial_state
+
 
 class PlayerRegular(Player):
 
@@ -26,7 +28,7 @@ class PlayerRegular(Player):
     def set_initial_states(self):
         self.set_initial_geometry_state()
         for perspective in self.perspectives:
-            perspective.card_state = zeros(len(self.catan.card_lookup))
+            perspective.card_state = initial_state.copy()
 
     def set_initial_geometry_state(self):
         self.geometry_state = {
@@ -60,9 +62,16 @@ class PlayerRegular(Player):
             perspective.card_state = array(state[perspective.name])
 
     def get_perspective_state(self, player_name):
-        perspective = [persective for perspective in self.perspectives
-                       if perspective.name == player_name][0]
+        perspective = [
+            persective for perspective in self.perspectives
+            if perspective.name == player_name][0]
         return perspective.card_state
+
+    def get_perspective(self, perspective_name):
+        perspective = [
+            perspective for perspective in self.perspectives
+            if perspective.view == perspective_name][0]
+        return perspective
 
 
     def update_development_trades(self):
@@ -83,8 +92,9 @@ class PlayerRegular(Player):
         return harvest_different
 
     def get_harvest_same(self):
-        harvest_same = [{resource: 2}
-                        for resource in self.catan.resources]
+        harvest_same = [
+            {resource: 2}
+            for resource in self.catan.resources]
         return harvest_same
         
     def precompute_road_builder(self):
