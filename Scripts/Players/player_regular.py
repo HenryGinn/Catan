@@ -82,9 +82,14 @@ class PlayerRegular(Player):
             for key in ["Settlements", "Cities", "Roads"]}
     
     def load_perspectives_from_state(self, state):
-        for perspective in self.perspectives:
-            perspective.card_state = array(state[perspective.name])
->>>>>>> refs/remotes/origin/main
+        self.perspectives = [
+            self.load_perspective_from_state(state, player.name)
+            for player in self.catan.players]
+
+    def load_perspective_from_state(self, state, perspective_view):
+        view = self.catan.get_player(perspective_view)
+        perspective = PlayerPerspective(view, self)
+        perspective.card_state = array(state[perspective.name])
 
     def get_perspective_state(self, player_name):
         perspective = [

@@ -1,4 +1,12 @@
+import os
+
 from numpy import array
+
+
+path_base = os.path.dirname(os.path.dirname(__file__))
+path_data = os.path.join(path_base, "Data")
+path_resources = os.path.join(path_data, "Resources")
+path_layouts = os.path.join(path_data, "Layouts")
 
 real_estate = {
     "Settlements": "Vertex",

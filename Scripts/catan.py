@@ -8,32 +8,29 @@ from hgutilities.utils import get_dict_string, make_folder, json
 
 from Board.board import Board
 from Players.player_regular import PlayerRegular
-from Trades.trade import Trade
+from Trades.turn import Turn
 from utils import get_name
 from output_state import plot_card_state
+from global_variables import (
+    path_data,
+    path_resources,
+    path_layouts)
 
 class Catan():
 
     def __init__(self, name=None):
         self.name = name
-        self.set_main_paths()
+        self.set_path_game()
         self.create_folders()
         self.create_objects()
-
-    def set_main_paths(self):
-        self.path_base = os.path.dirname(os.path.dirname(__file__))
-        self.path_data = os.path.join(self.path_base, "Data")
-        self.path_resources = os.path.join(self.path_data, "Resources")
-        self.path_layouts = os.path.join(self.path_data, "Layouts")
-        self.set_path_game()
 
     def set_path_game(self):
         self.name = get_name(self.name)
         self.path_game = os.path.join(
-            self.path_data, "Games", f"{self.name}.json")
+            path_data, "Games", f"{self.name}.json")
 
     def create_folders(self):
-        make_folder(self.path_layouts)
+        make_folder(path_layouts)
         make_folder(os.path.dirname(self.path_game))
 
         
@@ -57,21 +54,22 @@ class Catan():
             "Layout": self.board.layout_name,
             "Colors": {player.name: player.color
                        for player in self.players},
-            "Development Card Deck": self.development_deck}
+            "Development Card Deck": self.development_deck,
+            "Moves": self.moves}
         return meta_data
 
     def load(self):
         game_state = self.load_game_state()
         self.load_meta_data(game_state)
         self.load_player_states_from_game_state(game_state)
-        self.add_random_cards_to_card_data()
 
     def load_meta_data(self, game_state):
         self.board.load_layout(game_state["MetaData"]["Layout"])
         names, colors = list(zip(*game_state["MetaData"]["Colors"].items()))
         self.initialise_players(names=names, colors=colors)
-        self.trade.development_deck = (
+        self.development_deck = (
             game_state["MetaData"]["Development Card Deck"])
+        self.moves = game_state["MetaData"]["Moves"]
 
     def load_game_state(self):
         with open(self.path_game, "r") as file:
@@ -89,14 +87,18 @@ class Catan():
 
     def create_objects(self):
         self.board = Board(self)
-        self.trade = Trade(self)
 
-    def initialise_players(self, names=None, colors=None):
+    def start_game(self, names=None, colors=None):
+        self.initialise_players(names, colors)
+        self.initialise_perspectives()
+        self.set_initial_states()
+        self.moves = -1
+
+    def initialise_players(self, names, colors):
         names = self.get_player_names(names)
         colors = self.get_player_colors(colors)
         self.players = [PlayerRegular(self, name, color)
                         for name, color in zip(names, colors)]
-        self.initialise_perspectives()
 
     def initialise_perspectives(self):
         for player in self.players:
@@ -126,7 +128,7 @@ class Catan():
 
     def initialise_development_deck(self):
         development_path = os.path.join(
-            self.path_resources, "Development Deck.json")
+            path_resources, "Development Deck.json")
         with open(development_path, "r") as file:
             self.development_deck = json.load(file)
         shuffle(self.development_deck)
@@ -136,6 +138,18 @@ class Catan():
             player for player in self.players
             if player.name == player_name][0]
         return player
+
+    def take_turn(self):
+        self.turn = Turn(self)
+
+    def trade_players(self, trade):
+        self.turn.trade_players_input(trade)
+    
+    def trade_assets(self, trade):
+        self.turn.trade_assets_input(trade)
+
+    def play_development(self, trade):
+        self.turn.play_development_input(trade)
 
 
     # Output state
@@ -166,9 +180,6 @@ class Catan():
         card_df = {key: value for key, value in keys_and_values}
         perspective_df = DataFrame(card_df).set_index("Card")
         return perspective_df
-    
-    def o(self):
-        print(self.trade.output_states(self.trade.trade_states))
 
     def plot_card_state(self, player_name, perspective_name):
         player = self.get_player(player_name)

@@ -1,10 +1,10 @@
-from os.path import join
-
 from hgutilities.utils import json
 import numpy as np
 import pandas as pd
 
 from Trades.development import Development
+from global_variables import (
+    path_resources)
 
 
 class Trade(Development):
@@ -14,7 +14,7 @@ class Trade(Development):
         self.load_costs()
 
     def load_costs(self):
-        path = join(self.catan.path_resources, "Costs.json")
+        path = os.path.join(path_resources, "Costs.json")
         with open(path, "r") as file:
             self.costs = json.load(file)
 
@@ -161,10 +161,17 @@ class Trade(Development):
         state[perspective_name][self.catan.card_lookup["Development"]] -= 1
         to_pick_up -= 1
         return to_pick_up
+
+    def get_resource_trades(self, state_total):
+        ranges = [np.arange(total + 1) for total in state_total]
+        trades = [np.ravel(grid) for grid in np.meshgrid(*ranges)]
+        trades = np.stack(trades, axis=1)
+        return trades
     
     def output_states(self, states):
-        string = "\n\n".join(self.catan.get_state_string(state)
-                             for state in states.values())
+        string = "\n\n".join(
+            self.catan.get_state_string(state)
+            for state in states.values())
         return string
 
 

@@ -76,7 +76,7 @@ The state needs to be stored in a way where the state of many trades can be easi
 
 ### Representation of Trades
 
-A trade is given as a dictionary of dictionaries, where the key is the player name and the value is what they gain of lose. The keys of these inside dictionaries are the types of asset being changed. For all players involved in a trade, they will take both dictionaries and convert it to a state. These states will be compared to their actual player state for each player to determine if it is valid. If this is the case then the trade states will be added to their respective player states if executed. For the input of a trade, the cost of real estate will not be entered, and a preprocessing step will be done to the true gains and losses of the trade.
+A trade is given as a dictionary of dictionaries, where the key is the player name and the value is a dictionary giving what they gain or lose. The keys of these inside dictionaries are the types of asset being changed. For all players involved in a trade, they will take both dictionaries and convert it to a state. These states will be compared to their actual player state for each player to determine if it is valid. If this is the case then the trade states will be added to their respective player states if executed. For the input of a trade, the cost of real estate will not be entered, and a preprocessing step will be done to the true gains and losses of the trade.
 
 <<<<<<< HEAD
 For the input of a trade, the cost of real estate will not be entered, and a preprocessing step will be done to the true gains and losses of the trade

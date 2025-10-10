@@ -12,6 +12,9 @@ from Board.tile import Tile
 from Board.port import Port
 from Board.edge import Edge
 from utils import get_name
+from global_variables import (
+    path_resources,
+    path_layouts)
 
 
 class Board():
@@ -26,7 +29,7 @@ class Board():
         self.initialise_graph_components()
 
     def load_tile_data(self):
-        path = join(self.catan.path_resources, "Tile Definitions.json")
+        path = join(path_resources, "Tile Definitions.json")
         with open(path, "r") as file:
             self.tile_data = json.load(file)
 
@@ -46,7 +49,7 @@ class Board():
                          enumerate(vertex_vectors)]
 
     def get_vertex_position_vectors(self):
-        path = join(self.catan.path_resources, "Vertex Positions.json")
+        path = join(path_resources, "Vertex Positions.json")
         with open(path, "r") as file:
             vertex_vectors = [tuple(vector) for vector in json.load(file)]
         return vertex_vectors
@@ -60,7 +63,7 @@ class Board():
                       for tile_data in tiles_data]
 
     def load_tiles_data(self):
-        path = join(self.catan.path_resources, "Tiles Data.json")
+        path = join(path_resources, "Tiles Data.json")
         with open(path, "r") as file:
             tiles_data = json.load(file)
         return tiles_data
@@ -71,7 +74,7 @@ class Board():
                       for port_data in ports_data]
 
     def get_ports_date(self):
-        path = join(self.catan.path_resources, "Ports Data.json")
+        path = join(path_resources, "Ports Data.json")
         with open(path, "r") as file:
             ports_data = json.load(file)
         return ports_data
@@ -104,7 +107,7 @@ class Board():
     def get_path_tile_types(self, name=None):
         self.set_layout_name(name)
         file_name = f"{self.layout_name}.json"
-        path = join(self.catan.path_layouts, file_name)
+        path = join(path_layouts, file_name)
         return path
 
     def set_layout_name(self, name):
@@ -234,13 +237,15 @@ class Board():
 
     def plot_settlements(self):
         for player in self.catan.players:
-            self.plot_vertices(player.geometry_state["Settlements"],
-                               player.color, 0.15)
+            self.plot_vertices(
+                player.geometry_state["Settlements"],
+                player.color, 0.15)
 
     def plot_cities(self):
         for player in self.catan.players:
-            self.plot_vertices(player.geometry_state["Cities"],
-                               player.color, 0.25)
+            self.plot_vertices(
+                player.geometry_state["Cities"],
+                player.color, 0.25)
 
     def plot_vertices(self, indicators, color, size):
         for vertex, indicator in zip(self.vertices, indicators):
@@ -253,8 +258,9 @@ class Board():
 
     def plot_roads(self):
         for player in self.catan.players:
-            self.plot_edges(player.geometry_state["Roads"],
-                            player.color)
+            self.plot_edges(
+                player.geometry_state["Roads"],
+                player.color)
 
     def plot_edges(self, indicators, color):
         for edge, indicator in zip(self.edges, indicators):
@@ -262,8 +268,9 @@ class Board():
                 self.plot_edge(edge, color)
 
     def plot_edge(self, edge, color):
-        values = [[vertex.position[i]
-                   for vertex in edge.vertices]
+        values = [[
+            vertex.position[i]
+            for vertex in edge.vertices]
                   for i in range(2)]
         self.ax.plot(*values, color=color, linewidth=6)
 
@@ -289,9 +296,10 @@ class Board():
 
     def get_edge_string(self, state_edge):
         edge_vector_pairs = self.get_edge_vector_pairs(state_edge)
-        string = ", ".join(f"(({pair[0][0]}, {pair[0][1]}),"
-                            f"({pair[1][0]}, {pair[1][1]}))"
-                           for pair in edge_vector_pairs)
+        string = ", ".join(
+            f"(({pair[0][0]}, {pair[0][1]}),"
+            f"({pair[1][0]}, {pair[1][1]}))"
+            for pair in edge_vector_pairs)
         return string
 
     def get_edge_vector_pairs(self, state_edge):
@@ -332,8 +340,9 @@ tile_type_input_keys = {
     "Desert": ["6", "Desert", "D"]}
 
 tile_type_keys_prompt = (
-    '\n'.join(f"{key}   {', '.join(values)}"
-              for key, values in tile_type_input_keys.items()))
+    '\n'.join(
+        f"{key}   {', '.join(values)}"
+        for key, values in tile_type_input_keys.items()))
 
 tile_type_prompt = (
     "Enter the tile types going from left to right along the rows.\n"

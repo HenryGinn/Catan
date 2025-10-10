@@ -58,7 +58,7 @@ def plot_card_state(arg):
     card_state, perspective_name = parse_arg(arg)
     fig, axes = init_figure()
     plot_data(card_state, fig, axes)
-    plot_peripherals(perspective_name, fig)
+    plot_peripherals(perspective_name, fig, axes)
     plt.show()
     return fig, axes
 
@@ -105,10 +105,12 @@ def plot_data(card_state, fig, axes):
         ax.set_xticks(x_ticks_all[card_type])
         ax.set_title(card_type, fontsize=14)
 
-def plot_peripherals(perspective_name, fig):
+def plot_peripherals(perspective_name, fig, axes):
     if perspective_name is not None:
         title = f"Card State For {perspective_name}"
         fig.suptitle(title, fontsize=18, y=0.98)
+    axes[0].set_yticks([0, 0.2, 0.4, 0.6, 0.8, 1])
+    axes[5].set_yticks([0, 0.2, 0.4, 0.6, 0.8, 1])
 
 
 if __name__ == "__main__":
