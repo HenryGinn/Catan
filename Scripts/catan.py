@@ -14,7 +14,8 @@ from output_state import plot_card_state
 from global_variables import (
     path_data,
     path_resources,
-    path_layouts)
+    path_layouts,
+    real_estate)
 
 class Catan():
 
@@ -139,8 +140,11 @@ class Catan():
             if player.name == player_name][0]
         return player
 
-    def take_turn(self):
+    def next_turn(self):
         self.turn = Turn(self)
+
+    def take_turn(self):
+        self.turn.take_turn()
 
     def trade_players(self, trade):
         self.turn.trade_players_input(trade)
@@ -164,20 +168,18 @@ class Catan():
     def get_geometry_string(self, state):
         geometry_string = get_dict_string({
             key: self.board.get_string(state[key], structure)
-            for key, structure in self.real_estate.items()})
+            for key, structure in real_estate.items()})
         return geometry_string
 
     def get_card_df(self, state):
         perspective_dfs = [
             self.get_perspective_df(name, state[name])
-            for name in state if name not in self.real_estate]
+            for name in state if name not in real_estate]
         card_df = concat(perspective_dfs, axis=1)
         return card_df
 
     def get_perspective_df(self, name, card_state):
-        card_dict = dict(zip(self.card_lookup, card_state))
-        keys_and_values = zip(["Card", name], zip(*card_dict.items()))
-        card_df = {key: value for key, value in keys_and_values}
+        
         perspective_df = DataFrame(card_df).set_index("Card")
         return perspective_df
 

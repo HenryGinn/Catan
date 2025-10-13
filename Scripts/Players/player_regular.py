@@ -8,22 +8,16 @@ from global_variables import initial_state
 
 class PlayerRegular(Player):
 
-    player_type = "Regular"
-
     def __init__(self, catan, name, color):
         super().__init__(catan, name)
         self.color = color
 
     def initialise_perspectives(self):
+        self_index = self.catan.players.index(self)
+        indexes = [(self_index + i) % 4 for i in range(4)]
         self.perspectives = [
-            PlayerPerspective(player, self)
-            for player in self.catan.players]
-        self.set_self_perspective()
-
-    def set_self_perspective(self):
-        self.self_perspective = [
-            perspective for perspective in self.perspectives
-            if perspective.view is self.name][0]
+            PlayerPerspective(self.catan.players[index], self)
+            for index in indexes]
 
     def set_initial_states(self):
         self.set_initial_geometry_state()
@@ -90,6 +84,7 @@ class PlayerRegular(Player):
         view = self.catan.get_player(perspective_view)
         perspective = PlayerPerspective(view, self)
         perspective.card_state = array(state[perspective.name])
+        return perspective
 
     def get_perspective_state(self, player_name):
         perspective = [
