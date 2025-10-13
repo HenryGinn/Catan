@@ -14,7 +14,7 @@ real_estate = {
     "Roads": "Edge"}
 
 state_indexes = {
-    "Sheep": slice(None, 19),
+    "Sheep": slice(0, 19),
     "Ore": slice(19, 38),
     "Mud": slice(38, 57),
     "Wood": slice(57, 76),
@@ -24,7 +24,7 @@ state_indexes = {
     "Year of Plenty": slice(101, 104),
     "Victory": slice(104, 110),
     "Unplayed Knight": slice(110, 121),
-    "Played Knight": slice(121, None)}
+    "Played Knight": slice(121, 133)}
 
 initial_state = array([
     1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
