@@ -92,7 +92,6 @@ class Catan():
 
     def start_game(self, names=None, colors=None):
         self.initialise_players(names, colors)
-        self.initialise_perspectives()
         self.set_initial_states()
         self.moves = -1
 
@@ -101,6 +100,7 @@ class Catan():
         colors = self.get_player_colors(colors)
         self.players = [PlayerRegular(self, name, color)
                         for name, color in zip(names, colors)]
+        self.initialise_perspectives()
 
     def initialise_perspectives(self):
         for player in self.players:
