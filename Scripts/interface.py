@@ -14,6 +14,6 @@ catan.board.load_layout("TestLayout")
 catan.load()
 #catan.board.plot_state()
 
-a = catan.players[0]
+a = catan.players[1]
 catan.next_turn()
 catan.take_turn()
