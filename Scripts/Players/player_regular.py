@@ -88,6 +88,15 @@ class PlayerRegular(Player):
         return perspective
 
 
+    def set_card_states_from_resource_trades_self(self):
+        resource_states = self.get_resource_states(self.resource_trades)
+        resource_states = resource_states.reshape(-1, 95)
+        development_state = self.perspectives[0].card_state[95:]
+        development_states = np.tile(
+            development_state, (self.catan.turn.count, 1))
+        self.perspectives[0].card_states = np.concatenate(
+            (resource_states, development_states), axis=1)
+
     def update_development_trades(self):
         self.precompute_harvest()
         self.precompute_road_builder()

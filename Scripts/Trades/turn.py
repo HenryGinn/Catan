@@ -82,19 +82,9 @@ class Turn():
         return trades
 
     def set_game_states_player(self):
-        #self.player.perspectives[0].card_states = (
-        #    self.set_card_states_from_resource_trades_self(self.player))
-        #self.other.perspectives[0].card_states = (
-        #    self.set_card_states_from_resource_trades_self(self.player))
+        #self.player.set_card_states_from_resource_trades_self()
+        #self.other.set_card_states_from_resource_trades_self()
         self.set_game_states_non_trading_players()
-
-    def set_card_states_from_resource_trades_self(self, player):
-        resource_states = self.get_resource_states(player.resource_trades)
-        resource_states = resource_states.reshape(-1, 95)
-        development_state = player.perspectives[0].card_state[95:]
-        development_states = np.tile(development_state, (len(resource_states), 1))
-        player.perspectives[0].card_states = np.concatenate(
-            (resource_states, development_states), axis=1)
 
     def get_resource_states(self, resources):
         states = np.zeros((self.count, 5, 19))
@@ -123,7 +113,10 @@ class Turn():
     # Other knows what trades are being made, but not the traders card state.
     def set_game_states_other_trader_perspective(self, player, trader):
         perspective = player.get_perspective(trader.name)
-        plot_card_state(perspective.card_state)
+        resource_state = perspective.card_state[:95].reshape(5, 19)
+        print(resource_state)
+        print(trader.resource_trades)
+        
 
     def trade_assets(self):
         pass

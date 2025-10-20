@@ -91,4 +91,12 @@ Classify the different strategies that arise. Do players tend to change strategy
 =======
 Development cards are executed by performing a trade. As much of these trade states are computed in advance. For example the harvest trades are always static, and all possible pairs of resources in exchange for a harvest card can be found once at the start of the game. Road builder is similar, although needs to be filtered to ensure only valid roads are built. For knight cards the $19 \cdot 4$ possible trades are precomputed, corresponding to the 19 tiles and 4 players, and these are filtered based on who has property on the tiles. Monopoly cards cannot be precomputed at all as they are completely dependent on the decks of the other players. Victory cards cannot be played, the remain statically in the players deck.
 
->>>>>>> refs/remotes/origin/main
+### Figuring Out Probability Calculations
+
+P(0) = # games where they have 0 cards / # games
+P(1) = # games where they have 1 cards / # games
+P(they can lose a card) = # games where they have at least one card / # games
+P(they can lose a card) = (# games - # games where they have 0 cards) / # games = 1 - P(0)
+P(0 given they can lose a card) = # games where they have 0 / # games where they have at least one card to lose) = 0
+P(1 given they can lose a card) = # games where they have 1 / # games where they have at least one card to lose)
+P(1 given they can lose a card) = P(1) / P(they can lose a card) = P(1) / (1 - P(0))
