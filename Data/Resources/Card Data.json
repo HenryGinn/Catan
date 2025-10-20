@@ -1,0 +1,68 @@
+{
+  "Wheat": {
+    "Type": "Resource",
+    "Count": 18,
+    "Tradable": true,
+    "Ownable": true
+  },
+  "Sheep": {
+    "Type": "Resource",
+    "Count": 18,
+    "Tradable": true,
+    "Ownable": true
+  },
+  "Wood": {
+    "Type": "Resource",
+    "Count": 18,
+    "Tradable": true,
+    "Ownable": true
+  },
+  "Ore": {
+    "Type": "Resource",
+    "Count": 18,
+    "Tradable": true,
+    "Ownable": true
+  },
+  "Mud": {
+    "Type": "Resource",
+    "Count": 18,
+    "Tradable": true,
+    "Ownable": true
+  },
+  "Monopoly": {
+    "Type": "Development",
+    "Count": 2,
+    "Tradable": false,
+    "Ownable": true
+  },
+  "RoadBuilder": {
+    "Type": "Development",
+    "Count": 2,
+    "Tradable": false,
+    "Ownable": true
+  },
+  "Victory": {
+    "Type": "Development",
+    "Count": 5,
+    "Tradable": false,
+    "Ownable": true
+  },
+  "Harvest": {
+    "Type": "Development",
+    "Count": 2,
+    "Tradable": false,
+    "Ownable": true
+  },
+  "Knight": {
+    "Type": "Development",
+    "Count": 10,
+    "Tradable": false,
+    "Ownable": true
+  },
+  "Development": {
+    "Type": "Special",
+    "Count": 20,
+    "Tradable": true,
+    "Ownable": false
+  }
+}

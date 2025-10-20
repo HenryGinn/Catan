@@ -235,12 +235,12 @@ class Board():
 
     def plot_settlements(self):
         for player in self.catan.players:
-            self.plot_vertices(player.settlement_state,
+            self.plot_vertices(player.geometry_state["Settlements"],
                                player.color, 0.15)
 
     def plot_cities(self):
         for player in self.catan.players:
-            self.plot_vertices(player.city_state,
+            self.plot_vertices(player.geometry_state["Cities"],
                                player.color, 0.25)
 
     def plot_vertices(self, indicators, color, size):
@@ -254,7 +254,7 @@ class Board():
 
     def plot_roads(self):
         for player in self.catan.players:
-            self.plot_edges(player.road_state,
+            self.plot_edges(player.geometry_state["Roads"],
                             player.color)
 
     def plot_edges(self, indicators, color):
@@ -270,6 +270,11 @@ class Board():
 
 
     # Other
+
+    def get_string(self, state, structure_type):
+        match structure_type:
+            case "Vertex": return self.get_vertex_string(state)
+            case "Edge"  : return self.get_edge_string(state)
 
     def get_vertex_string(self, state_vertex):
         vertex_vectors = self.get_vertex_vectors(state_vertex)
@@ -292,10 +297,15 @@ class Board():
 
     def get_edge_vector_pairs(self, state_edge):
         edge_vectors = [
-            (edge.vertex_1.vector, edge.vertex_2.vector)
-            for indicator, vertex in zip(state_edge, self.edges)
+            tuple([vertex.vector for vertex in edge.vertices])
+            for indicator, edge in zip(state_edge, self.edges)
             if indicator]
         return edge_vectors
+
+    def get_state(self, vectors, real_estate):
+        match self.catan.real_estate[real_estate]:
+            case "Vertex": return self.get_vertex_state(vectors)
+            case "Edge"  : return self.get_edge_state(vectors)
 
     def get_vertex_state(self, vectors):
         vertex_state = np.array(

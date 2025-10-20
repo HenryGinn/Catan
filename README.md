@@ -69,10 +69,15 @@ What a player believes about a player's belongings (including themselves) can be
 
 There are two subclasses of player: A perspective player, and a regular player. A perspective player contains the knowledge of player A about what cards player B has. The card state is a dictionary stored as an attribute of a perspective player. A player's perspective about themselves is also handled by a perspective player. A regular player stores the real estate information corresponding to that player, and also a list of perspective player objects associated with themselves.
 
+The card state for each player involves a minimum and maximum for each resource. This is because a player can steal a card from another player and it will not be known what that card is. Development cards have even more uncertainty, and a special unknown development card is used for this. Each player will also keep track of how many of each type of development card has been played by each player. This information is useful to players as they will be able to learn knowledge about what the deck contains, therefore taking advantage of it, e.g. there are no monopolies left in the deck. As development cards cannot be stolen, and they are completely known to either the owner or the public depending on whether it has been played or not, the absolute number of each development will have no uncertainty. All the uncertainty is bundled into the unknown development card, therefore the types of development card have no minimum and maximum.
+
+The state needs to be stored in a way where the state of many trades can be easily computed from it, and evaluated by the neural network. A numpy array is used for this as the ability to add a vector to each column of a matrix outweighs the human-readable advantages of a dictionary. The state is not stored in a single array, and instead reflects the structure of the neural network. The settlement, city, and road states of each player, and the card state of each perspective are stored as their own arrays.
+
 ### Representation of Trades
 
-A trade is given as a dictionary of dictionaries, where the key is the player name and the value is what they gain of lose. The keys of these inside dictionaries are the types of asset being changed. For all players involved in a trade, they will take both dictionaries and convert it to a state. These states will be compared to their actual player state for each player to determine if it is valid. If this is the case then the trade states will be added to their respective player states.
+A trade is given as a dictionary of dictionaries, where the key is the player name and the value is what they gain of lose. The keys of these inside dictionaries are the types of asset being changed. For all players involved in a trade, they will take both dictionaries and convert it to a state. These states will be compared to their actual player state for each player to determine if it is valid. If this is the case then the trade states will be added to their respective player states if executed. For the input of a trade, the cost of real estate will not be entered, and a preprocessing step will be done to the true gains and losses of the trade.
 
+<<<<<<< HEAD
 For the input of a trade, the cost of real estate will not be entered, and a preprocessing step will be done to the true gains and losses of the trade
 
 ## Notes
@@ -82,3 +87,6 @@ How large an effect is ganging up on other players?
 For a given board and starting configuration, how variable are the results? I want to try quantify the importance of starting position and see how much of a factor luck is.
 
 Classify the different strategies that arise. Do players tend to change strategy? I might try change the weights to test strategies such as the road builder and OWS.
+=======
+Development cards are executed by performing a trade. As much of these trade states are computed in advance. For example the harvest trades are always static, and all possible pairs of resources in exchange for a harvest card can be found once at the start of the game. Road builder is similar, although needs to be filtered to ensure only valid roads are built. For knight cards the $19 \cdot 4$ possible trades are precomputed, corresponding to the 19 tiles and 4 players, and these are filtered based on who has property on the tiles. Monopoly cards cannot be precomputed at all as they are completely dependent on the decks of the other players. Victory cards cannot be played, the remain statically in the players deck.
+>>>>>>> refs/remotes/origin/main
