@@ -20,11 +20,18 @@ class PlayerRegular(Player):
     def set_initial_states(self):
         self.set_initial_geometry_state()
 
+<<<<<<< HEAD
+    def set_initial_board_state(self):
+        self.settlement_state = zeros(len(self.catan.board.vertices)).astype("bool")
+        self.city_state = zeros(len(self.catan.board.vertices)).astype("bool")
+        self.road_state = zeros(len(self.catan.board.edges)).astype("bool")
+=======
     def set_initial_geometry_state(self):
         self.geometry_state = {
             "Settlements": zeros(len(self.catan.board.vertices)).astype("int8"),
             "Cities": zeros(len(self.catan.board.vertices)).astype("int8"),
             "Roads": zeros(len(self.catan.board.edges)).astype("int8")}
+>>>>>>> refs/remotes/origin/main
 
     def get_state(self):
         perspective_states = self.get_perspective_states()
@@ -32,8 +39,19 @@ class PlayerRegular(Player):
                  **perspective_states}
         return state
 
+<<<<<<< HEAD
+    def get_geometry_dict(self):
+        geometry_dict = {"Settlements": self.settlement_state.astype("int8"),
+                         "Cities": self.city_state.astype("int8"),
+                         "Roads": self.road_state.astype("int8")}
+        return geometry_dict
+
+    def get_perspectives_dict(self):
+        perspectives_dict = {
+=======
     def get_perspective_states(self):
         perspective_states = {
+>>>>>>> refs/remotes/origin/main
             perspective.name: perspective.card_state
             for perspective in self.perspectives}
         return perspective_states
@@ -42,6 +60,12 @@ class PlayerRegular(Player):
         self.load_geometry_from_state(state)
         self.load_perspectives_from_state(state)
 
+<<<<<<< HEAD
+    def load_from_geometry_dict(self, geometry_dict):
+        self.settlement_state = array(geometry_dict["Settlements"]).astype("bool")
+        self.city_state = array(geometry_dict["Cities"]).astype("bool")
+        self.road_state = array(geometry_dict["Roads"]).astype("bool")
+=======
     def load_geometry_from_state(self, state):
         self.geometry_state = {
             key: array(state[key])
@@ -50,6 +74,7 @@ class PlayerRegular(Player):
     def load_perspectives_from_state(self, state):
         for perspective in self.perspectives:
             perspective.card_state = array(state[perspective.name])
+>>>>>>> refs/remotes/origin/main
 
     def get_perspective_state(self, player_name):
         perspective = [
