@@ -65,7 +65,7 @@ class Catan():
 
     def get_player_names(self, names):
         if names is None:
-            return [1, 2, 3, 4]
+            return ["1", "2", "3", "4"]
         else:
             return names
 
@@ -85,8 +85,9 @@ class Catan():
             player.set_initial_states()
 
     def get_player(self, player_name):
-        player = [player for player in self.players
-                  if player.name == player_name][0]
+        players = [player for player in self.players
+                  if player.name == player_name]
+        player = players[0]
         return player
 
 
