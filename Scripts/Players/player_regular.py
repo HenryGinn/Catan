@@ -1,4 +1,4 @@
-from numpy import array, zeros
+import numpy as np
 
 from Players.player import Player
 from Players.player_perspective import PlayerPerspective
@@ -20,18 +20,11 @@ class PlayerRegular(Player):
     def set_initial_states(self):
         self.set_initial_geometry_state()
 
-<<<<<<< HEAD
-    def set_initial_board_state(self):
-        self.settlement_state = zeros(len(self.catan.board.vertices)).astype("bool")
-        self.city_state = zeros(len(self.catan.board.vertices)).astype("bool")
-        self.road_state = zeros(len(self.catan.board.edges)).astype("bool")
-=======
     def set_initial_geometry_state(self):
         self.geometry_state = {
-            "Settlements": zeros(len(self.catan.board.vertices)).astype("int8"),
-            "Cities": zeros(len(self.catan.board.vertices)).astype("int8"),
-            "Roads": zeros(len(self.catan.board.edges)).astype("int8")}
->>>>>>> refs/remotes/origin/main
+            "Settlements": np.zeros(len(self.catan.board.vertices)).astype("int8"),
+            "Cities": np.zeros(len(self.catan.board.vertices)).astype("int8"),
+            "Roads": np.zeros(len(self.catan.board.edges)).astype("int8")}
 
     def get_state(self):
         perspective_states = self.get_perspective_states()
@@ -39,19 +32,8 @@ class PlayerRegular(Player):
                  **perspective_states}
         return state
 
-<<<<<<< HEAD
-    def get_geometry_dict(self):
-        geometry_dict = {"Settlements": self.settlement_state.astype("int8"),
-                         "Cities": self.city_state.astype("int8"),
-                         "Roads": self.road_state.astype("int8")}
-        return geometry_dict
-
-    def get_perspectives_dict(self):
-        perspectives_dict = {
-=======
     def get_perspective_states(self):
         perspective_states = {
->>>>>>> refs/remotes/origin/main
             perspective.name: perspective.card_state
             for perspective in self.perspectives}
         return perspective_states
@@ -60,20 +42,14 @@ class PlayerRegular(Player):
         self.load_geometry_from_state(state)
         self.load_perspectives_from_state(state)
 
-<<<<<<< HEAD
-    def load_from_geometry_dict(self, geometry_dict):
-        self.settlement_state = array(geometry_dict["Settlements"]).astype("bool")
-        self.city_state = array(geometry_dict["Cities"]).astype("bool")
-        self.road_state = array(geometry_dict["Roads"]).astype("bool")
-=======
     def load_geometry_from_state(self, state):
         self.geometry_state = {
-            key: array(state[key])
+            key: np.array(state[key])
             for key in ["Settlements", "Cities", "Roads"]}
     
     def load_perspectives_from_state(self, state):
         for perspective in self.perspectives:
-            perspective.card_state = array(state[perspective.name])
+            perspective.card_state = np.array(state[perspective.name])
 
     def get_perspective_state(self, player_name):
         perspective = [
@@ -89,13 +65,25 @@ class PlayerRegular(Player):
 
 
     def set_card_states_from_resource_trades_self(self):
-        resource_states = self.get_resource_states(self.resource_trades)
-        resource_states = resource_states.reshape(-1, 95)
+        resource_states = self.get_resource_states()
         development_state = self.perspectives[0].card_state[95:]
         development_states = np.tile(
             development_state, (self.catan.turn.count, 1))
         self.perspectives[0].card_states = np.concatenate(
             (resource_states, development_states), axis=1)
+
+    def get_resource_states(self):
+        states = np.zeros((self.catan.turn.count, 5, 19))
+        card_type_indexer = np.tile(np.arange(5), (self.catan.turn.count, 1))
+        card_count_indexer = np.tile(np.arange(self.catan.turn.count), (5, 1)).T
+        states[card_count_indexer, card_type_indexer, self.resource_trades] = 1
+        resource_states = states.reshape(-1, 95)
+        return resource_states
+
+    def set_game_states_perspectives_of_self(self):
+        print("Implement me!")
+        for perspective in self.perspectives[1:]:
+            pass
 
     def update_development_trades(self):
         self.precompute_harvest()
@@ -128,10 +116,10 @@ class PlayerRegular(Player):
 
     def precompute_knights(self):
         self.knight_trades = [
-            {"Robber": tile.vector, "Players": {
+            {"Robber": np.tile.vector, "Players": {
                 self.name: {f"Random {other_player.name}": 1},
                 other_player.name: {f"Random {self.name}": -1}}}
-            for tile in self.board.tiles
+            for np.tile in self.board.np.tiles
             for other_player in self.players
             if other_player != self]
         for i in self.knight_trades:

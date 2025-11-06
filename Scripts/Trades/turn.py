@@ -3,6 +3,10 @@ import numpy as np
 from output_state import plot_card_state
 
 
+zeros = np.zeros((5, 19))
+resource_state_indexer = np.tile(np.arange(5), (19, 1)).T
+initial_indexer = np.tile(np.arange(57), (5, 1))
+
 class Turn():
 
     trade_limit = 10
@@ -22,9 +26,9 @@ class Turn():
     def take_turn(self):
         while self.continue_exploring_trades():
             self.traded_this_cycle = False
-            self.trade_with_players()
-            self.trade_assets()
-            self.trade_play_development_card()
+            self.generate_possible_trades()
+            self.evaluate_trades()
+            self.execute_trades()
 
     def continue_exploring_trades(self):
         if self.trade_count > self.trade_limit:
@@ -32,7 +36,12 @@ class Turn():
         else:
             return self.traded_this_cycle
 
-    def trade_with_players(self):
+    def generate_possible_trades(self):
+        self.generate_trades_with_players()
+        self.generate_trades_assets()
+        self.generate_trades_play_development_card()
+
+    def generate_trades_with_players(self):
         for other_perspective in self.player.perspectives[1:2]:
             self.other = other_perspective.them
             self.set_non_traders()
@@ -46,8 +55,8 @@ class Turn():
 
     def trade_with_player(self):
         self.set_all_resources()
-        self.player.resource_trades = self.get_resource_trades()
-        self.other.resource_trades = self.resources_total - self.player.resource_trades
+        self.player.resource_trades = self.get_resource_trades() - self.player.resources
+        self.other.resource_trades = -self.player.resource_trades
         self.count = len(self.player.resource_trades)
         self.set_game_states_player()
 
@@ -82,50 +91,59 @@ class Turn():
         return trades
 
     def set_game_states_player(self):
-        #self.player.set_card_states_from_resource_trades_self()
-        #self.other.set_card_states_from_resource_trades_self()
-        self.set_game_states_non_trading_players()
+        #self.resource_trade_view_others(self.player, self.other)
+        self.resource_trade_view_others(self.other, self.player)
 
-    def get_resource_states(self, resources):
-        states = np.zeros((self.count, 5, 19))
-        card_type_indexer = np.tile(np.arange(5), (self.count, 1))
-        card_count_indexer = np.tile(np.arange(self.count), (5, 1)).T
-        states[card_count_indexer, card_type_indexer, resources] = 1
-        return states
+    def resource_trade_view_others(self, trader, other):
+        trader.set_card_states_from_resource_trades_self()
+        self.resource_trade_view_trader(trader, other)
+        self.resource_trade_view_non_traders(trader)
 
-    def set_game_states_non_trading_players(self):
-        for player in self.non_traders[:1]:                     ###### REMEMBER TO RESET THIS
-            self.set_game_states_non_trading_player(player)
-
-    def set_game_states_non_trading_player(self, player):
-        #self.set_game_states_non_trading_player_non_traders(player)
-        self.set_game_states_other_trader_perspective(player, self.player)
-        #self.set_game_states_other_trader_perspective(player, self.other)
-
-    def set_game_states_non_trading_player_non_traders(self, player):
-        for perspective in player.perspectives:
+    # Trader is making a trade with other. Trader does not know the card
+    # state of other. Trader knows that each proposed trade is doable
+    # by other. It is an implementation detail that trader knows all
+    # possible trades that other can make and can thus deduce their deck. In
+    # reality a player can only get answers on whether another player would
+    # make a trade, not whether they can. Because of this, each trade must
+    # be considered in isolation where the only knowledge the trader can
+    # deduce is that the trade beinng considered is possible for the other
+    # player to execute. This places a lower bound on the number of cards of
+    # each type which is the posterior information provided.
+    # P(k given they have lost m cards) =
+    #   P(K - m) / (P(m) + ... + P(19)) if k < 19 - m, 0 otherwise
+    def resource_trade_view_trader(self, trader, other):
+        perspective = trader.get_perspective(other.name)
+        resource_state = perspective.card_state[:95].reshape(5, 19)
+        expanded_state = np.concatenate((zeros, resource_state, zeros), axis=1)
+        indexer = initial_indexer - other.resource_trades.reshape(-1, 5, 1)
+        indexer = indexer[:, :, 19:38]
+        perspective.states = expanded_state[resource_state_indexer, indexer]
+        perspective.normalise_states()
+        
+    def resource_trade_view_non_traders(self, trader):
+        for perspective in trader.perspectives:
             if perspective.them in self.non_traders:
                 perspective.card_states = np.tile(
                     perspective.card_state, (self.count, 1))
 
-    # Trader is the one making the trades.
-    # Player is any other player.
-    # Other knows what trades are being made, but not the traders card state.
-    def set_game_states_other_trader_perspective(self, player, trader):
-        perspective = player.get_perspective(trader.name)
-        resource_state = perspective.card_state[:95].reshape(5, 19)
-        print(resource_state)
-        print(trader.resource_trades)
-        
-
-    def trade_assets(self):
+    def generate_trades_assets(self):
         pass
 
-    def trade_play_development_card(self):
+    def generate_trades_play_development_card(self):
         if not self.played_development_card:
-            self.do_trade_play_development_card()
+            self.do_generate_trades_play_development_card()
 
-    def do_trade_play_development_card(self):
+    def do_generate_trades_play_development_card(self):
+        pass
+
+
+
+    # Evaluating and executing trades
+
+    def evaluate_trades(self):
+        pass
+
+    def execute_trades(self):
         pass
 
 

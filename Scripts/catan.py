@@ -108,7 +108,7 @@ class Catan():
 
     def get_player_names(self, names):
         if names is None:
-            return ["1", "2", "3", "4"]
+            return [1, 2, 3, 4]
         else:
             return names
 

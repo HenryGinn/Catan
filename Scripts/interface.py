@@ -1,8 +1,23 @@
 from hgutilities.utils import json
+import numpy as np
 
 from catan import Catan
 
+splash = r"""
+      ______     _____    ____________   _____        ____    ___
+     /  ___/    /     |  /____   ____/  /     |      /    |  /  /
+    /  /       /  /|  |      /  /      /  /|  |     /  /| | /  /
+   /  /       /  /_|  |     /  /      /  /_|  |    /  / | |/  /
+  /  /       /  ___   |    /  /      /  ___   |   /  /  | |  /
+  \  \___   /  /   |  |   /  /      /  /   |  |  /  /   |   /
+   \_____/ /__/    |__|  /__/      /__/    |__| /__/    |__/
+"""
+
+np.set_printoptions(edgeitems=30, linewidth=10000)
+
 catan = Catan("TestGame")
+catan.a = None
+catan.c = None
 #catan.board.input_layout("TestLayout")
 #catan.board.generate_layout("TestLayout")
 catan.board.load_layout("TestLayout")
@@ -14,6 +29,8 @@ catan.board.load_layout("TestLayout")
 catan.load()
 #catan.board.plot_state()
 
-a = catan.players[1]
 catan.next_turn()
 catan.take_turn()
+
+a = catan.a
+c = catan.c
