@@ -15,8 +15,7 @@ from global_variables import (
     path_data,
     path_resources,
     path_layouts,
-    real_estate,
-    state_indexes)
+    real_estate)
 
 class Catan():
 
@@ -181,9 +180,9 @@ class Catan():
 
     def get_perspective_df(self, name, card_state):
         df = {
-            (card_type, index): card_state[card_slice][index]
-            for card_type, card_slice in state_indexes.items()
-            for index in range(min(132, card_slice.stop) - card_slice.start)}
+            (card_type, count): card_count_probability
+            for card_type, card_distribution in card_state.items()
+            for count, card_count_probability in enumerate(card_distribution)}
         df = DataFrame({name: df})
         df.index = df.index.set_names(("Card Type", "Count"))
         return df

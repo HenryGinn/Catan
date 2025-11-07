@@ -20,7 +20,7 @@ catan.a = None
 catan.c = None
 #catan.board.input_layout("TestLayout")
 #catan.board.generate_layout("TestLayout")
-catan.board.load_layout("TestLayout")
+#catan.board.load_layout("TestLayout")
 #catan.board.plot_layout()
 #catan.start_game(
 #    names=["H", "Y", "D", "J"],

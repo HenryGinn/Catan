@@ -3,6 +3,8 @@ import numpy as np
 from Players.player import Player
 from Players.player_perspective import PlayerPerspective
 
+from global_variables import resource_types
+
 
 class PlayerRegular(Player):
 
@@ -49,7 +51,9 @@ class PlayerRegular(Player):
     
     def load_perspectives_from_state(self, state):
         for perspective in self.perspectives:
-            perspective.card_state = np.array(state[perspective.name])
+            perspective.card_state = {
+                card_type: np.array(distribution)
+                for card_type, distribution in state[perspective.name].items()}
 
     def get_perspective_state(self, player_name):
         perspective = [
@@ -62,6 +66,46 @@ class PlayerRegular(Player):
             perspective for perspective in self.perspectives
             if perspective.view == perspective_name][0]
         return perspective
+
+
+    def set_resources(self):
+        self.set_cards()
+        self.resources = {
+            card_type: self.cards[card_type]
+            for card_type in resource_types}
+
+    def set_cards(self):
+        card_state = self.perspectives[0].card_state
+        self.ensure_valid_card_state(card_state)
+        self.cards = {
+            card_type: np.where(distribution == 1)[0]
+            for card_type, distribution in card_state.items()}
+
+    # Both these tests ensure that a player has no uncertainty in their own
+    # deck. Each card should have a 1 in its distribution with all other
+    # entries equal to 0. The only time a player does not have certainty in
+    # their own deck is when they are considering playing a development card
+    # or moving the robber and stealing from another player.
+    def ensure_valid_card_state(self, card_state):
+        all_card_types_have_one = self.get_all_card_types_have_one(card_state)
+        total_is_eleven = self.get_total_is_eleven(card_state)
+        valid_card_state = (all_card_types_have_one and total_is_eleven)
+        if not valid_card_state:
+            raise ValueError(
+                f"Player {self.name} has uncertainty in their own deck:\n\n{card_state}")
+
+    def get_all_card_types_have_one(self, card_state):
+        all_card_types_have_one = np.all([
+            np.any(distribution == 1)
+            for distribution in card_state.values()])
+        return all_card_types_have_one
+
+    def get_total_is_eleven(self, card_state):
+        distribution_totals = [
+            np.sum(distribution)
+            for distribution in card_state.values()]
+        total_is_eleven = (sum(distribution_totals) == 11)
+        return total_is_eleven
 
 
     def set_card_states_from_resource_trades_self(self):

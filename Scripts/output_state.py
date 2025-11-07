@@ -2,7 +2,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 from Players.player_perspective import PlayerPerspective
-from global_variables import state_indexes
 
 
 x_values_all = {
@@ -98,10 +97,9 @@ def remove_ticks(axes):
             ax.tick_params("y", labelleft=False)
 
 def plot_data(card_state, fig, axes):
-    for ax, (card_type, slicer) in zip(axes, state_indexes.items()):
+    for ax, (card_type, card_distribution) in zip(axes, card_state.items()):
         x_values = x_values_all[card_type]
-        distribution = card_state[slicer]
-        ax.bar(x_values, distribution, width=1, align="center")
+        ax.bar(x_values, card_distribution, width=1, align="center")
         ax.set_xticks(x_ticks_all[card_type])
         ax.set_title(card_type, fontsize=14)
 

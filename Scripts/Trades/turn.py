@@ -1,11 +1,9 @@
 import numpy as np
+from hgutilities.utils import json
 
 from output_state import plot_card_state
+from global_variables import resource_types
 
-
-zeros = np.zeros((5, 19))
-resource_state_indexer = np.tile(np.arange(5), (19, 1)).T
-initial_indexer = np.tile(np.arange(57), (5, 1))
 
 class Turn():
 
@@ -55,49 +53,51 @@ class Turn():
 
     def trade_with_player(self):
         self.set_all_resources()
-        self.player.resource_trades = self.get_resource_trades() - self.player.resources
-        self.other.resource_trades = -self.player.resource_trades
-        self.count = len(self.player.resource_trades)
+        self.set_card_trades()
+        self.count = len(self.player.card_trades)
         self.set_game_states_player()
 
     def set_all_resources(self):
-        self.set_resources(self.player)
-        self.set_resources(self.other)
-        self.resources_total = self.player.resources + self.other.resources
+        self.player.set_resources()
+        self.other.set_resources()
+        self.set_resources_total()
 
-    def set_resources(self, player):
-        resources = player.perspectives[0].card_state[:95].reshape(5, 19)
-        self.ensure_valid_resources(resources, player.name)
-        positions, resource_type_indexes = np.where(resources == 1)
-        player.resources = positions[resource_type_indexes]
+    def set_resources_total(self):
+        self.resources_total = {
+            resource_type: (
+                self.player.resources[resource_type] +
+                self.other.resources[resource_type])
+            for resource_type in resource_types}
 
-    # Both these tests ensure that a player has no uncertainty in their own
-    # deck. Each card should have a 1 in its distribution with all other
-    # entries equal to 0. The only time a player does not have certainty in
-    # their own deck is when they are considering playing a development card
-    # or moving the robber and stealing from another player.
-    def ensure_valid_resources(self, resources, name):
-        all_rows_have_one = np.all(np.any(resources == 1, axis=1), axis=0)
-        total_is_five = np.sum(resources) == 5
-        valid_resources = (all_rows_have_one and total_is_five)
-        if not valid_resources:
-            raise ValueError(
-                f"Player {name} has uncertainty in their own deck:\n\n{resources}")
+    def set_card_trades(self):
+        card_trades = self.get_card_trades()
+        self.set_card_trades_player(card_trades)
+        self.set_card_trades_other()
 
-    def get_resource_trades(self):
-        ranges = [np.arange(total + 1) for total in self.resources_total]
+    def get_card_trades(self):
+        ranges = [np.arange(total + 1) for total in self.resources_total.values()]
         trades = [np.ravel(grid) for grid in np.meshgrid(*ranges)]
-        trades = np.stack(trades, axis=1)
+        trades = dict(zip(resource_types, trades))
         return trades
 
-    def set_game_states_player(self):
-        #self.resource_trade_view_others(self.player, self.other)
-        self.resource_trade_view_others(self.other, self.player)
+    def set_card_trades_player(self, card_trades):
+        self.player.card_trades = {
+            resource_type: (card_trades[resource_type] - self.player.resources[resource_type])
+            for resource_type in resource_types}
 
-    def resource_trade_view_others(self, trader, other):
-        trader.set_card_states_from_resource_trades_self()
-        self.resource_trade_view_trader(trader, other)
-        self.resource_trade_view_non_traders(trader)
+    def set_card_trades_other(self):
+        self.other.card_trades = {
+            resource_type: -self.player.card_trades[resource_type]
+            for resource_type in resource_types}
+
+    def set_game_states_player(self):
+        self.card_trade_view_others(self.player, self.other)
+        #self.card_trade_view_others(self.other, self.player)
+    
+    def card_trade_view_others(self, trader, other):
+        #trader.set_card_states_from_card_trades_self()
+        self.card_trade_view_trader(trader, other)
+        #self.card_trade_view_non_traders(trader)
 
     # Trader is making a trade with other. Trader does not know the card
     # state of other. Trader knows that each proposed trade is doable
@@ -106,21 +106,17 @@ class Turn():
     # reality a player can only get answers on whether another player would
     # make a trade, not whether they can. Because of this, each trade must
     # be considered in isolation where the only knowledge the trader can
-    # deduce is that the trade beinng considered is possible for the other
-    # player to execute. This places a lower bound on the number of cards of
+    # deduce is that the trade being considered is possible for the other
+    # player to execute. This places bounds on the number of cards of
     # each type which is the posterior information provided.
     # P(k given they have lost m cards) =
     #   P(K - m) / (P(m) + ... + P(19)) if k < 19 - m, 0 otherwise
-    def resource_trade_view_trader(self, trader, other):
+    def card_trade_view_trader(self, trader, other):
         perspective = trader.get_perspective(other.name)
-        resource_state = perspective.card_state[:95].reshape(5, 19)
-        expanded_state = np.concatenate((zeros, resource_state, zeros), axis=1)
-        indexer = initial_indexer - other.resource_trades.reshape(-1, 5, 1)
-        indexer = indexer[:, :, 19:38]
-        perspective.states = expanded_state[resource_state_indexer, indexer]
-        perspective.normalise_states()
-        
-    def resource_trade_view_non_traders(self, trader):
+        for resource_type in resource_types:
+            perspective.update_distribution(resource_type)
+
+    def card_trade_view_non_traders(self, trader):
         for perspective in trader.perspectives:
             if perspective.them in self.non_traders:
                 perspective.card_states = np.tile(
