@@ -1,9 +1,12 @@
 import warnings
 
 import numpy as np
+from hgutilities.utils import json
 
 from Players.player import Player
-from global_variables import initial_state
+from global_variables import (
+    initial_state,
+    card_types)
 
 
 update_tools = {
@@ -46,6 +49,35 @@ class PlayerPerspective(Player):
         self.them = perspective
         self.card_state = initial_state.copy()
         self.states = {}
+        
+    # Base is making a trade with Them. Base does not know the card state of
+    # Them. Base knows that each proposed trade is doable by Them. It is a
+    # consequence of implementation that Base knows all possible trades that
+    # Them can make and can thus deduce their deck. In reality a player can
+    # only get answers on whether another player would make a trade, not
+    # whether they can. Because of this, each trade must be considered in
+    # isolation where the only knowledge that Base can deduce is that the
+    # trade being considered is possible for Them to execute. This places
+    # bounds on the number of cards of each type which is the posterior
+    # information provided.
+    # P(k given they have lost m cards) =
+    #   P(K - m) / (P(m) + ... + P(19)) if k < 19 - m, 0 otherwise
+    #
+    # The if statement here is because if no cards of a given card type are
+    # exchanged in any of the trades then it is cheaper to simply stack the
+    # current distribution. This is especially the case for development
+    # cards which will always pass this test for resource card trades.
+    def set_states(self):
+        for card_type in card_types:
+            if np.all(self.base.card_trades[card_type] == 0):
+                self.update_distribution_tile(card_type)
+            else:
+                self.update_distribution(card_type)
+
+    def update_distribution_tile(self, card_type):
+        self.states[card_type] = np.tile(
+            self.card_state[card_type],
+            (self.catan.turn.count, 1))
 
     def update_distribution(self, card_type):
         zeros, _, middle = update_tools[card_type]

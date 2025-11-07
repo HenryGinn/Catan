@@ -26,5 +26,6 @@ initial_state = {
     "Unplayed Knight": array([1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
     "Played Knight": array([1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0])}
 
+card_types = list(initial_state.keys())
 resource_types = [
     "Sheep", "Ore", "Mud", "Wood", "Wheat"]

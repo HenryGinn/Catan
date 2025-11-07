@@ -2,8 +2,12 @@ import numpy as np
 from hgutilities.utils import json
 
 from output_state import plot_card_state
-from global_variables import resource_types
+from global_variables import (
+    card_types,
+    resource_types)
 
+
+zero = np.array([0])
 
 class Turn():
 
@@ -52,22 +56,22 @@ class Turn():
             and (player is not self.other)]
 
     def trade_with_player(self):
-        self.set_all_resources()
+        self.set_all_cards()
         self.set_card_trades()
-        self.count = len(self.player.card_trades)
+        self.count = len(self.player.card_trades["Sheep"])
         self.set_game_states_player()
 
-    def set_all_resources(self):
-        self.player.set_resources()
-        self.other.set_resources()
-        self.set_resources_total()
+    def set_all_cards(self):
+        self.player.set_cards()
+        self.other.set_cards()
+        self.set_cards_total()
 
-    def set_resources_total(self):
-        self.resources_total = {
-            resource_type: (
-                self.player.resources[resource_type] +
-                self.other.resources[resource_type])
-            for resource_type in resource_types}
+    def set_cards_total(self):
+        self.cards_total = {
+            card_type: (
+                self.player.cards[card_type] +
+                self.other.cards[card_type])
+            for card_type in card_types}
 
     def set_card_trades(self):
         card_trades = self.get_card_trades()
@@ -75,20 +79,22 @@ class Turn():
         self.set_card_trades_other()
 
     def get_card_trades(self):
-        ranges = [np.arange(total + 1) for total in self.resources_total.values()]
+        ranges = [
+            np.arange(total + 1) if card_type in resource_types else zero
+            for card_type, total in self.cards_total.items()]
         trades = [np.ravel(grid) for grid in np.meshgrid(*ranges)]
-        trades = dict(zip(resource_types, trades))
+        trades = dict(zip(card_types, trades))
         return trades
 
     def set_card_trades_player(self, card_trades):
         self.player.card_trades = {
-            resource_type: (card_trades[resource_type] - self.player.resources[resource_type])
-            for resource_type in resource_types}
+            card_type: (card_trades[card_type] - self.player.cards[card_type])
+            for card_type in card_types}
 
     def set_card_trades_other(self):
         self.other.card_trades = {
-            resource_type: -self.player.card_trades[resource_type]
-            for resource_type in resource_types}
+            card_type: -self.player.card_trades[card_type]
+            for card_type in card_types}
 
     def set_game_states_player(self):
         self.card_trade_view_others(self.player, self.other)
@@ -99,23 +105,10 @@ class Turn():
         self.card_trade_view_trader(trader, other)
         #self.card_trade_view_non_traders(trader)
 
-    # Trader is making a trade with other. Trader does not know the card
-    # state of other. Trader knows that each proposed trade is doable
-    # by other. It is an implementation detail that trader knows all
-    # possible trades that other can make and can thus deduce their deck. In
-    # reality a player can only get answers on whether another player would
-    # make a trade, not whether they can. Because of this, each trade must
-    # be considered in isolation where the only knowledge the trader can
-    # deduce is that the trade being considered is possible for the other
-    # player to execute. This places bounds on the number of cards of
-    # each type which is the posterior information provided.
-    # P(k given they have lost m cards) =
-    #   P(K - m) / (P(m) + ... + P(19)) if k < 19 - m, 0 otherwise
     def card_trade_view_trader(self, trader, other):
         perspective = trader.get_perspective(other.name)
-        for resource_type in resource_types:
-            perspective.update_distribution(resource_type)
-
+        perspective.set_states()
+        
     def card_trade_view_non_traders(self, trader):
         for perspective in trader.perspectives:
             if perspective.them in self.non_traders:

@@ -68,12 +68,6 @@ class PlayerRegular(Player):
         return perspective
 
 
-    def set_resources(self):
-        self.set_cards()
-        self.resources = {
-            card_type: self.cards[card_type]
-            for card_type in resource_types}
-
     def set_cards(self):
         card_state = self.perspectives[0].card_state
         self.ensure_valid_card_state(card_state)
@@ -88,8 +82,8 @@ class PlayerRegular(Player):
     # or moving the robber and stealing from another player.
     def ensure_valid_card_state(self, card_state):
         all_card_types_have_one = self.get_all_card_types_have_one(card_state)
-        total_is_eleven = self.get_total_is_eleven(card_state)
-        valid_card_state = (all_card_types_have_one and total_is_eleven)
+        total_is_correct = self.get_total_is_correct(card_state)
+        valid_card_state = (all_card_types_have_one and total_is_correct)
         if not valid_card_state:
             raise ValueError(
                 f"Player {self.name} has uncertainty in their own deck:\n\n{card_state}")
@@ -100,15 +94,15 @@ class PlayerRegular(Player):
             for distribution in card_state.values()])
         return all_card_types_have_one
 
-    def get_total_is_eleven(self, card_state):
+    def get_total_is_correct(self, card_state):
         distribution_totals = [
             np.sum(distribution)
             for distribution in card_state.values()]
-        total_is_eleven = (sum(distribution_totals) == 11)
-        return total_is_eleven
+        total_is_correct = (sum(distribution_totals) == 11)
+        return total_is_correct
 
 
-    def set_card_states_from_resource_trades_self(self):
+    def set_card_states_from_card_trades_self(self):
         resource_states = self.get_resource_states()
         development_state = self.perspectives[0].card_state[95:]
         development_states = np.tile(
