@@ -98,12 +98,12 @@ class Turn():
 
     def set_game_states_player(self):
         self.card_trade_view_others(self.player, self.other)
-        #self.card_trade_view_others(self.other, self.player)
+        self.card_trade_view_others(self.other, self.player)
     
     def card_trade_view_others(self, trader, other):
-        #trader.set_card_states_from_card_trades_self()
+        trader.set_self_card_states()
         self.card_trade_view_trader(trader, other)
-        #self.card_trade_view_non_traders(trader)
+        self.card_trade_view_non_traders(trader)
 
     def card_trade_view_trader(self, trader, other):
         perspective = trader.get_perspective(other.name)
@@ -112,8 +112,7 @@ class Turn():
     def card_trade_view_non_traders(self, trader):
         for perspective in trader.perspectives:
             if perspective.them in self.non_traders:
-                perspective.card_states = np.tile(
-                    perspective.card_state, (self.count, 1))
+                perspective.set_view_non_trader()
 
     def generate_trades_assets(self):
         pass

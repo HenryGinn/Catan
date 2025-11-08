@@ -6,37 +6,11 @@ from hgutilities.utils import json
 from Players.player import Player
 from global_variables import (
     initial_state,
-    card_types)
-
-
-update_tools = {
-    "Sheep":            (np.zeros(19 * 3), np.arange(19), np.arange(19 * 1, 19 * 2)),
-    "Ore":              (np.zeros(19 * 3), np.arange(19), np.arange(19 * 1, 19 * 2)),
-    "Mud":              (np.zeros(19 * 3), np.arange(19), np.arange(19 * 1, 19 * 2)),
-    "Wood":             (np.zeros(19 * 3), np.arange(19), np.arange(19 * 1, 19 * 2)),
-    "Wheat":            (np.zeros(19 * 3), np.arange(19), np.arange(19 * 1, 19 * 2)),
-    "Road Builder":     (np.zeros( 3 * 3), np.arange( 3), np.arange( 3 * 1,  3 * 2)),
-    "Year of Plenty":   (np.zeros( 3 * 3), np.arange( 3), np.arange( 3 * 1,  3 * 2)),
-    "Monopoly":         (np.zeros( 3 * 3), np.arange( 3), np.arange( 3 * 1,  3 * 2)),
-    "Victory":          (np.zeros( 6 * 3), np.arange( 6), np.arange( 6 * 1,  6 * 2)),
-    "Unplayed Knight":  (np.zeros(11 * 3), np.arange(11), np.arange(11 * 1, 11 * 2)),
-    "Played Knight":    (np.zeros(11 * 3), np.arange(11), np.arange(11 * 1, 11 * 2))}
-
-
-# Assumed distributions when states are not normalisable. These should
-# not be used and are only included so that the game can continue.
-guessed_distributions = {
-    "Sheep":            np.array([0.303, 0.251, 0.201, 0.101, 0.030, 0.024, 0.019, 0.015, 0.012, 0.010, 0.008, 0.006, 0.005, 0.004, 0.003, 0.003, 0.002, 0.002, 0.001]),
-    "Ore":              np.array([0.303, 0.251, 0.201, 0.101, 0.030, 0.024, 0.019, 0.015, 0.012, 0.010, 0.008, 0.006, 0.005, 0.004, 0.003, 0.003, 0.002, 0.002, 0.001]),
-    "Mud":              np.array([0.303, 0.251, 0.201, 0.101, 0.030, 0.024, 0.019, 0.015, 0.012, 0.010, 0.008, 0.006, 0.005, 0.004, 0.003, 0.003, 0.002, 0.002, 0.001]),
-    "Wood":             np.array([0.303, 0.251, 0.201, 0.101, 0.030, 0.024, 0.019, 0.015, 0.012, 0.010, 0.008, 0.006, 0.005, 0.004, 0.003, 0.003, 0.002, 0.002, 0.001]),
-    "Wheat":            np.array([0.303, 0.251, 0.201, 0.101, 0.030, 0.024, 0.019, 0.015, 0.012, 0.010, 0.008, 0.006, 0.005, 0.004, 0.003, 0.003, 0.002, 0.002, 0.001]),
-    "Road Builder":     np.array([0.989, 0.010, 0.001]),
-    "Year of Plenty":   np.array([0.989, 0.010, 0.001]),
-    "Monopoly":         np.array([0.989, 0.010, 0.001]),
-    "Victory":          np.array([0.568, 0.227, 0.114, 0.057, 0.023, 0.011]),
-    "Unplayed Knight":  np.array([0.530, 0.396, 0.066, 0.001, 0.001, 0.001, 0.001, 0.001, 0.001, 0.001, 0.001]),
-    "Played Knight":    np.array([0.530, 0.396, 0.066, 0.001, 0.001, 0.001, 0.001, 0.001, 0.001, 0.001, 0.001])}
+    card_types,
+    sizes,
+    zeros_lookup,
+    middle_lookup,
+    guessed_distributions)
 
 
 class PlayerPerspective(Player):
@@ -49,7 +23,18 @@ class PlayerPerspective(Player):
         self.them = perspective
         self.card_state = initial_state.copy()
         self.states = {}
-        
+
+    def set_self_states_no_change(self, card_type):
+        self.states[card_type] = np.tile(
+            self.card_state[card_type],
+            (self.catan.turn.count, 1))
+    
+    def set_self_states_change(self, card_type):
+        indexes = self.base.cards[card_type] + self.base.card_trades[card_type]
+        state = np.zeros((self.catan.turn.count, sizes[card_type]))
+        state[np.arange(self.catan.turn.count), indexes] = 1
+        self.states[card_type] = state
+    
     # Base is making a trade with Them. Base does not know the card state of
     # Them. Base knows that each proposed trade is doable by Them. It is a
     # consequence of implementation that Base knows all possible trades that
@@ -70,17 +55,18 @@ class PlayerPerspective(Player):
     def set_states(self):
         for card_type in card_types:
             if np.all(self.base.card_trades[card_type] == 0):
-                self.update_distribution_tile(card_type)
+                self.update_distribution_no_change(card_type)
             else:
-                self.update_distribution(card_type)
+                self.update_distribution_change(card_type)
 
-    def update_distribution_tile(self, card_type):
+    def update_distribution_no_change(self, card_type):
         self.states[card_type] = np.tile(
             self.card_state[card_type],
             (self.catan.turn.count, 1))
 
-    def update_distribution(self, card_type):
-        zeros, _, middle = update_tools[card_type]
+    def update_distribution_change(self, card_type):
+        zeros = zeros_lookup[card_type]
+        middle = middle_lookup[card_type]
         expanded_state = zeros.copy()
         expanded_state[middle] = self.card_state[card_type]
         indexer = middle - self.them.card_trades[card_type].reshape(-1, 1)
@@ -123,6 +109,13 @@ class PlayerPerspective(Player):
             f"{self.base.name} believes the requested change in state to {card_type} "
             f"to be incompatible with what cards {self.them.name} could hold.")
 
+    def set_view_non_trader(self):
+        self.states = {
+            card_type: np.tile(
+                self.card_state[card_type],
+                (self.catan.turn.count, 1))
+            for card_type in card_types}
+                        
     def __str__(self):
         df = self.catan.get_perspective_df(self.name, self.card_state)
         string = df.to_string()

@@ -3,7 +3,9 @@ import numpy as np
 from Players.player import Player
 from Players.player_perspective import PlayerPerspective
 
-from global_variables import resource_types
+from global_variables import (
+    card_types,
+    arange_lookup)
 
 
 class PlayerRegular(Player):
@@ -102,21 +104,12 @@ class PlayerRegular(Player):
         return total_is_correct
 
 
-    def set_card_states_from_card_trades_self(self):
-        resource_states = self.get_resource_states()
-        development_state = self.perspectives[0].card_state[95:]
-        development_states = np.tile(
-            development_state, (self.catan.turn.count, 1))
-        self.perspectives[0].card_states = np.concatenate(
-            (resource_states, development_states), axis=1)
-
-    def get_resource_states(self):
-        states = np.zeros((self.catan.turn.count, 5, 19))
-        card_type_indexer = np.tile(np.arange(5), (self.catan.turn.count, 1))
-        card_count_indexer = np.tile(np.arange(self.catan.turn.count), (5, 1)).T
-        states[card_count_indexer, card_type_indexer, self.resource_trades] = 1
-        resource_states = states.reshape(-1, 95)
-        return resource_states
+    def set_self_card_states(self):
+        for card_type in card_types:
+            if np.all(self.card_trades[card_type] == 0):
+                self.perspectives[0].set_self_states_no_change(card_type)
+            else:
+                self.perspectives[0].set_self_states_change(card_type)
 
     def set_game_states_perspectives_of_self(self):
         print("Implement me!")
