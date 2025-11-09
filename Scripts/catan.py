@@ -15,7 +15,7 @@ splash = r"""
 
 np.set_printoptions(edgeitems=30, linewidth=10000)
 
-catan = Game("TestGame", reset_log=True)
+catan = Game("TestGame", reset_log=True, seed=43)
 catan.a = None
 catan.c = None
 #catan.board.input_layout("TestLayout")
@@ -30,7 +30,7 @@ catan.load()
 #catan.board.plot_state()
 
 catan.next_turn()
-catan.take_turn()
+#catan.take_turn()
 
 a = catan.a
 c = catan.c

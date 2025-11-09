@@ -27,11 +27,12 @@ formatter = logging.Formatter(
 
 class Game():
 
-    def __init__(self, name=None, reset_log=True):
+    def __init__(self, name=None, reset_log=True, seed=None):
         self.name = name
         self.set_paths()
         self.create_folders()
         self.init_log(reset_log)
+        self.set_seed(seed)
         self.create_objects()
     
     def set_paths(self):
@@ -73,6 +74,16 @@ class Game():
         file_handler.setFormatter(formatter)
         file_handler.setLevel(logging.DEBUG)
         self.log.addHandler(file_handler)
+
+    def set_seed(self, seed):
+        if seed is None:
+            self.seed = np.random.randint(1, 10**6)
+            self.log.debug("Numpy randomisation seed not set, generating random seed")
+        else:
+            self.seed = seed
+            self.log.debug("Numpy randomisation seed prescribed")
+        np.random.seed(self.seed)
+        self.log.debug(f"Numpy randomisation seed: {np.random.seed}")
 
         
     # Saving and loading
@@ -131,6 +142,7 @@ class Game():
     # Players and state manipulations
 
     def create_objects(self):
+        self.log.info("Creating board")
         self.board = Board(self)
 
     def start_game(self, names=None, colors=None):
@@ -141,8 +153,9 @@ class Game():
     def initialise_players(self, names, colors):
         names = self.get_player_names(names)
         colors = self.get_player_colors(colors)
-        self.players = [PlayerRegular(self, name, color)
-                        for name, color in zip(names, colors)]
+        self.players = [
+            PlayerRegular(self, name, color)
+            for name, color in zip(names, colors)]
         self.initialise_perspectives()
 
     def initialise_perspectives(self):
@@ -165,9 +178,11 @@ class Game():
         colors = self.get_player_colors(colors)
         for player, color in zip(self.players, colors):
             player.color = color
+            self.log.debug(f"Setting color for {player.name} to {color}")
 
     def set_initial_states(self):
         self.initialise_development_deck()
+        self.log.info("Initialising all player states")
         for player in self.players:
             player.set_initial_states()
 
@@ -177,6 +192,7 @@ class Game():
         with open(development_path, "r") as file:
             self.development_deck = json.load(file)
         shuffle(self.development_deck)
+        self.log.debug(f"Initialising development deck:\n{self.development_deck}")
 
     def get_player(self, player_name):
         player = [

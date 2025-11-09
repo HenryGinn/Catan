@@ -25,6 +25,8 @@ class Board():
 
     def __init__(self, game):
         self.game = game
+        self.log = game.log
+        np.random.seed(game.seed)
         self.load_tile_data()
         self.initialise_graph_components()
 
@@ -103,6 +105,7 @@ class Board():
         tile_types = [tile.type for tile in self.tiles]
         with open(path, "w+") as file:
             json.dump(tile_types, file, indent=2)
+            self.log.info(f"Saving layout to {path}")
 
     def get_path_tile_types(self, name=None):
         self.set_layout_name(name)
@@ -123,6 +126,7 @@ class Board():
     # Loading
 
     def load_layout(self, name):
+        self.log.info(f"Loading layout {name}")
         self.layout_name = name
         tile_types = self.load_tile_types()
         self.set_tile_types(tile_types)
@@ -141,6 +145,7 @@ class Board():
     # Produce layout
 
     def generate_layout(self, name=None):
+        self.log.info("Generating layout")
         tile_types = self.get_generated_tile_types()
         self.set_tile_types(tile_types)
         self.save_layout(name)
@@ -161,8 +166,9 @@ class Board():
 
     def get_input_tile_types(self):
         print(tile_type_prompt)
-        tile_types = [self.get_tile_type_from_input()
-                      for index in range(19)]
+        tile_types = [
+            self.get_tile_type_from_input()
+            for index in range(19)]
         return tile_types
 
     def get_tile_type_from_input(self):

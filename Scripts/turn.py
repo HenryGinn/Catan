@@ -16,6 +16,7 @@ class Turn():
     def __init__(self, game):
         self.game = game
         self.log = self.game.log
+        np.random.seed(self.game.seed)
         self.set_player()
         self.trade_count = 0
         self.played_development_card = False
