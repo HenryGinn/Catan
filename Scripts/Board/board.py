@@ -23,8 +23,8 @@ class Board():
     directions = np.array([[1, 0], [0, 1], [-1, 1],
                            [-1, 0], [0, -1], [1, -1]])
 
-    def __init__(self, catan):
-        self.catan = catan
+    def __init__(self, game):
+        self.game = game
         self.load_tile_data()
         self.initialise_graph_components()
 
@@ -236,13 +236,13 @@ class Board():
         self.show()
 
     def plot_settlements(self):
-        for player in self.catan.players:
+        for player in self.game.players:
             self.plot_vertices(
                 player.geometry_state["Settlements"],
                 player.color, 0.15)
 
     def plot_cities(self):
-        for player in self.catan.players:
+        for player in self.game.players:
             self.plot_vertices(
                 player.geometry_state["Cities"],
                 player.color, 0.25)
@@ -257,7 +257,7 @@ class Board():
         self.ax.add_patch(circle)
 
     def plot_roads(self):
-        for player in self.catan.players:
+        for player in self.game.players:
             self.plot_edges(
                 player.geometry_state["Roads"],
                 player.color)
@@ -310,7 +310,7 @@ class Board():
         return edge_vectors
 
     def get_state(self, vectors, real_estate):
-        match self.catan.real_estate[real_estate]:
+        match self.game.real_estate[real_estate]:
             case "Vertex": return self.get_vertex_state(vectors)
             case "Edge"  : return self.get_edge_state(vectors)
 

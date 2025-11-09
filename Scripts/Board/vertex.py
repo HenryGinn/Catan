@@ -7,7 +7,7 @@ vertex: this is the position with respect to a basis adapted to
 position: this is the position in Cartesian coordinates. This
     is used for graphical representations of the board.
 
-polar: this is not used explicitely, but will be evident in
+polar: this is not used explicitly, but will be evident in
     the structure of neural network.
 """
 

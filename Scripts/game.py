@@ -1,0 +1,238 @@
+import logging
+import os
+from random import shuffle
+
+import pandas as pd
+import numpy as np
+from hgutilities import defaults
+from hgutilities.utils import get_dict_string, make_folder, json
+
+from Board.board import Board
+from Players.player_regular import PlayerRegular
+from turn import Turn
+from utils import get_name
+from output_state import plot_card_state
+from global_variables import (
+    path_data,
+    path_resources,
+    path_layouts,
+    real_estate)
+
+
+formatter = logging.Formatter(
+   "{asctime}: {levelname} - {message}",
+    style="{",
+    datefmt="%Y-%m-%d %H:%M")
+
+
+class Game():
+
+    def __init__(self, name=None, reset_log=True):
+        self.name = name
+        self.set_paths()
+        self.create_folders()
+        self.init_log(reset_log)
+        self.create_objects()
+    
+    def set_paths(self):
+        self.name = get_name(self.name)
+        self.path = os.path.join(
+            path_data, "Games", f"{self.name}")
+        self.path_logger = os.path.join(
+            self.path, f"{self.name}.log")
+        self.path_state = os.path.join(
+            self.path, f"{self.name}State.json")
+
+    def create_folders(self):
+        make_folder(path_layouts)
+        make_folder(self.path)
+
+    def init_log(self, reset_log):
+        file_handler_mode = self.get_file_handler_mode(reset_log)
+        self.log = logging.getLogger(self.name)
+        self.log.setLevel(logging.DEBUG)
+        self.add_console_handler()
+        self.add_file_handler(file_handler_mode)
+        self.log.debug(f"Initialised {self.name}")
+
+    def get_file_handler_mode(self, reset_log):
+        if reset_log is True:
+            return "w+"
+        else:
+            return "a"
+
+    def add_console_handler(self):
+        console_handler = logging.StreamHandler()
+        console_handler.setFormatter(formatter)
+        console_handler.setLevel(logging.INFO)
+        self.log.addHandler(console_handler)
+
+    def add_file_handler(self, file_handler_mode):
+        file_handler = logging.FileHandler(
+            self.path_logger, mode=file_handler_mode, encoding="utf-8")
+        file_handler.setFormatter(formatter)
+        file_handler.setLevel(logging.DEBUG)
+        self.log.addHandler(file_handler)
+
+        
+    # Saving and loading
+
+    def save(self):
+        game_state = self.get_game_state()
+        with open(self.path_state, "w+") as file:
+            json.dump(game_state, file, indent=2)
+        self.log.info(f"Saved game at {self.path_state}")
+        self.log.debug(json.dumps(self.path_state))
+
+    def get_game_state(self):
+        meta_data = self.get_meta_data()
+        players_state = {player.name: player.get_state()
+                         for player in self.players}
+        game_state = {"MetaData": meta_data,
+                      "Players": players_state}
+        return game_state
+
+    def get_meta_data(self):
+        meta_data = {
+            "Layout": self.board.layout_name,
+            "Colors": {player.name: player.color
+                       for player in self.players},
+            "Development Card Deck": self.development_deck,
+            "Moves": self.moves}
+        return meta_data
+
+    def load(self):
+        game_state = self.load_game_state()
+        self.load_meta_data(game_state)
+        self.load_player_states_from_game_state(game_state)
+        self.log.info(f"Loaded state from {self.path_state}")
+        self.log.debug(json.dumps(game_state))
+
+    def load_meta_data(self, game_state):
+        self.board.load_layout(game_state["MetaData"]["Layout"])
+        names, colors = list(zip(*game_state["MetaData"]["Colors"].items()))
+        self.initialise_players(names=names, colors=colors)
+        self.development_deck = (
+            game_state["MetaData"]["Development Card Deck"])
+        self.moves = game_state["MetaData"]["Moves"]
+
+    def load_game_state(self):
+        with open(self.path_state, "r") as file:
+            game_state = json.load(file)
+        return game_state
+
+    def load_player_states_from_game_state(self, game_state):
+        iterable = zip(self.players, game_state["Players"].items())
+        for player, (name, player_state) in iterable:
+            player.name = name
+            player.update_state(player_state)
+
+
+    # Players and state manipulations
+
+    def create_objects(self):
+        self.board = Board(self)
+
+    def start_game(self, names=None, colors=None):
+        self.initialise_players(names, colors)
+        self.set_initial_states()
+        self.moves = -1
+
+    def initialise_players(self, names, colors):
+        names = self.get_player_names(names)
+        colors = self.get_player_colors(colors)
+        self.players = [PlayerRegular(self, name, color)
+                        for name, color in zip(names, colors)]
+        self.initialise_perspectives()
+
+    def initialise_perspectives(self):
+        for player in self.players:
+            player.initialise_perspectives()
+
+    def get_player_names(self, names):
+        if names is None:
+            return [1, 2, 3, 4]
+        else:
+            return names
+
+    def get_player_colors(self, colors=None):
+        if colors is None:
+            return ["#E50000","#18E100", "#3FFF00", "#FF08FE"]
+        else:
+            return colors
+
+    def set_player_colors(self, colors=None):
+        colors = self.get_player_colors(colors)
+        for player, color in zip(self.players, colors):
+            player.color = color
+
+    def set_initial_states(self):
+        self.initialise_development_deck()
+        for player in self.players:
+            player.set_initial_states()
+
+    def initialise_development_deck(self):
+        development_path = os.path.join(
+            path_resources, "Development Deck.json")
+        with open(development_path, "r") as file:
+            self.development_deck = json.load(file)
+        shuffle(self.development_deck)
+
+    def get_player(self, player_name):
+        player = [
+            player for player in self.players
+            if player.name == player_name][0]
+        return player
+
+    def next_turn(self):
+        self.turn = Turn(self)
+        self.turn.execute_dice_roll()
+
+    def take_turn(self):
+        self.turn.take_turn()
+
+    def trade_players(self, trade):
+        self.turn.trade_players_input(trade)
+    
+    def trade_assets(self, trade):
+        self.turn.trade_assets_input(trade)
+
+    def play_development(self, trade):
+        self.turn.play_development_input(trade)
+
+
+    # Output state
+
+    def get_state_string(self, state):
+        geometry_string = self.get_geometry_string(state)
+        card_df = self.get_card_df(state)
+        string = (f"{geometry_string}\n\n"
+                  f"{card_df.to_string()}")
+        return string
+
+    def get_geometry_string(self, state):
+        geometry_string = get_dict_string({
+            key: self.board.get_string(state[key], structure)
+            for key, structure in real_estate.items()})
+        return geometry_string
+
+    def get_card_df(self, state):
+        perspective_dfs = [
+            self.get_perspective_df(name, state[name])
+            for name in state if name not in real_estate]
+        card_df = pd.concat(perspective_dfs, axis=1)
+        return card_df
+
+    def get_perspective_df(self, name, card_state):
+        df = {
+            (card_type, count): card_count_probability
+            for card_type, card_distribution in card_state.items()
+            for count, card_count_probability in enumerate(card_distribution)}
+        df = pd.DataFrame({name: df})
+        df.index = df.index.set_names(("Card Type", "Count"))
+        return df
+
+    def plot_card_state(self, player_name, perspective_name):
+        player = self.get_player(player_name)
+        perspective = player.get_perspective(perspective_name)
+        plot_card_state(perspective)

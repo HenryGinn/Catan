@@ -10,15 +10,15 @@ from global_variables import (
 
 class PlayerRegular(Player):
 
-    def __init__(self, catan, name, color):
-        super().__init__(catan, name)
+    def __init__(self, game, name, color):
+        super().__init__(game, name)
         self.color = color
 
     def initialise_perspectives(self):
-        self_index = self.catan.players.index(self)
+        self_index = self.game.players.index(self)
         indexes = [(self_index + i) % 4 for i in range(4)]
         self.perspectives = [
-            PlayerPerspective(self.catan.players[index], self)
+            PlayerPerspective(self.game.players[index], self)
             for index in indexes]
 
     def set_initial_states(self):
@@ -26,9 +26,9 @@ class PlayerRegular(Player):
 
     def set_initial_geometry_state(self):
         self.geometry_state = {
-            "Settlements": np.zeros(len(self.catan.board.vertices)).astype("int8"),
-            "Cities": np.zeros(len(self.catan.board.vertices)).astype("int8"),
-            "Roads": np.zeros(len(self.catan.board.edges)).astype("int8")}
+            "Settlements": np.zeros(len(self.game.board.vertices)).astype("int8"),
+            "Cities": np.zeros(len(self.game.board.vertices)).astype("int8"),
+            "Roads": np.zeros(len(self.game.board.edges)).astype("int8")}
 
     def get_state(self):
         perspective_states = self.get_perspective_states()
@@ -74,7 +74,7 @@ class PlayerRegular(Player):
         card_state = self.perspectives[0].card_state
         self.ensure_valid_card_state(card_state)
         self.cards = {
-            card_type: np.where(distribution == 1)[0]
+            card_type: int(np.where(distribution == 1)[0])
             for card_type, distribution in card_state.items()}
 
     # Both these tests ensure that a player has no uncertainty in their own
@@ -129,21 +129,21 @@ class PlayerRegular(Player):
     def get_harvest_different(self):
         harvest_different = [
             {self.name: {resource_1: 1, resource_2: 1}}
-            for index, resource_1 in enumerate(self.catan.resources)
-            for resource_2 in self.catan.resources[index+1:]]
+            for index, resource_1 in enumerate(self.game.resources)
+            for resource_2 in self.game.resources[index+1:]]
         return harvest_different
 
     def get_harvest_same(self):
         harvest_same = [
             {resource: 2}
-            for resource in self.catan.resources]
+            for resource in self.game.resources]
         return harvest_same
         
     def precompute_road_builder(self):
         self.road_builder_trades = [
             {self.name: {"Roads": [edge_1.get_midpoint(), edge_2.get_midpoint()]}}
-            for index, edge_1 in enumerate(self.catan.board.edges)
-            for edge_2 in self.catan.board.edges[index+1:]]
+            for index, edge_1 in enumerate(self.game.board.edges)
+            for edge_2 in self.game.board.edges[index+1:]]
 
     def precompute_knights(self):
         self.knight_trades = [
@@ -161,5 +161,5 @@ class PlayerRegular(Player):
 
     def __str__(self):
         state = self.get_state()
-        string = self.catan.get_state_string(state)
+        string = self.game.get_state_string(state)
         return string

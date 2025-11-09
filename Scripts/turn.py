@@ -13,29 +13,47 @@ class Turn():
 
     trade_limit = 10
     
-    def __init__(self, catan):
-        self.catan = catan
+    def __init__(self, game):
+        self.game = game
+        self.log = self.game.log
         self.set_player()
         self.trade_count = 0
         self.played_development_card = False
         self.traded_this_cycle = True
 
     def set_player(self):
-        self.catan.moves += 1
-        turn = self.catan.moves % 4
-        self.player = self.catan.players[turn]
+        self.game.moves += 1
+        turn = self.game.moves % 4
+        self.player = self.game.players[turn]
+        self.log.info(
+            f"Starting move {self.game.moves}. "
+            f"Player {self.player.name} to move")
+
+    def execute_dice_roll(self):
+        self.set_dice_result()
+
+    def set_dice_result(self):
+        dice_1 = np.random.randint(1, 7)
+        dice_2 = np.random.randint(1, 7)
+        self.dice_result = dice_1 + dice_2
+        self.log.info(
+            f"Dice result: {self.dice_result}")
 
     def take_turn(self):
         while self.continue_exploring_trades():
             self.traded_this_cycle = False
+            self.log.debug(f"Begining trading cycle {self.trade_count + 1}")
             self.generate_possible_trades()
             self.evaluate_trades()
             self.execute_trades()
+        self.log.info(f"Turn ended after {self.trade_count} actions")
 
     def continue_exploring_trades(self):
         if self.trade_count > self.trade_limit:
+            self.log.debug(f"Trade limit reached")
             return False
         else:
+            self.log.debug(f"Trade limit unreached. {self.traded_this_cycle=}")
             return self.traded_this_cycle
 
     def generate_possible_trades(self):
@@ -44,14 +62,16 @@ class Turn():
         self.generate_trades_play_development_card()
 
     def generate_trades_with_players(self):
+        self.log.debug("Considering trades with other players")
         for other_perspective in self.player.perspectives[1:2]:
             self.other = other_perspective.them
             self.set_non_traders()
+            self.log.debug(f"Considering trades with {self.other.name}")
             self.trade_with_player()
 
     def set_non_traders(self):
         self.non_traders = [
-            player for player in self.catan.players
+            player for player in self.game.players
             if (player is not self.player)
             and (player is not self.other)]
 
@@ -65,6 +85,9 @@ class Turn():
         self.player.set_cards()
         self.other.set_cards()
         self.set_cards_total()
+        self.log.debug(
+            f"Total cards between {self.player.name} and {self.other.name}:\n"
+            f"{json.dumps(self.cards_total)}")
 
     def set_cards_total(self):
         self.cards_total = {
@@ -115,10 +138,11 @@ class Turn():
                 perspective.set_view_non_trader()
 
     def generate_trades_assets(self):
-        pass
+        self.log.debug("Considering buying assets")
 
     def generate_trades_play_development_card(self):
         if not self.played_development_card:
+            self.log.debug("Considering playing a development card")
             self.do_generate_trades_play_development_card()
 
     def do_generate_trades_play_development_card(self):

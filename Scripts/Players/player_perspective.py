@@ -18,7 +18,7 @@ class PlayerPerspective(Player):
     def __init__(self, perspective, base):
         name = f"{base.name} view {perspective.name}"
         self.view = f"{perspective.name}"
-        super().__init__(base.catan, name)
+        super().__init__(base.game, name)
         self.base = base
         self.them = perspective
         self.card_state = initial_state.copy()
@@ -27,12 +27,12 @@ class PlayerPerspective(Player):
     def set_self_states_no_change(self, card_type):
         self.states[card_type] = np.tile(
             self.card_state[card_type],
-            (self.catan.turn.count, 1))
+            (self.game.turn.count, 1))
     
     def set_self_states_change(self, card_type):
         indexes = self.base.cards[card_type] + self.base.card_trades[card_type]
-        state = np.zeros((self.catan.turn.count, sizes[card_type]))
-        state[np.arange(self.catan.turn.count), indexes] = 1
+        state = np.zeros((self.game.turn.count, sizes[card_type]))
+        state[np.arange(self.game.turn.count), indexes] = 1
         self.states[card_type] = state
     
     # Base is making a trade with Them. Base does not know the card state of
@@ -62,7 +62,7 @@ class PlayerPerspective(Player):
     def update_distribution_no_change(self, card_type):
         self.states[card_type] = np.tile(
             self.card_state[card_type],
-            (self.catan.turn.count, 1))
+            (self.game.turn.count, 1))
 
     def update_distribution_change(self, card_type):
         zeros = zeros_lookup[card_type]
@@ -104,8 +104,8 @@ class PlayerPerspective(Player):
         self.states[card_type][invalid_states, :] = distribution
 
     def raise_warning_zero_distribution(self, card_type):
-        warnings.warn(
-            "\nA probability distribution has collapsed and cannot be normalised.\n"
+        self.log.warning(
+            "A probability distribution has collapsed and cannot be normalised.\n"
             f"{self.base.name} believes the requested change in state to {card_type} "
             f"to be incompatible with what cards {self.them.name} could hold.")
 
@@ -113,10 +113,10 @@ class PlayerPerspective(Player):
         self.states = {
             card_type: np.tile(
                 self.card_state[card_type],
-                (self.catan.turn.count, 1))
+                (self.game.turn.count, 1))
             for card_type in card_types}
                         
     def __str__(self):
-        df = self.catan.get_perspective_df(self.name, self.card_state)
+        df = self.game.get_perspective_df(self.name, self.card_state)
         string = df.to_string()
         return string

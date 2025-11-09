@@ -4,3 +4,4 @@ Scripts/Board/__pycache__/
 Scripts/Players/__pycache__/
 Scripts/Trades/__pycache__/
 Scripts/Cards/__pycache__/
+*.log
