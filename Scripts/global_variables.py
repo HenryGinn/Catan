@@ -13,6 +13,10 @@ real_estate = {
     "Cities": "Vertex",
     "Roads": "Edge"}
 
+tile_numbers = sorted([
+    number for number in range(2, 13)
+    for weight in range(min(number - 1, 13 - number))])
+
 sizes = {
     "Sheep": 19,
     "Ore": 19,

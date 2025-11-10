@@ -8,7 +8,7 @@
       "J": "yellow"
     },
     "Development Card Deck": ["Victory", "Knight", "Victory", "Road Builder", "Monopoly", "Year of Plenty", "Year of Plenty", "Monopoly", "Victory", "Victory", "Knight", "Knight", "Knight", "Knight", "Knight", "Knight", "Knight", "Road Builder", "Knight", "Victory", "Knight"],
-    "Moves": -1
+    "Move": 0
   },
   "Players": {
     "H": {

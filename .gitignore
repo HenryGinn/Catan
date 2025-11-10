@@ -5,3 +5,9 @@ Scripts/Players/__pycache__/
 Scripts/Trades/__pycache__/
 Scripts/Cards/__pycache__/
 *.log
+Essay/*.aux
+Essay/*.bbl
+Essay/*.blg
+Essay/*.gz
+Essay/*.out
+Data/Games/**/*.pdf

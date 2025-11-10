@@ -21,15 +21,16 @@ catan.c = None
 #catan.board.input_layout("TestLayout")
 #catan.board.generate_layout("TestLayout")
 #catan.board.load_layout("TestLayout")
-#catan.board.plot_layout()
+#catan.board.show_layout()
+#catan.board.save_layout()
 #catan.start_game(
 #    names=["H", "Y", "D", "J"],
 #    colors=["blue", "green", "red", "yellow"])
 #catan.save()
 catan.load()
-#catan.board.plot_state()
+catan.board.save_state()
 
-catan.next_turn()
+#catan.next_turn()
 #catan.take_turn()
 
 a = catan.a

@@ -23,11 +23,11 @@ class Turn():
         self.traded_this_cycle = True
 
     def set_player(self):
-        self.game.moves += 1
-        turn = self.game.moves % 4
+        self.game.move += 1
+        turn = (self.game.move - 1) % 4
         self.player = self.game.players[turn]
         self.log.info(
-            f"Starting move {self.game.moves}. "
+            f"Starting move {self.game.move}. "
             f"Player {self.player.name} to move")
 
     def execute_dice_roll(self):

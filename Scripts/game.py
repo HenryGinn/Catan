@@ -109,7 +109,7 @@ class Game():
             "Colors": {player.name: player.color
                        for player in self.players},
             "Development Card Deck": self.development_deck,
-            "Moves": self.moves}
+            "Move": self.move}
         return meta_data
 
     def load(self):
@@ -125,7 +125,7 @@ class Game():
         self.initialise_players(names=names, colors=colors)
         self.development_deck = (
             game_state["MetaData"]["Development Card Deck"])
-        self.moves = game_state["MetaData"]["Moves"]
+        self.move = game_state["MetaData"]["Move"]
 
     def load_game_state(self):
         with open(self.path_state, "r") as file:
@@ -148,7 +148,7 @@ class Game():
     def start_game(self, names=None, colors=None):
         self.initialise_players(names, colors)
         self.set_initial_states()
-        self.moves = -1
+        self.move = 0
 
     def initialise_players(self, names, colors):
         names = self.get_player_names(names)

@@ -1,0 +1,83 @@
+\documentclass[hidelinks, 11 pt]{article}
+
+\usepackage[a4paper, top=25mm, bottom=25mm, left=20mm, right=20mm, footskip=8mm]{geometry}
+\usepackage[skip=7pt]{parskip}
+\usepackage[list=true, listformat=simple]{subcaption}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{float}
+\usepackage{fancyhdr}
+\usepackage{amsthm}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{multirow}
+\usepackage{hyperref}
+\usepackage{titlesec}
+\usepackage{enumitem}
+\usepackage[nameinlink]{cleveref}
+\usepackage{lipsum}
+\usepackage{silence}
+
+
+\widowpenalty=1000
+
+% ########### Header and footer ###########
+
+% Defining marks
+\renewcommand{\sectionmark}[1]{\gdef\leftmark{#1}}
+\renewcommand{\subsectionmark}[1]{\markright{#1}}
+
+\fancypagestyle{coverpage}{
+	\fancyhf{}
+	\fancyfoot[C]{}
+	\renewcommand{\headrulewidth}{0pt}
+}
+
+\fancypagestyle{firstpage}{
+	\fancyhf{}
+	\fancyfoot[C]{\thepage}
+	\renewcommand{\headrulewidth}{0pt}
+}
+
+\fancypagestyle{fancy}{
+	\fancyhf{}
+	\fancyhead[L]{\nouppercase{\leftmark}}
+	\fancyhead[R]{\nouppercase{\rightmark}}
+	\fancyfoot[C]{\thepage}
+}
+
+\pagestyle{fancy}
+
+
+% ########### Other ###########
+
+% Spacing around headings
+\setlength{\parindent}{0pt}
+\titlespacing*{\section}{0pt}{10pt}{5pt}
+\titlespacing*{\subsection}{0pt}{10pt}{5pt}
+
+% Other spacing
+\setlength{\parindent}{0mm} % Start of paragraph line indent
+\setlength{\skip\footins}{5mm} % Footnotes
+\setlength{\headheight}{13.6pt}
+
+% Dark mode pdf
+\pagecolor[rgb]{0,0,0} %black
+\color[rgb]{0.9,0.9,0.9} %grey 
+
+\begin{document}
+	
+	\addtolength{\topmargin}{-1.6pt}
+	\thispagestyle{firstpage}
+	
+	\begin{center}
+		\vspace*{-20mm}
+		\huge Playing and Analysing Settlers of Catan With A Neural Network  \\
+		\vspace{5mm}
+		\large Henry Ginn  \\
+		\vspace{3 mm}
+		\large \today
+	\end{center}
+	\vspace{5mm}
+	
+\end{document}

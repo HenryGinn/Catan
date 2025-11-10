@@ -17,5 +17,5 @@ class Tile():
 
     def set_type(self, tile_type):
         self.type = tile_type
-        self.color = self.board.tile_data[tile_type]["Color"]
+        self.color = self.board.tile_definitions[tile_type]["Color"]
 

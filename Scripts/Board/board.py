@@ -1,11 +1,11 @@
-from os.path import join
+import os
 from random import shuffle
-import json
 
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.patches import Polygon
 from matplotlib.collections import PatchCollection
+from hgutilities.utils import json
 
 from Board.vertex import Vertex
 from Board.tile import Tile
@@ -14,26 +14,28 @@ from Board.edge import Edge
 from utils import get_name
 from global_variables import (
     path_resources,
-    path_layouts)
+    path_layouts,
+    tile_numbers)
 
 
 class Board():
 
     basis = np.array([[0, 1], [np.sin(np.pi/3), np.cos(np.pi/3)]])
-    directions = np.array([[1, 0], [0, 1], [-1, 1],
-                           [-1, 0], [0, -1], [1, -1]])
+    directions = np.array([
+        [1, 0], [0, 1], [-1, 1],
+        [-1, 0], [0, -1], [1, -1]])
 
     def __init__(self, game):
         self.game = game
         self.log = game.log
         np.random.seed(game.seed)
-        self.load_tile_data()
+        self.load_tile_definitions()
         self.initialise_graph_components()
 
-    def load_tile_data(self):
-        path = join(path_resources, "Tile Definitions.json")
+    def load_tile_definitions(self):
+        path = os.path.join(path_resources, "Tile Definitions.json")
         with open(path, "r") as file:
-            self.tile_data = json.load(file)
+            self.tile_definitions = json.load(file)
 
     def initialise_graph_components(self):
         self.initialise_vertices()
@@ -46,12 +48,13 @@ class Board():
 
     def initialise_vertices(self):
         vertex_vectors = self.get_vertex_position_vectors()
-        self.vertices = [Vertex(self, position_vector, index)
-                         for index, position_vector in
-                         enumerate(vertex_vectors)]
+        self.vertices = [
+            Vertex(self, position_vector, index)
+            for index, position_vector in
+            enumerate(vertex_vectors)]
 
     def get_vertex_position_vectors(self):
-        path = join(path_resources, "Vertex Positions.json")
+        path = os.path.join(path_resources, "Vertex Positions.json")
         with open(path, "r") as file:
             vertex_vectors = [tuple(vector) for vector in json.load(file)]
         return vertex_vectors
@@ -61,11 +64,11 @@ class Board():
 
     def initialise_tiles(self):
         tiles_data = self.load_tiles_data()
-        self.tiles = [Tile(self, tile_data)
-                      for tile_data in tiles_data]
+        self.tiles = [Tile(self, tile_definitions)
+                      for tile_definitions in tiles_data]
 
     def load_tiles_data(self):
-        path = join(path_resources, "Tiles Data.json")
+        path = os.path.join(path_resources, "Tiles Data.json")
         with open(path, "r") as file:
             tiles_data = json.load(file)
         return tiles_data
@@ -76,7 +79,7 @@ class Board():
                       for port_data in ports_data]
 
     def get_ports_date(self):
-        path = join(path_resources, "Ports Data.json")
+        path = os.path.join(path_resources, "Ports Data.json")
         with open(path, "r") as file:
             ports_data = json.load(file)
         return ports_data
@@ -101,16 +104,23 @@ class Board():
     # Saving
 
     def save_layout(self, name=None):
-        path = self.get_path_tile_types(name)
-        tile_types = [tile.type for tile in self.tiles]
+        path = self.get_path_tile_data(name)
+        tile_data = self.get_tile_data()
         with open(path, "w+") as file:
-            json.dump(tile_types, file, indent=2)
-            self.log.info(f"Saving layout to {path}")
+            json.dump(tile_data, file, indent=2)
+        self.log.info(f"Saving layout to {path}")
 
-    def get_path_tile_types(self, name=None):
+    def get_tile_data(self):
+        tile_data = [
+            {"Type": tile.type,
+             "Number": tile.number}
+            for tile in self.tiles]
+        return tile_data
+
+    def get_path_tile_data(self, name=None):
         self.set_layout_name(name)
         file_name = f"{self.layout_name}.json"
-        path = join(path_layouts, file_name)
+        path = os.path.join(path_layouts, file_name)
         return path
 
     def set_layout_name(self, name):
@@ -118,51 +128,55 @@ class Board():
             or self.layout_name is None):
             self.layout_name = get_name(name)
 
-    def json_iterable(self, iterable):
-        iterable = [int(i) for i in iterable]
-        return iterable
-
-
     # Loading
 
     def load_layout(self, name):
         self.log.info(f"Loading layout {name}")
         self.layout_name = name
-        tile_types = self.load_tile_types()
-        self.set_tile_types(tile_types)
+        tile_data = self.load_tile_data()
+        self.set_tile_data(tile_data)
 
-    def load_tile_types(self):
-        path = self.get_path_tile_types()
+    def load_tile_data(self):
+        path = self.get_path_tile_data()
         with open(path, "r") as file:
-            tile_types = json.load(file)
-        return tile_types
+            tile_data = json.load(file)
+        return tile_data
 
-    def set_tile_types(self, tile_types):
-        for tile, tile_type in zip(self.tiles, tile_types):
-            tile.set_type(tile_type)
+    def set_tile_data(self, tile_data):
+        for tile, data in zip(self.tiles, tile_data):
+            tile.set_type(data["Type"])
+            tile.number = data["Number"]
 
 
     # Produce layout
 
     def generate_layout(self, name=None):
         self.log.info("Generating layout")
-        tile_types = self.get_generated_tile_types()
-        self.set_tile_types(tile_types)
+        self.set_generate_tile_types()
+        self.set_generate_tile_numbers()
         self.save_layout(name)
 
-    def set_layout(self, tile_types, name=None):
+    def set_generate_tile_types(self):
+        tile_types = self.get_generated_tile_types()
         for tile, tile_type in zip(self.tiles, tile_types):
             tile.set_type(tile_type)
 
     def get_generated_tile_types(self):
-        tile_types = [tile_type for tile_type in self.tile_data
-                      for index in range(self.tile_data[tile_type]["Count"])]
+        tile_types = [
+            tile_type
+            for tile_type, definition in self.tile_definitions.items()
+            for index in range(definition["Count"])]
         shuffle(tile_types)
         return tile_types
 
+    def set_generate_tile_numbers(self):
+        shuffle(tile_numbers)
+        for tile, tile_number in zip(self.tiles, tile_numbers):
+            tile.number = tile_number
+
     def input_layout(self, name=None):
         tile_types = self.get_input_tile_types()
-        self.set_layout(tile_types, name)
+        self.set_tile_types(tile_types)
 
     def get_input_tile_types(self):
         print(tile_type_prompt)
@@ -181,17 +195,37 @@ class Board():
 
     # Plotting
 
+    def show_layout(self):
+        self.initialise_plot_show()
+        self.plot_layout()
+        plt.show()
+
+    def save_layout(self):
+        self.initialise_plot_save()
+        self.plot_layout()
+        path = os.path.join(
+            self.game.path, "Layout.pdf")
+        plt.savefig(path)
+        self.log.info(f"Saved board layout to {path}")
+    
     def plot_layout(self):
-        self.initialise_plot()
         self.add_tiles_to_plot()
+        self.add_numbers_to_plot()
         self.add_ports_to_plot()
         self.set_x_and_y_plot_limits()
 
-    def initialise_plot(self):
-        self.fig, self.ax = plt.subplots(1, figsize=(12, 8))
+    def initialise_plot_show(self):
+        self.fig = plt.figure(figsize=(12, 8))
+        self.ax = self.fig.add_axes([0, 0, 1, 1])
         self.ax.set_aspect("equal")
         self.ax.axis("off")
         self.fig.patch.set_facecolor("#002240")
+
+    def initialise_plot_save(self):
+        self.fig = plt.figure(figsize=(8, 8))
+        self.ax = self.fig.add_axes([0, 0, 1, 1])
+        self.ax.set_aspect("equal")
+        self.ax.axis("off")
 
     def add_tiles_to_plot(self):
         polygons = PatchCollection(
@@ -199,6 +233,12 @@ class Board():
                      closed=True, facecolor=tile.color, edgecolor="k")
              for tile in self.tiles], match_original=True)
         self.ax.add_collection(polygons)
+
+    def add_numbers_to_plot(self):
+        for tile in self.tiles:
+            self.ax.text(
+                *tile.position, tile.number,
+                ha="center", va="center", fontsize=20)
 
     def add_ports_to_plot(self):
         self.add_port_piers_to_plot()
@@ -219,9 +259,9 @@ class Board():
 
     def add_port_text_to_plot(self):
         for port in self.ports:
-            self.ax.add_artist(
-                plt.Text(*port.position, str(port.ratio),
-                         ha='center', va='center', fontsize=20))
+            self.ax.add_artist(plt.Text(
+                *port.position, str(port.ratio),
+                ha='center', va='center', fontsize=20))
 
     def set_x_and_y_plot_limits(self):
         positions = np.array(
@@ -231,15 +271,24 @@ class Board():
         self.ax.set_xlim(min_x, max_x)
         self.ax.set_ylim(min_y, max_y)
 
-    def show(self):
+    def show_state(self):
+        self.initialise_plot_show()
+        self.plot_state()
         plt.show()
+
+    def save_state(self):
+        self.initialise_plot_save()
+        self.plot_state()
+        path = os.path.join(
+            self.game.path, f"BoardState_{self.game.move:04}.pdf")
+        plt.savefig(path)
+        self.log.info(f"Saved board state to {path}")
 
     def plot_state(self):
         self.plot_layout()
         self.plot_settlements()
         self.plot_cities()
         self.plot_roads()
-        self.show()
 
     def plot_settlements(self):
         for player in self.game.players:
@@ -360,16 +409,3 @@ tile_type_input_dict = dict(
     (key.lower(), value)
     for value in tile_type_input_keys
     for key in tile_type_input_keys[value])
-
-
-
-
-
-
-
-
-
-
-
-
-

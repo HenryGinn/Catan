@@ -5,5 +5,5 @@
 	"Ore": {"Count": 3, "Color": "#686578"},
 	"Mud": {"Count": 3, "Color": "#9a5126"},
 	"Desert": {"Count": 1, "Color": "#d3b06e"},
-	"Variety": {"Color":"#c0c3ca"}
+	"Variety": {"Count": 0, "Color":"#c0c3ca"}
 }
