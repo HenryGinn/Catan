@@ -12,6 +12,7 @@ splash = r"""
   \  \___   /  /   |  |   /  /      /  /   |  |  /  /   |   /
    \_____/ /__/    |__|  /__/      /__/    |__| /__/    |__/
 """
+print(splash)
 
 np.set_printoptions(edgeitems=30, linewidth=10000)
 
@@ -28,10 +29,10 @@ catan.c = None
 #    colors=["blue", "green", "red", "yellow"])
 #catan.save()
 catan.load()
-catan.board.save_state()
+#catan.board.save_state()
 
-#catan.next_turn()
-#catan.take_turn()
+catan.next_turn()
+catan.take_turn()
 
 a = catan.a
 c = catan.c

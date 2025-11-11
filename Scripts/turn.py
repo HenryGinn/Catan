@@ -32,13 +32,26 @@ class Turn():
 
     def execute_dice_roll(self):
         self.set_dice_result()
+        self.distribute_resources_tiles()
+
+    def distribute_resources_tiles(self):
+        for tile in self.game.board.tiles:
+            if tile.number == self.dice:
+                self.distribute_resources_tile(tile)
+
+    def distribute_resources_tile(self, tile):
+        for player in self.game.players:
+            vertex_values = (
+                1 * player.geometry_state["Settlements"] +
+                2 * player.geometry_state["Cities"])
+            resources_gained = np.sum(vertex_values * tile.vertex_indicators)
 
     def set_dice_result(self):
         dice_1 = np.random.randint(1, 7)
         dice_2 = np.random.randint(1, 7)
-        self.dice_result = dice_1 + dice_2
+        self.dice = dice_1 + dice_2
         self.log.info(
-            f"Dice result: {self.dice_result}")
+            f"Dice result: {self.dice}")
 
     def take_turn(self):
         while self.continue_exploring_trades():
@@ -122,7 +135,7 @@ class Turn():
 
     def set_game_states_player(self):
         self.card_trade_view_others(self.player, self.other)
-        self.card_trade_view_others(self.other, self.player)
+        #self.card_trade_view_others(self.other, self.player)
     
     def card_trade_view_others(self, trader, other):
         trader.set_self_card_states()
@@ -136,7 +149,7 @@ class Turn():
     def card_trade_view_non_traders(self, trader):
         for perspective in trader.perspectives:
             if perspective.them in self.non_traders:
-                perspective.set_view_non_trader()
+                perspective.set_states_non_trader()
 
     def generate_trades_assets(self):
         self.log.debug("Considering buying assets")

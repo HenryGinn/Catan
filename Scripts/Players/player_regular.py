@@ -2,10 +2,8 @@ import numpy as np
 
 from Players.player import Player
 from Players.player_perspective import PlayerPerspective
-
-from global_variables import (
-    card_types,
-    arange_lookup)
+from Players.state_utils import get_self_state
+from global_variables import card_types
 
 
 class PlayerRegular(Player):
@@ -103,62 +101,13 @@ class PlayerRegular(Player):
         total_is_correct = (sum(distribution_totals) == 11)
         return total_is_correct
 
-
     def set_self_card_states(self):
         for card_type in card_types:
-            if np.all(self.card_trades[card_type] == 0):
-                self.perspectives[0].set_self_states_no_change(card_type)
-            else:
-                self.perspectives[0].set_self_states_change(card_type)
-
-    def set_game_states_perspectives_of_self(self):
-        print("Implement me!")
-        for perspective in self.perspectives[1:]:
-            pass
-
-    def update_development_trades(self):
-        self.precompute_harvest()
-        self.precompute_road_builder()
-        self.precompute_knights()
-        
-    def precompute_harvest(self):
-        harvest_different = self.get_harvest_different()
-        harvest_same = self.get_harvest_same()
-        self.harvest_trades = harvest_different + harvest_same
-
-    def get_harvest_different(self):
-        harvest_different = [
-            {self.name: {resource_1: 1, resource_2: 1}}
-            for index, resource_1 in enumerate(self.game.resources)
-            for resource_2 in self.game.resources[index+1:]]
-        return harvest_different
-
-    def get_harvest_same(self):
-        harvest_same = [
-            {resource: 2}
-            for resource in self.game.resources]
-        return harvest_same
-        
-    def precompute_road_builder(self):
-        self.road_builder_trades = [
-            {self.name: {"Roads": [edge_1.get_midpoint(), edge_2.get_midpoint()]}}
-            for index, edge_1 in enumerate(self.game.board.edges)
-            for edge_2 in self.game.board.edges[index+1:]]
-
-    def precompute_knights(self):
-        self.knight_trades = [
-            {"Robber": np.tile.vector, "Players": {
-                self.name: {f"Random {other_player.name}": 1},
-                other_player.name: {f"Random {self.name}": -1}}}
-            for np.tile in self.board.np.tiles
-            for other_player in self.players
-            if other_player != self]
-        for i in self.knight_trades:
-            print(i)
-
-            
-    # Output
-
+            state = self.perspectives[0].card_state[card_type]
+            shift = self.card_trades[card_type]
+            self.perspectives[0].states = get_self_state(
+                card_type, state, shift)
+    
     def __str__(self):
         state = self.get_state()
         string = self.game.get_state_string(state)

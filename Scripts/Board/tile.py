@@ -1,3 +1,6 @@
+import numpy as np
+
+
 class Tile():
 
     def __init__(self, board, tile_data):
@@ -11,9 +14,14 @@ class Tile():
         self.position = self.board.get_position(self.vector)
 
     def set_vertices(self, vertex_data):
+        self.set_vertex_indicators(vertex_data)
         self.vertices = [
             self.board.vertices[index]
             for index in vertex_data]
+
+    def set_vertex_indicators(self, vertex_data):
+        self.vertex_indicators = np.zeros(54)
+        self.vertex_indicators[vertex_data] = 1
 
     def set_type(self, tile_type):
         self.type = tile_type

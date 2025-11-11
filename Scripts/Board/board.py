@@ -1,5 +1,4 @@
 import os
-from random import shuffle
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -166,13 +165,18 @@ class Board():
             tile_type
             for tile_type, definition in self.tile_definitions.items()
             for index in range(definition["Count"])]
-        shuffle(tile_types)
+        np.random.shuffle(tile_types)
         return tile_types
 
     def set_generate_tile_numbers(self):
-        shuffle(tile_numbers)
-        for tile, tile_number in zip(self.tiles, tile_numbers):
-            tile.number = tile_number
+        np.random.shuffle(tile_numbers)
+        index = 0
+        for tile in self.tiles:
+            if tile.type != "Desert":
+                tile.number = tile_numbers[index]
+                index += 1
+            else:
+                tile.number = None
 
     def input_layout(self, name=None):
         tile_types = self.get_input_tile_types()
@@ -200,7 +204,7 @@ class Board():
         self.plot_layout()
         plt.show()
 
-    def save_layout(self):
+    def save_layout_plot(self):
         self.initialise_plot_save()
         self.plot_layout()
         path = os.path.join(
