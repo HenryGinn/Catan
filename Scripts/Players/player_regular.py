@@ -1,4 +1,5 @@
 import numpy as np
+import pandas as pd
 
 from Players.player import Player
 from Players.player_perspective import PlayerPerspective
@@ -13,10 +14,10 @@ class PlayerRegular(Player):
 
     def initialise_perspectives(self):
         self_index = self.game.players.index(self)
-        indexes = [(self_index + i) % 4 for i in range(4)]
+        self.perspective_indexes = [(self_index + i) % 4 for i in range(4)]
         self.perspectives = [
             PlayerPerspective(self.game.players[index], self)
-            for index in indexes]
+            for index in self.perspective_indexes]
 
     def set_initial_states(self):
         self.set_initial_geometry_state()
@@ -29,8 +30,9 @@ class PlayerRegular(Player):
 
     def get_state(self):
         perspective_states = self.get_perspective_states()
-        state = {**self.geometry_state,
-                 **perspective_states}
+        state = {
+            **self.geometry_state,
+            **perspective_states}
         return state
 
     def get_perspective_states(self):
@@ -125,7 +127,12 @@ class PlayerRegular(Player):
         for perspective in self.perspectives[1:]:
             perspective.update_states_other(actor, card_type, changes)
 
-    def __str__(self):
-        state = self.get_state()
-        string = self.game.get_state_string(state)
-        return string
+    def get_card_df(self):
+        perspective_dfs = [
+            self.perspectives[(4 - index) % 4].get_df()
+            for index in self.perspective_indexes]
+        card_df = pd.concat(perspective_dfs, axis=1)
+        card_df.columns = pd.MultiIndex.from_product(
+            [[self.name], card_df.columns.to_list()])
+        return card_df
+        

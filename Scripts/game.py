@@ -250,35 +250,10 @@ class Game():
 
     # Output state
 
-    def get_state_string(self, state):
-        geometry_string = self.get_geometry_string(state)
-        card_df = self.get_card_df(state)
-        string = (
-            f"{geometry_string}\n\n"
-            f"{card_df.to_string()}")
-        return string
-
-    def get_geometry_string(self, state):
-        geometry_string = get_dict_string({
-            key: self.board.get_string(state[key], structure)
-            for key, structure in real_estate.items()})
-        return geometry_string
-
-    def get_card_df(self, state):
-        perspective_dfs = [
-            self.get_perspective_df(name, state[name])
-            for name in state if name not in real_estate]
-        card_df = pd.concat(perspective_dfs, axis=1)
+    def get_card_df(self):
+        player_dfs = [player.get_card_df() for player in self.players]
+        card_df = pd.concat(player_dfs, axis=1)
         return card_df
-
-    def get_perspective_df(self, name, card_state):
-        df = {
-            (card_type, count): card_count_probability
-            for card_type, card_distribution in card_state.items()
-            for count, card_count_probability in enumerate(card_distribution)}
-        df = pd.DataFrame({name: df})
-        df.index = df.index.set_names(("Card Type", "Count"))
-        return df
 
     def plot_card_state(self, player_name, perspective_name):
         player = self.get_player(player_name)
@@ -286,5 +261,6 @@ class Game():
         plot_card_state(perspective)
 
     def __str__(self):
-        string = self.get_state_string(self.get_game_state())
+        card_df = self.get_card_df()
+        string = card_df.to_string()
         return string

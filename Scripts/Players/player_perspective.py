@@ -1,5 +1,6 @@
-import numpy as np
 from hgutilities.utils import json
+import numpy as np
+import pandas as pd
 
 from Players.player import Player
 from Players.state_utils import (
@@ -48,7 +49,11 @@ class PlayerPerspective(Player):
         self.states[card_type] = (
             get_updated_states(card_type, state, change))
     
-    def __str__(self):
-        df = self.game.get_perspective_df(self.name, self.card_state)
-        string = df.to_string()
-        return string
+    def get_df(self):
+        df = {
+            (card_type, count): card_count_probability
+            for card_type, card_distribution in self.card_state.items()
+            for count, card_count_probability in enumerate(card_distribution)}
+        df = pd.DataFrame({self.them.name: df})
+        df.index = df.index.set_names(("Card Type", "Count"))
+        return df

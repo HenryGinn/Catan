@@ -20,7 +20,7 @@ catan.c = None
 catan.load()
 #catan.board.save_state()
 
-catan.next_turn()
+#catan.next_turn()
 #catan.take_turn()
 
 a = catan.a
