@@ -38,14 +38,14 @@ class Turn():
         for tile in self.game.board.tiles:
             if tile.number == self.dice:
                 self.distribute_resources_tile(tile)
+                break
 
     def distribute_resources_tile(self, tile):
         for player in self.game.players:
-            vertex_values = (
-                1 * player.geometry_state["Settlements"] +
-                2 * player.geometry_state["Cities"])
-            resources_gained = np.sum(vertex_values * tile.vertex_indicators)
-
+            resources_gained = player.get_resources_gained(tile)
+            if resources_gained != 0:
+                self.game.update_state(tile.type, {player: resources_gained})
+            
     def set_dice_result(self):
         dice_1 = np.random.randint(1, 7)
         dice_2 = np.random.randint(1, 7)
@@ -79,21 +79,14 @@ class Turn():
         self.log.debug("Considering trades with other players")
         for other_perspective in self.player.perspectives[1:2]:
             self.other = other_perspective.them
-            self.set_non_traders()
             self.log.debug(f"Considering trades with {self.other.name}")
             self.trade_with_player()
-
-    def set_non_traders(self):
-        self.non_traders = [
-            player for player in self.game.players
-            if (player is not self.player)
-            and (player is not self.other)]
 
     def trade_with_player(self):
         self.set_all_cards()
         self.set_card_trades()
         self.count = len(self.player.card_trades["Sheep"])
-        self.set_game_states_player()
+        self.set_states_resources()
 
     def set_all_cards(self):
         self.player.set_cards()
@@ -133,23 +126,10 @@ class Turn():
             card_type: -self.player.card_trades[card_type]
             for card_type in card_types}
 
-    def set_game_states_player(self):
-        self.card_trade_view_others(self.player, self.other)
-        #self.card_trade_view_others(self.other, self.player)
-    
-    def card_trade_view_others(self, trader, other):
-        trader.set_self_card_states()
-        self.card_trade_view_trader(trader, other)
-        self.card_trade_view_non_traders(trader)
+    def set_states_resources(self):
+        self.player.set_states_resources(self.other)
+        #self.other.set_states_resources(self.player)
 
-    def card_trade_view_trader(self, trader, other):
-        perspective = trader.get_perspective(other.name)
-        perspective.set_states()
-        
-    def card_trade_view_non_traders(self, trader):
-        for perspective in trader.perspectives:
-            if perspective.them in self.non_traders:
-                perspective.set_states_non_trader()
 
     def generate_trades_assets(self):
         self.log.debug("Considering buying assets")

@@ -10,7 +10,9 @@ from hgutilities.utils import get_dict_string, make_folder, json
 from Board.board import Board
 from Players.player_regular import PlayerRegular
 from turn import Turn
-from utils import get_name
+from utils import (
+    get_name,
+    get_change_str)
 from output_state import plot_card_state
 from global_variables import (
     path_data,
@@ -24,8 +26,21 @@ formatter = logging.Formatter(
     style="{",
     datefmt="%Y-%m-%d %H:%M")
 
+splash = r"""
+      ______     _____    ____________   _____        ____    ___
+     /  ___/    /     |  /____   ____/  /     |      /    |  /  /
+    /  /       /  /|  |      /  /      /  /|  |     /  /| | /  /
+   /  /       /  /_|  |     /  /      /  /_|  |    /  / | |/  /
+  /  /       /  ___   |    /  /      /  ___   |   /  /  | |  /
+  \  \___   /  /   |  |   /  /      /  /   |  |  /  /   |   /
+   \_____/ /__/    |__|  /__/      /__/    |__| /__/    |__/
+"""
+print(splash)
+
 
 class Game():
+
+    # Logging, paths, and initialisation
 
     def __init__(self, name=None, reset_log=True, seed=None):
         self.name = name
@@ -54,6 +69,7 @@ class Game():
         self.log.setLevel(logging.DEBUG)
         self.add_console_handler()
         self.add_file_handler(file_handler_mode)
+        self.log.debug(splash)
         self.log.debug(f"Initialised {self.name}")
 
     def get_file_handler_mode(self, reset_log):
@@ -84,6 +100,11 @@ class Game():
             self.log.debug("Numpy randomisation seed prescribed")
         np.random.seed(self.seed)
         self.log.debug(f"Numpy randomisation seed: {np.random.seed}")
+
+    def create_objects(self):
+        self.log.info("Creating board")
+        self.board = Board(self)
+
 
         
     # Saving and loading
@@ -136,14 +157,7 @@ class Game():
         iterable = zip(self.players, game_state["Players"].items())
         for player, (name, player_state) in iterable:
             player.name = name
-            player.update_state(player_state)
-
-
-    # Players and state manipulations
-
-    def create_objects(self):
-        self.log.info("Creating board")
-        self.board = Board(self)
+            player.set_from_state(player_state)
 
     def start_game(self, names=None, colors=None):
         self.initialise_players(names, colors)
@@ -200,6 +214,9 @@ class Game():
             if player.name == player_name][0]
         return player
 
+
+    # Game control
+
     def next_turn(self):
         self.turn = Turn(self)
         self.turn.execute_dice_roll()
@@ -216,14 +233,29 @@ class Game():
     def play_development(self, trade):
         self.turn.play_development_input(trade)
 
+    def update_state(self, card_type, actor_changes):
+        self.log_update_state(card_type, actor_changes)
+        for player in self.players:
+            for actor, change in actor_changes.items():
+                for perspective in player.perspectives:
+                    if perspective.them is actor:
+                        perspective.update_state(card_type, change)
+
+    def log_update_state(self, card_type, actor_changes):
+        changes = {
+            player.name: change
+            for player, change in actor_changes.items()}
+        self.log.debug(f"Updating {card_type} state for:\n{changes}")
+
 
     # Output state
 
     def get_state_string(self, state):
         geometry_string = self.get_geometry_string(state)
         card_df = self.get_card_df(state)
-        string = (f"{geometry_string}\n\n"
-                  f"{card_df.to_string()}")
+        string = (
+            f"{geometry_string}\n\n"
+            f"{card_df.to_string()}")
         return string
 
     def get_geometry_string(self, state):
@@ -252,3 +284,7 @@ class Game():
         player = self.get_player(player_name)
         perspective = player.get_perspective(perspective_name)
         plot_card_state(perspective)
+
+    def __str__(self):
+        string = self.get_state_string(self.get_game_state())
+        return string

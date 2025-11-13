@@ -11,3 +11,4 @@ Essay/*.blg
 Essay/*.gz
 Essay/*.out
 Data/Games/**/*.pdf
+Data/Games/TestGame/TestGameState.json

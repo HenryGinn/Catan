@@ -3,17 +3,6 @@ import numpy as np
 
 from game import Game
 
-splash = r"""
-      ______     _____    ____________   _____        ____    ___
-     /  ___/    /     |  /____   ____/  /     |      /    |  /  /
-    /  /       /  /|  |      /  /      /  /|  |     /  /| | /  /
-   /  /       /  /_|  |     /  /      /  /_|  |    /  / | |/  /
-  /  /       /  ___   |    /  /      /  ___   |   /  /  | |  /
-  \  \___   /  /   |  |   /  /      /  /   |  |  /  /   |   /
-   \_____/ /__/    |__|  /__/      /__/    |__| /__/    |__/
-"""
-print(splash)
-
 np.set_printoptions(edgeitems=30, linewidth=10000)
 
 catan = Game("TestGame", reset_log=True, seed=43)
@@ -32,7 +21,7 @@ catan.load()
 #catan.board.save_state()
 
 catan.next_turn()
-catan.take_turn()
+#catan.take_turn()
 
 a = catan.a
 c = catan.c

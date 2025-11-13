@@ -2,7 +2,6 @@ import numpy as np
 
 from Players.player import Player
 from Players.player_perspective import PlayerPerspective
-from Players.state_utils import get_self_state
 from global_variables import card_types
 
 
@@ -40,7 +39,7 @@ class PlayerRegular(Player):
             for perspective in self.perspectives}
         return perspective_states
 
-    def update_state(self, state):
+    def set_from_state(self, state):
         self.load_geometry_from_state(state)
         self.load_perspectives_from_state(state)
 
@@ -101,13 +100,31 @@ class PlayerRegular(Player):
         total_is_correct = (sum(distribution_totals) == 11)
         return total_is_correct
 
-    def set_self_card_states(self):
-        for card_type in card_types:
-            state = self.perspectives[0].card_state[card_type]
-            shift = self.card_trades[card_type]
-            self.perspectives[0].states = get_self_state(
-                card_type, state, shift)
-    
+    def get_resources_gained(self, tile):
+        vertex_values = (
+            1 * self.geometry_state["Settlements"] +
+            2 * self.geometry_state["Cities"])
+        resources_gained = np.sum(vertex_values * tile.vertex_indicators)
+        return resources_gained
+
+    def update_state(self, actor, card_type, change):
+        self.log.debug(f"Updating state of {actor.name} for {card_type} with change {change}")
+        self.perspectives[0].update_state_self(card_type, change)
+        for perspective in self.perspectives[1:]:
+            perspective.update_state_other(actor, card_type, change)
+
+    def set_states_resources(self, actor):
+        self.log.debug((
+            f"Updating {self.name}'s states for {player.name}\n"
+            f"{json.dumps(player.card_trades)}"))
+        for card_type, trade in player.card_trades.items():
+            player.update_states(player, card_type, trade)
+
+    def update_states(self, actor, card_type, changes):
+        self.perspectives[0].update_states_self(card_type, changes)
+        for perspective in self.perspectives[1:]:
+            perspective.update_states_other(actor, card_type, changes)
+
     def __str__(self):
         state = self.get_state()
         string = self.game.get_state_string(state)

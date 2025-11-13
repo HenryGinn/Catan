@@ -16,7 +16,7 @@ it is cheaper to simply stack the current state. This is
 especially the case for development cards which will always pass this
 test for resource card trades.
 
-shift can either be a scalar or a 1d numpy array.
+change can either be a scalar or a 1d numpy array.
 """
 
 
@@ -56,38 +56,35 @@ arange_lookup = {
     for card_type, size in sizes.items()}
 
 
-def get_updated_state(card_type, state, shift):
-    # This is designed for handling 1d arrays of shifts
-    # therefore needs a 1d array input.
-    shift = np.array(shift)
-    state = get_updated_state_split_on_shift(
-        card_type, state, shift)
+def get_updated_states(card_type, state, change):
+    state = get_updated_state_split_on_change(
+        card_type, state, change)
     state = np.squeeze(state)
     return state
 
-def get_updated_state_split_on_shift(card_type, state, shift):
-    if np.all(shift == 0):
-        state = get_updated_state_no_change(card_type, state, shift)
+def get_updated_state_split_on_change(card_type, state, change):
+    if np.all(change == 0):
+        state = get_updated_state_no_change(card_type, state, change)
     else:
-        state = get_updated_state_change(card_type, state, shift)
+        state = get_updated_state_change(card_type, state, change)
     return state
 
-def get_updated_state_no_change(card_type, state, shift):
+def get_updated_state_no_change(card_type, state, change):
     state = np.tile(
-        state, (shift.shape[0], 1))
+        state, (change.size, 1))
     return state
 
-def get_updated_state_change(card_type, state, shift):
-    state = get_shifted_state(card_type, state, shift)
+def get_updated_state_change(card_type, state, change):
+    state = get_changeed_state(card_type, state, change)
     state = get_normalised_state(card_type, state)
     return state
 
-def get_shifted_state(card_type, state, shift):
+def get_changeed_state(card_type, state, change):
     zeros = zeros_lookup[card_type]
     middle = middle_lookup[card_type]
     expanded_state = zeros.copy()
     expanded_state[middle] = state
-    indexer = middle - shift.reshape(-1, 1)
+    indexer = middle - change.reshape(-1, 1)
     state = expanded_state[indexer]
     return state
 
@@ -99,6 +96,7 @@ def get_normalised_state(card_type, state):
         # The states that have replaced the invalid ones are normalised.
         denominators = np.where(invalid_states, 1, denominators)
     state = execute_normalise_state(state, denominators, card_type)
+    return state
 
 def execute_normalise_state(state, denominators, card_type):
     state = (
@@ -126,26 +124,25 @@ def raise_warning_zero_state(card_type):
         "incompatible with what cards the other player could hold.")
 
 
-def get_self_state(card_type, state, shift):
-    shift = np.array(shift)
-    state = get_self_state_split_on_shift(card_type, state, shift)
+def get_self_states(card_type, state, change):
+    state = get_self_state_split_on_change(card_type, state, change)
     state = np.squeeze(state)
     return state
 
-def get_self_state_split_on_shift(card_type, state, shift):
-    if np.all(shift == 0):
-        state = get_self_states_no_change(card_type, state, shift)
+def get_self_state_split_on_change(card_type, state, change):
+    if np.all(change == 0):
+        state = get_self_states_no_change(card_type, state, change)
     else:
-        state = get_self_states_change(card_type, state, shift)
+        state = get_self_states_change(card_type, state, change)
     return state
 
-def get_self_states_no_change(card_type, state, shift):
-    state = np.tile(state, (shift.shape[0], 1))
+def get_self_states_no_change(card_type, state, change):
+    state = np.tile(state, (change.size, 1))
     return state
 
-def get_self_states_change(card_type, state, shift):
+def get_self_states_change(card_type, state, change):
     card_count = int(np.where(state == 1)[0])
-    indexes = card_count + shift
-    state = np.zeros((shift.shape[0], sizes[card_type]))
-    state[np.arange(shift.shape[0]), indexes] = 1
+    indexes = card_count + change
+    state = np.zeros((change.size, sizes[card_type]))
+    state[np.arange(change.size), indexes] = 1
     return state

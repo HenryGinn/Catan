@@ -2,7 +2,9 @@ import numpy as np
 from hgutilities.utils import json
 
 from Players.player import Player
-from Players.state_utils import get_updated_state
+from Players.state_utils import (
+    get_self_states,
+    get_updated_states)
 from global_variables import (
     initial_state,
     card_types)
@@ -18,20 +20,34 @@ class PlayerPerspective(Player):
         self.them = perspective
         self.card_state = initial_state.copy()
         self.states = {}
+
+    def update_state(self, card_type, change):
+        change = np.array(change, "int8")
+        if self.base is self.them:
+            self.update_state_self(card_type, change)
+        else:
+            self.update_state_other(card_type, change)
+
+    def update_state_self(self, card_type, change):
+        state = self.card_state[card_type]
+        self.card_state[card_type] = (
+            get_self_states(card_type, state, change))
+
+    def update_state_other(self, card_type, change):
+        state = self.card_state[card_type]
+        self.card_state[card_type] = (
+            get_updated_states(card_type, state, change))
+
+    def update_states_self(self, card_type, change):
+        state = self.card_state[card_type]
+        self.states[card_type] = (
+            get_self_states(card_type, state, change))
+
+    def update_states_other(self, actor, card_type, change):
+        state = self.card_state[card_type]
+        self.states[card_type] = (
+            get_updated_states(card_type, state, change))
     
-    def set_states(self):
-        for card_type in card_types:
-            self.states[card_type] = get_updated_state(
-                card_type, self.card_state[card_type],
-                self.base.card_trades[card_type])
-
-    def set_states_non_trader(self):
-        self.states = {
-            card_type: np.tile(
-                self.card_state[card_type],
-                (self.game.turn.count, 1))
-            for card_type in card_types}
-
     def __str__(self):
         df = self.game.get_perspective_df(self.name, self.card_state)
         string = df.to_string()
