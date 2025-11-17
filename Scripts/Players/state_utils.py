@@ -77,6 +77,7 @@ def get_updated_state_no_change(card_type, state, change):
 def get_updated_state_change(card_type, state, change):
     state = get_changeed_state(card_type, state, change)
     state = get_normalised_state(card_type, state)
+    state = state.round(6)
     return state
 
 def get_changeed_state(card_type, state, change):
@@ -89,7 +90,6 @@ def get_changeed_state(card_type, state, change):
     return state
 
 def get_normalised_state(card_type, state):
-    print(card_type, state)
     denominators = np.sum(state, axis=1)
     invalid_states = (denominators == 0)
     if np.any(invalid_states):

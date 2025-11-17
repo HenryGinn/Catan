@@ -234,14 +234,7 @@ class Game():
         self.turn.play_development_input(trade)
 
 
-    # Updating state and states
-
-    # It is always the case that when a perspective of a player is updated,
-    # all other perspectives of that player should be updated. It is not
-    # always the case that when a player is updated that all other players
-    # are updated. When two players make a trade, the game only needs to be
-    # evaluated from their perspective. This is what "states" is, while
-    # "state" is for decisions that have been made.
+    # Updating state
 
     def update_state(self, card_type, actor_changes):
         self.log_update_state(card_type, actor_changes)
@@ -260,16 +253,6 @@ class Game():
         for perspective in player.perspectives:
             if perspective.them is actor:
                 perspective.update_state(card_type, change)
-
-    # Only the perspectives of the actors being changed are updated - see
-    # comment at the start of the code block.
-    
-    def update_states(self, card_type, actor_changes):
-        for player in actor_changes:
-            for actor, changes in actor_changes.items():
-                if not np.all(changes == 0):
-                    for perspective in player.perspectives:
-                        perspective.update_states(card_type, actor, changes)
     
     
     # Output state

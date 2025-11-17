@@ -1,4 +1,4 @@
-Venv/
+.venv/
 Scripts/__pycache__/
 Scripts/Board/__pycache__/
 Scripts/Players/__pycache__/

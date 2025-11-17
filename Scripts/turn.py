@@ -126,12 +126,25 @@ class Turn():
             card_type: -self.player.card_trades[card_type]
             for card_type in card_types}
 
+    # It is always the case that when a perspective of a player is updated,
+    # all other perspectives of that player should be updated. It is not
+    # always the case that when a player is updated that all other players
+    # are updated. When two players make a trade, the game only needs to be
+    # evaluated from their perspective. This is what "states" is, while
+    # "state" is for decisions that have been made.
+
     def set_states_resources(self):
         for card_type in card_types:
             actor_changes = {
                 self.player: self.player.card_trades[card_type],
                 self.other: self.other.card_trades[card_type]}
-            self.game.update_states(card_type, actor_changes)
+            self.update_states(card_type, actor_changes)
+    
+    def update_states(self, card_type, actor_changes):
+        for player in actor_changes:
+            for perspective in player.perspectives:
+                perspective.update_states(
+                    card_type, actor_changes, self.count)
 
 
     def generate_trades_assets(self):

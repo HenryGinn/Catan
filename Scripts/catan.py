@@ -1,3 +1,5 @@
+#!.\venv\bin\python3.exe
+
 from hgutilities.utils import json
 import numpy as np
 
