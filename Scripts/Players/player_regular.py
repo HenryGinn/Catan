@@ -115,13 +115,6 @@ class PlayerRegular(Player):
         for perspective in self.perspectives[1:]:
             perspective.update_state_other(actor, card_type, change)
 
-    def set_states_resources(self, actor):
-        self.log.debug((
-            f"Updating {self.name}'s states for {player.name}\n"
-            f"{json.dumps(player.card_trades)}"))
-        for card_type, trade in player.card_trades.items():
-            player.update_states(player, card_type, trade)
-
     def update_states(self, actor, card_type, changes):
         self.perspectives[0].update_states_self(card_type, changes)
         for perspective in self.perspectives[1:]:

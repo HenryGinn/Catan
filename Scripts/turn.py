@@ -127,8 +127,11 @@ class Turn():
             for card_type in card_types}
 
     def set_states_resources(self):
-        self.player.set_states_resources(self.other)
-        #self.other.set_states_resources(self.player)
+        for card_type in card_types:
+            actor_changes = {
+                self.player: self.player.card_trades[card_type],
+                self.other: self.other.card_trades[card_type]}
+            self.game.update_states(card_type, actor_changes)
 
 
     def generate_trades_assets(self):

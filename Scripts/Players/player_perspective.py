@@ -39,12 +39,19 @@ class PlayerPerspective(Player):
         self.card_state[card_type] = (
             get_updated_states(card_type, state, change))
 
+    def update_states(self, card_type, actor, changes):
+        if self.them is actor:
+            if self.base is self.them:
+                self.update_states_self(card_type, changes)
+            else
+                self.update_states_other(card_type, changes)
+
     def update_states_self(self, card_type, change):
         state = self.card_state[card_type]
         self.states[card_type] = (
             get_self_states(card_type, state, change))
 
-    def update_states_other(self, actor, card_type, change):
+    def update_states_other(self, card_type, change):
         state = self.card_state[card_type]
         self.states[card_type] = (
             get_updated_states(card_type, state, change))
