@@ -1,6 +1,7 @@
 import numpy as np
 from hgutilities.utils import json
 
+from trade import Trade
 from output_state import plot_card_state
 from global_variables import (
     card_types,
@@ -71,6 +72,7 @@ class Turn():
             return self.traded_this_cycle
 
     def generate_possible_trades(self):
+        self.player.trade = Trade(self, self.player)
         self.generate_trades_with_players()
         self.generate_trades_assets()
         self.generate_trades_play_development_card()
@@ -83,10 +85,12 @@ class Turn():
             self.trade_with_player()
 
     def trade_with_player(self):
+        self.other.trade = Trade(self, self.other)
         self.set_all_cards()
         self.set_card_trades()
         self.count = len(self.player.card_trades["Sheep"])
         self.set_states_resources()
+        self.other.trade.stack_real_estate(self.count)
 
     def set_all_cards(self):
         self.player.set_cards()
@@ -145,6 +149,9 @@ class Turn():
             for perspective in player.perspectives:
                 perspective.update_states(
                     card_type, actor_changes, self.count)
+
+    def update_trade_resources(self):
+        self.player.trade.update_from_states()
 
 
     def generate_trades_assets(self):

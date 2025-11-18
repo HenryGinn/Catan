@@ -16,7 +16,7 @@ class PlayerRegular(Player):
         self_index = self.game.players.index(self)
         self.perspective_indexes = [(self_index + i) % 4 for i in range(4)]
         self.perspectives = [
-            PlayerPerspective(self.game.players[index], self)
+            PlayerPerspective(self.game.players[index], self, index)
             for index in self.perspective_indexes]
 
     def set_initial_states(self):

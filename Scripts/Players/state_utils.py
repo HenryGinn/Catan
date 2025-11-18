@@ -25,7 +25,7 @@ log = logging.getLogger("game")
 
 import numpy as np
 
-from global_variables import sizes
+from global_variables import card_sizes
 
 
 # Assumed states when states are not normalisable. These should
@@ -45,15 +45,15 @@ guessed_states = {
 
 zeros_lookup = {
     card_type: np.zeros(size * 3)
-    for card_type, size in sizes.items()}
+    for card_type, size in card_sizes.items()}
 
 middle_lookup = {
     card_type: np.arange(size, size * 2)
-    for card_type, size in sizes.items()}
+    for card_type, size in card_sizes.items()}
 
 arange_lookup = {
     card_type: np.arange(size)
-    for card_type, size in sizes.items()}
+    for card_type, size in card_sizes.items()}
 
 
 def get_updated_states(card_type, state, change):
@@ -144,6 +144,6 @@ def get_self_states_no_change(card_type, state, change):
 def get_self_states_change(card_type, state, change):
     card_count = int(np.where(state == 1)[0])
     indexes = card_count + change
-    state = np.zeros((change.size, sizes[card_type]))
+    state = np.zeros((change.size, card_sizes[card_type]))
     state[np.arange(change.size), indexes] = 1
     return state

@@ -18,7 +18,7 @@ from global_variables import (
     path_data,
     path_resources,
     path_layouts,
-    real_estate)
+    real_estate_graph_components)
 
 
 formatter = logging.Formatter(
@@ -118,11 +118,17 @@ class Game():
 
     def get_game_state(self):
         meta_data = self.get_meta_data()
-        players_state = {player.name: player.get_state()
-                         for player in self.players}
-        game_state = {"MetaData": meta_data,
-                      "Players": players_state}
+        players_state = self.get_players_state()
+        game_state = {
+            "MetaData": meta_data,
+            "Players": players_state}
         return game_state
+
+    def get_players_state(self):
+        players_state = {
+            player.name: player.get_state()
+            for player in self.players}
+        return players_state
 
     def get_meta_data(self):
         meta_data = {

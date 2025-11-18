@@ -13,14 +13,14 @@ from global_variables import (
 
 class PlayerPerspective(Player):
 
-    def __init__(self, perspective, base):
+    def __init__(self, perspective, base, index):
         name = f"{base.name} view {perspective.name}"
         self.view = f"{perspective.name}"
         super().__init__(base.game, name)
         self.base = base
         self.them = perspective
+        self.index = index
         self.card_state = initial_state.copy()
-        self.states = {}
 
     def update_state(self, card_type, change):
         change = np.array(change, "int8")
@@ -53,18 +53,18 @@ class PlayerPerspective(Player):
 
     def update_states_self(self, card_type, change):
         state = self.card_state[card_type]
-        self.states[card_type] = (
-            get_self_states(card_type, state, change))
+        states = get_self_states(card_type, state, change)
+        self.base.trade.update_states(self.index, card_type, states)
 
     def update_states_other(self, card_type, change):
         state = self.card_state[card_type]
-        self.states[card_type] = (
-            get_updated_states(card_type, state, change))
+        states = get_updated_states(card_type, state, change)
+        self.base.trade.update_states(self.index, card_type, states)
 
     def update_states_stack(self, card_type, count):
         state = self.card_state[card_type]
-        self.states[card_type] = np.tile(
-            state, (count, 1))
+        states = np.tile(state, (count, 1))
+        self.base.trade.update_states(self.index, card_type, states)
     
     def get_df(self):
         df = {

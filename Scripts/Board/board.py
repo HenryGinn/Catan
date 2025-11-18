@@ -14,7 +14,8 @@ from utils import get_name
 from global_variables import (
     path_resources,
     path_layouts,
-    tile_numbers)
+    tile_numbers,
+    tile_types_list)
 
 
 class Board():
@@ -63,8 +64,10 @@ class Board():
 
     def initialise_tiles(self):
         tiles_data = self.load_tiles_data()
-        self.tiles = [Tile(self, tile_definitions)
-                      for tile_definitions in tiles_data]
+        self.tiles = [
+            Tile(self, tile_definitions)
+            for tile_definitions in tiles_data]
+        
 
     def load_tiles_data(self):
         path = os.path.join(path_resources, "Tiles Data.json")
@@ -74,14 +77,21 @@ class Board():
 
     def initialise_ports(self):
         ports_data = self.get_ports_date()
-        self.ports = [Port(self, port_data)
-                      for port_data in ports_data]
+        self.ports = [
+            Port(self, port_data)
+            for port_data in ports_data]
 
     def get_ports_date(self):
         path = os.path.join(path_resources, "Ports Data.json")
         with open(path, "r") as file:
             ports_data = json.load(file)
         return ports_data
+
+    def set_tile_states(self):
+        self.tile_states = {
+            tile_type: np.array([
+                tile.type == tile_type for tile in self.tiles]).astype("int8")
+            for tile_type in tile_types_list}
 
 
     # Edges
@@ -145,6 +155,7 @@ class Board():
         for tile, data in zip(self.tiles, tile_data):
             tile.set_type(data["Type"])
             tile.number = data["Number"]
+        self.set_tile_states()
 
 
     # Produce layout
