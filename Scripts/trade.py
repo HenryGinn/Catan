@@ -1,8 +1,11 @@
+from hgutilities.utils import json
 import numpy as np
+import pandas as pd
 
 from global_variables import (
     sizes,
-    real_estates)
+    real_estates,
+    action_columns)
 
 
 class Trade():
@@ -13,16 +16,24 @@ class Trade():
         self.log = turn.log
         self.player = player
         self.init_states()
+        self.init_actions()
 
     def init_states(self):
         self.states = [
-            {item_type: np.array([]).reshape(0, size)
-             for item_type, size in sizes.items()}
-            for player_index in range(4)]
+            perspective.get_initial_states()
+            for perspective in self.player.perspectives]
 
+    def init_actions(self):
+        self.actions = pd.DataFrame([{
+            item: np.nan for item in action_columns}])
+    
     def update_states(self, index, card_type, states):
         self.states[index][card_type] = np.vstack(
             (self.states[index][card_type], states))
+
+    def update_actions_cards(self):
+        self.actions(
+            self.player.card_trades)
 
     # Each state passed into the neural network must look the same. That
     # means that for each card states being considered there must be a
@@ -63,7 +74,7 @@ class Trade():
     def init_meta_data(self):
         self.meta_data = {
             "PlayedDevelopmentCard": self.turn.played_development_card,
-            #"Robber": self.game.robber_state,
+            "Robber": self.game.robber_state,
             } | self.game.board.tiles_state
     
     def stack_meta_data(self):

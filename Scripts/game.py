@@ -136,7 +136,8 @@ class Game():
             "Colors": {player.name: player.color
                        for player in self.players},
             "Development Card Deck": self.development_deck,
-            "Move": self.move}
+            "Move": self.move,
+            "Robber": self.robber_index}
         return meta_data
 
     def load(self):
@@ -153,6 +154,7 @@ class Game():
         self.development_deck = (
             game_state["MetaData"]["Development Card Deck"])
         self.move = game_state["MetaData"]["Move"]
+        self.robber_index = game_state["MetaData"]["Robber"]
 
     def load_game_state(self):
         with open(self.path_state, "r") as file:
@@ -168,6 +170,7 @@ class Game():
     def start_game(self, names=None, colors=None):
         self.initialise_players(names, colors)
         self.set_initial_states()
+        self.initialise_robber()
         self.move = 0
 
     def initialise_players(self, names, colors):
@@ -220,6 +223,18 @@ class Game():
             if player.name == player_name][0]
         return player
 
+    def initialise_robber(self):
+        robber_index = [
+            index
+            for index, tile in self.board.tiles
+            if tile.type == "Desert"][0]
+        self.update_robber(robber_index)
+
+    def update_robber(self, index):
+        self.log.info(f"Robber placed on tile {index}")
+        self.robber_index = index
+        self.robber_state = np.zeros(19).astype("int8")
+        self.robber_state[robber_index] = 1
 
     # Game control
 

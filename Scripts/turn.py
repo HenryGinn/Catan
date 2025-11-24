@@ -138,20 +138,21 @@ class Turn():
     # "state" is for decisions that have been made.
 
     def set_states_resources(self):
+        self.update_actions_resources()
         for card_type in card_types:
             actor_changes = {
                 self.player: self.player.card_trades[card_type],
                 self.other: self.other.card_trades[card_type]}
             self.update_states(card_type, actor_changes)
+
+    def update_actions_resources(self):
+        self.player.trade.update_actions()
     
     def update_states(self, card_type, actor_changes):
         for player in actor_changes:
             for perspective in player.perspectives:
                 perspective.update_states(
                     card_type, actor_changes, self.count)
-
-    def update_trade_resources(self):
-        self.player.trade.update_from_states()
 
 
     def generate_trades_assets(self):

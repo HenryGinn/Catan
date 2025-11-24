@@ -2,7 +2,7 @@ import os
 
 import numpy as np
 import matplotlib.pyplot as plt
-from matplotlib.patches import Polygon
+from matplotlib.patches import Polygon, Annulus
 from matplotlib.collections import PatchCollection
 from hgutilities.utils import json
 
@@ -103,11 +103,16 @@ class Board():
 
     def add_edges_around_tile(self, tile):
         vertex_offset = tile.vertices[1:] + [tile.vertices[0]]
-        edges = [Edge(self, vertex_1, vertex_2)
-                 for vertex_1, vertex_2 in zip(tile.vertices, vertex_offset)
-                 if vertex_1.ID < vertex_2.ID]
-        new_edges = [edge for edge in edges if edge not in self.edges]
+        edges_around_tile = self.get_edges_around_tile(tile, vertex_offset)
+        new_edges = [edge for edge in edges_around_tile if edge not in self.edges]
         self.edges = self.edges + new_edges
+
+    def get_edges_around_tile(self, tile, vertex_offset):
+        edges_around_tile = [
+            Edge(self, vertex_1, vertex_2)
+            for vertex_1, vertex_2 in zip(tile.vertices, vertex_offset)
+            if vertex_1.ID < vertex_2.ID]
+        return edges_around_tile
 
 
     # Saving
@@ -227,6 +232,7 @@ class Board():
         self.add_tiles_to_plot()
         self.add_numbers_to_plot()
         self.add_ports_to_plot()
+        self.add_robber()
         self.set_x_and_y_plot_limits()
 
     def initialise_plot_show(self):
@@ -277,6 +283,11 @@ class Board():
             self.ax.add_artist(plt.Text(
                 *port.position, str(port.ratio),
                 ha='center', va='center', fontsize=20))
+
+    def add_robber(self):
+        robber_tile = self.tiles[self.game.robber_index]
+        annulus = Annulus(robber_tile.position, 0.7, 0.15, color="black")
+        self.ax.add_patch(annulus)
 
     def set_x_and_y_plot_limits(self):
         positions = np.array(

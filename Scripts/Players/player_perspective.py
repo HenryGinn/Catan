@@ -39,6 +39,24 @@ class PlayerPerspective(Player):
         self.card_state[card_type] = (
             get_updated_states(card_type, state, change))
 
+    def get_initial_states(self):
+        card_states = self.get_initial_states_card()
+        real_estate_states = self.get_initial_states_real_estate()
+        states = card_states | real_estate_states
+        return states
+
+    def get_initial_states_card(self):
+        card_states = {
+            card_type: distribution.reshape(1, -1)
+            for card_type, distribution in self.card_state.items()}
+        return card_states
+
+    def get_initial_states_real_estate(self):
+        real_estate_states = {
+            real_estate_type: distribution.reshape(1, -1)
+            for real_estate_type, distribution in self.them.geometry_state.items()}
+        return real_estate_states
+
     def update_states(self, card_type, actor_changes, count):
         if self.them in actor_changes:
             self.update_states_change(card_type, actor_changes[self.them])
