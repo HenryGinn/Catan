@@ -257,6 +257,9 @@ class Game():
     
     # Output state
 
+    def save_state(self):
+        self.board.save_state()
+
     def get_card_df(self):
         player_dfs = [player.get_card_df() for player in self.players]
         card_df = pd.concat(player_dfs, axis=1)

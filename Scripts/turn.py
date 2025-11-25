@@ -2,6 +2,7 @@ import numpy as np
 from hgutilities.utils import json
 
 from output_state import plot_card_state
+from Board.board_utils import get_buildable_roads
 from global_variables import (
     card_types,
     resource_types)
@@ -32,9 +33,10 @@ class Turn():
 
     def execute_dice_roll(self):
         self.set_dice_result()
-        self.distribute_resources_tiles()
+        #self.distribute_resources_tiles()
 
     def distribute_resources_tiles(self):
+        self.log.debug("Distributing resource tiles")
         for tile in self.game.board.tiles:
             if tile.number == self.dice:
                 self.distribute_resources_tile(tile)
@@ -71,9 +73,12 @@ class Turn():
             return self.traded_this_cycle
 
     def generate_possible_trades(self):
+        self.log.debug("Generating possible trades")
+        #self.trades = {}
+        self.player.set_cards()
         self.generate_trades_with_players()
-        self.generate_trades_assets()
-        self.generate_trades_play_development_card()
+        #self.generate_trades_assets()
+        #self.generate_trades_play_development_card()
 
     def generate_trades_with_players(self):
         self.log.debug("Considering trades with other players")
@@ -89,7 +94,6 @@ class Turn():
         self.set_states_resources()
 
     def set_all_cards(self):
-        self.player.set_cards()
         self.other.set_cards()
         self.set_cards_total()
         self.log.debug(
@@ -149,6 +153,24 @@ class Turn():
 
     def generate_trades_assets(self):
         self.log.debug("Considering buying assets")
+        self.set_vertices_and_edges()
+        self.generate_trades_road()
+        self.generate_trades_settlement()
+        self.generate_trades_city()
+
+    def set_vertices_and_edges(self):
+        edges_indexes = np.nonzero(self.player.geometry_state["Roads"])
+        self.edges = self.game.board.edges[edges_indexes]
+        self.vertices = get_vertices_from_edges(self.edges)
+
+    def generate_trades_road(self):
+        pass
+
+    def generate_trades_settlement(self):
+        pass
+
+    def generate_trades_city(self):
+        pass
 
     def generate_trades_play_development_card(self):
         if not self.played_development_card:

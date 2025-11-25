@@ -20,7 +20,7 @@ catan.c = None
 #    colors=["blue", "green", "red", "yellow"])
 #catan.save()
 catan.load()
-#catan.board.save_state()
+#catan.save_state()
 
 catan.next_turn()
 catan.take_turn()

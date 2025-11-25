@@ -22,3 +22,4 @@ class Vertex():
         self.vector = vector
         self.ID = ID
         self.position = self.board.get_position(self.vector)
+        self.edges = []

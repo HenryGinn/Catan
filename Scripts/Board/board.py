@@ -63,8 +63,9 @@ class Board():
 
     def initialise_tiles(self):
         tiles_data = self.load_tiles_data()
-        self.tiles = [Tile(self, tile_definitions)
-                      for tile_definitions in tiles_data]
+        self.tiles = [
+            Tile(self, tile_definitions)
+            for tile_definitions in tiles_data]
 
     def load_tiles_data(self):
         path = os.path.join(path_resources, "Tiles Data.json")
@@ -73,11 +74,12 @@ class Board():
         return tiles_data
 
     def initialise_ports(self):
-        ports_data = self.get_ports_date()
-        self.ports = [Port(self, port_data)
-                      for port_data in ports_data]
+        ports_data = self.get_ports_data()
+        self.ports = [
+            Port(self, port_data)
+            for port_data in ports_data]
 
-    def get_ports_date(self):
+    def get_ports_data(self):
         path = os.path.join(path_resources, "Ports Data.json")
         with open(path, "r") as file:
             ports_data = json.load(file)
@@ -90,6 +92,7 @@ class Board():
         self.edges = []
         for tile in self.tiles:
             self.add_edges_around_tile(tile)
+        self.edges = np.array(self.edges)
 
     def add_edges_around_tile(self, tile):
         vertex_offset = tile.vertices[1:] + [tile.vertices[0]]

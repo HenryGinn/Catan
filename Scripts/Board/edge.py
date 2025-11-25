@@ -3,6 +3,11 @@ class Edge():
     def __init__(self, board, vertex_1, vertex_2):
         self.board = board
         self.vertices = [vertex_1, vertex_2]
+        self.update_vertex_edges()
+
+    def update_vertex_edges(self):
+        for vertex in self.vertices:
+            vertex.edges.append(self)
 
     def get_vectors(self):
         vectors = [(vertex.vector) for vertex in self.vertices]
