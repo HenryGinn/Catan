@@ -1,6 +1,7 @@
 import numpy as np
 from hgutilities.utils import json
 
+from trade import Trade
 from output_state import plot_card_state
 from Board.board_utils import get_buildable_roads
 from global_variables import (
@@ -88,10 +89,12 @@ class Turn():
             self.trade_with_player()
 
     def trade_with_player(self):
+        self.other.trade = Trade(self, self.other)
         self.set_all_cards()
         self.set_card_trades()
         self.count = len(self.player.card_trades["Sheep"])
         self.set_states_resources()
+        self.other.trade.stack_real_estate(self.count)
 
     def set_all_cards(self):
         self.other.set_cards()
@@ -138,11 +141,15 @@ class Turn():
     # "state" is for decisions that have been made.
 
     def set_states_resources(self):
+        self.update_actions_resources()
         for card_type in card_types:
             actor_changes = {
                 self.player: self.player.card_trades[card_type],
                 self.other: self.other.card_trades[card_type]}
             self.update_states(card_type, actor_changes)
+
+    def update_actions_resources(self):
+        self.player.trade.update_actions()
     
     def update_states(self, card_type, actor_changes):
         for player in actor_changes:
