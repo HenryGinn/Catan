@@ -25,14 +25,17 @@ class Trade():
 
     def init_actions(self):
         self.actions = pd.DataFrame([{
-            item: np.nan for item in action_columns}])
+            item: np.nan for item in action_columns[1:]}])
     
     def update_states(self, index, card_type, states):
         self.states[index][card_type] = np.vstack(
             (self.states[index][card_type], states))
 
     def update_actions_cards(self):
-        print(self.actions)
+        actions_cards = pd.DataFrame(self.player.card_trades)
+        actions_cards.loc[:, "Trade Partner"] = self.turn.other.name
+        self.actions = pd.concat(
+            (self.actions, actions_cards), axis=0).reset_index()
 
     # Each state passed into the neural network must look the same. That
     # means that for each card states being considered there must be a

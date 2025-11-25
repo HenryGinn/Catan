@@ -50,6 +50,7 @@ tile_types_list = resource_types + ["Desert"]
 sizes = real_estate_sizes | card_sizes
 
 action_columns = card_types + [
+    "Trade Partner",
     "Settlement", "City", "Road 1", "Road 2", # Two roads to account for Road Builder
     "Robber", "Robbee", "Robbed Tile",
     "Dumped 1", "Dumped 2", "Dumped 3", "Dumped 4",

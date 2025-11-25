@@ -86,6 +86,9 @@ class Turn():
         self.generate_trades_with_players()
         #self.generate_trades_assets()
         #self.generate_trades_play_development_card()
+        self.log.debug((
+            "Generated possible trades:\n"
+            f"{self.player.trade.actions.to_string()}"))
 
     def generate_trades_with_players(self):
         self.log.debug("Considering trades with other players")
