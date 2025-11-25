@@ -76,7 +76,7 @@ class Board():
         return tiles_data
 
     def initialise_ports(self):
-        ports_data = self.get_ports_date()
+        ports_data = self.get_ports_data()
         self.ports = [
             Port(self, port_data)
             for port_data in ports_data]

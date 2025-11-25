@@ -32,8 +32,7 @@ class Trade():
             (self.states[index][card_type], states))
 
     def update_actions_cards(self):
-        self.actions(
-            self.player.card_trades)
+        print(self.actions)
 
     # Each state passed into the neural network must look the same. That
     # means that for each card states being considered there must be a

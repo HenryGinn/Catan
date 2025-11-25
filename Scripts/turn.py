@@ -58,12 +58,19 @@ class Turn():
 
     def take_turn(self):
         while self.continue_exploring_trades():
-            self.traded_this_cycle = False
-            self.log.debug(f"Begining trading cycle {self.trade_count + 1}")
-            self.generate_possible_trades()
-            self.evaluate_trades()
-            self.execute_trades()
+            self.trade_cycle()
         self.log.info(f"Turn ended after {self.trade_count} actions")
+
+    def trade_cycle(self):
+        self.generate_possible_trades()
+        self.evaluate_trades()
+        self.execute_trades()
+
+    def init_trade_cycle(self):
+        self.traded_this_cycle = False
+        self.log.debug(f"Begining trading cycle {self.trade_count + 1}")
+        self.player.trade = Trade(self, self.player)
+        self.player.set_cards()
 
     def continue_exploring_trades(self):
         if self.trade_count > self.trade_limit:
@@ -74,9 +81,8 @@ class Turn():
             return self.traded_this_cycle
 
     def generate_possible_trades(self):
+        self.init_trade_cycle()
         self.log.debug("Generating possible trades")
-        #self.trades = {}
-        self.player.set_cards()
         self.generate_trades_with_players()
         #self.generate_trades_assets()
         #self.generate_trades_play_development_card()
@@ -93,7 +99,7 @@ class Turn():
         self.set_all_cards()
         self.set_card_trades()
         self.count = len(self.player.card_trades["Sheep"])
-        self.set_states_resources()
+        self.update_trade_cards()
         self.other.trade.stack_real_estate(self.count)
 
     def set_all_cards(self):
@@ -140,16 +146,16 @@ class Turn():
     # evaluated from their perspective. This is what "states" is, while
     # "state" is for decisions that have been made.
 
-    def set_states_resources(self):
-        self.update_actions_resources()
+    def update_trade_cards(self):
+        self.update_actions_cards()
         for card_type in card_types:
             actor_changes = {
                 self.player: self.player.card_trades[card_type],
                 self.other: self.other.card_trades[card_type]}
             self.update_states(card_type, actor_changes)
 
-    def update_actions_resources(self):
-        self.player.trade.update_actions()
+    def update_actions_cards(self):
+        self.player.trade.update_actions_cards()
     
     def update_states(self, card_type, actor_changes):
         for player in actor_changes:
