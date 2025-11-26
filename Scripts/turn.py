@@ -83,8 +83,8 @@ class Turn():
     def generate_possible_trades(self):
         self.init_trade_cycle()
         self.log.debug("Generating possible trades")
-        self.generate_trades_with_players()
-        #self.generate_trades_assets()
+        #self.generate_trades_with_players()
+        self.generate_trades_assets()
         #self.generate_trades_play_development_card()
         self.log.debug((
             "Generated possible trades:\n"
@@ -180,7 +180,7 @@ class Turn():
         self.vertices = get_vertices_from_edges(self.edges)
 
     def generate_trades_road(self):
-        pass
+        self.roads = get_buildable_roads(self.edges)
 
     def generate_trades_settlement(self):
         pass

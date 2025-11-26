@@ -15,7 +15,6 @@ catan.c = None
 #catan.board.generate_layout("TestLayout")
 #catan.board.load_layout("TestLayout")
 #catan.board.show_layout()
-#catan.board.save_layout()
 #catan.start_game(
 #    names=["H", "Y", "D", "J"],
 #    colors=["blue", "green", "red", "yellow"])
@@ -24,7 +23,8 @@ catan.load()
 #catan.save_state()
 
 catan.next_turn()
-catan.take_turn()
+#catan.take_turn()
+#catan.buy_road()
 
 a = catan.a
 c = catan.c

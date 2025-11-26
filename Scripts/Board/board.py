@@ -90,7 +90,8 @@ class Board():
     def set_tile_states(self):
         self.tile_states = {
             tile_type: np.array([
-                tile.type == tile_type for tile in self.tiles]).astype("int8")
+                tile.type == tile_type
+                for tile in self.tiles]).astype("int8")
             for tile_type in tile_types_list}
 
 
@@ -150,6 +151,7 @@ class Board():
         self.layout_name = name
         tile_data = self.load_tile_data()
         self.set_tile_data(tile_data)
+        self.set_lookups()
 
     def load_tile_data(self):
         path = self.get_path_tile_data()
@@ -171,6 +173,7 @@ class Board():
         self.set_generate_tile_types()
         self.set_generate_tile_numbers()
         self.save_layout(name)
+        self.set_lookups()
 
     def set_generate_tile_types(self):
         tile_types = self.get_generated_tile_types()
@@ -212,6 +215,25 @@ class Board():
             return tile_type_input_dict[type_input.lower()].strip(" ")
         else:
             return "Desert"
+
+
+    # Lookups
+
+    def set_lookups(self):
+        self.set_vertex_index_lookup_from_tile_and_vertex()
+        self.set_edge_index_lookup_from_tile_and_edge()
+
+    def set_vertex_index_lookup_from_tile_and_vertex(self):
+        self.vertex_index_lookup_from_tile_and_vertex = {
+            (tile_index, vertex_index): self.vertices.index(vertex)
+            for tile_index, tile in enumerate(self.tiles)
+            for vertex_index, vertex in enumerate(self.tiles.vertices)}
+
+    def set_edge_index_lookup_from_tile_and_edge(self):
+        self.edge_index_lookup_from_tile_and_edge = {
+            (tile_index, vertex_index): self.vertices.index(vertex)
+            for tile_index, tile in enumerate(self.tiles)
+            for edge_index, edge in enumerate(self.tiles.edges)}
 
 
     # Plotting
@@ -366,8 +388,9 @@ class Board():
 
     def get_vertex_string(self, state_vertex):
         vertex_vectors = self.get_vertex_vectors(state_vertex)
-        string = ", ".join(f"({vector[0]}, {vector[1]})"
-                           for vector in vertex_vectors)
+        string = ", ".join(
+            f"({vector[0]}, {vector[1]})"
+            for vector in vertex_vectors)
         return string
 
     def get_vertex_vectors(self, state_vertex):
@@ -403,15 +426,53 @@ class Board():
         return vertex_state
 
     def get_edge_state(self, edges):
-        edge_state = np.array(
-            [edge.get_vectors() in edges
-             for edge in self.edges])
+        edge_state = np.array([
+            edge.get_vectors() in edges
+            for edge in self.edges])
         return edge_state
 
     def get_position(self, vector):
         position = np.dot(np.array(vector), self.basis)
         return position
 
+
+    # Input for interacting with the board
+    
+    def get_tile_input(self):
+        tile_number = int(input(tile_number_prompt))
+        if tile_number == 7:
+            return self.get_tile_number_desert()
+        else:
+            return self.get_tile_number_non_desert()
+
+    def get_tile_number_desert(self):
+        tile_index = [
+            index for index, tile in enumerate(self.tiles)
+            if tile.number is None]
+        return tile_index
+
+    def get_tile_number_non_desert(self):
+        tile_order = int(input(tile_order_prompt)) - 1
+        tile_index = [
+            index for index, tile in enumerate(self.tiles)
+            if tile.number == tile_number][tile_order]
+        return tile_index
+
+    def get_vertex_input(self):
+        print("Pick a tile that the edge borders")
+        tile_index = self.get_tile_input()
+        tile = self.tiles[tile_index]
+        vertex_index = int(input(vertex_input_prompt))
+        vertex_index = [
+            index for index, vertex in enumerate(self.vertices)
+            if tile.vertices[vertex_index] is vertex][0]
+        return vertex_index
+
+    def get_edge_input(self):
+        print("Pick a tile the edge borders")
+        tile_index = self.get_tile_input()
+        edge_index = int(input(edge_input_prompt))
+    
 
 tile_type_input_keys = {
     "Wheat ": ["1", "Wheat", "Crops", "W"],
@@ -436,3 +497,14 @@ tile_type_input_dict = dict(
     (key.lower(), value)
     for value in tile_type_input_keys
     for key in tile_type_input_keys[value])
+
+tile_number_prompt = (
+    "What is the number on the tile?\n"
+    "Use 7 for a desert")
+tile_order_prompt = "Does this tile number appear first or second (1 or 2?):\n"
+vertex_input_prompt = (
+    "Starting with the top of the hexagon as 1,\n"
+    "what number is the vertex:\n")
+edge_input_prompt = (
+    "Starting with the top right edge of the hexagon as 1,\n"
+    "what number is the edge:\n")
