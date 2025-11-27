@@ -9,7 +9,6 @@ from hgutilities.utils import json
 from Board.vertex import Vertex
 from Board.tile import Tile
 from Board.port import Port
-from Board.edge import Edge
 from utils import get_name
 from global_variables import (
     path_resources,
@@ -101,20 +100,14 @@ class Board():
         self.edges = []
         for tile in self.tiles:
             self.add_edges_around_tile(tile)
-        self.edges = np.array(self.edges)
+        self.edges = np.array(list(set(self.edges)))
 
     def add_edges_around_tile(self, tile):
-        vertex_offset = tile.vertices[1:] + [tile.vertices[0]]
-        edges_around_tile = self.get_edges_around_tile(tile, vertex_offset)
-        new_edges = [edge for edge in edges_around_tile if edge not in self.edges]
+        edges_around_tile = tile.init_edges_around_tile()
+        new_edges = [
+            edge for edge in edges_around_tile
+            if edge not in self.edges]
         self.edges = self.edges + new_edges
-
-    def get_edges_around_tile(self, tile, vertex_offset):
-        edges_around_tile = [
-            Edge(self, vertex_1, vertex_2)
-            for vertex_1, vertex_2 in zip(tile.vertices, vertex_offset)
-            if vertex_1.ID < vertex_2.ID]
-        return edges_around_tile
 
 
     # Saving
@@ -221,19 +214,19 @@ class Board():
 
     def set_lookups(self):
         self.set_vertex_index_lookup_from_tile_and_vertex()
-        self.set_edge_index_lookup_from_tile_and_edge()
+        #self.set_edge_index_lookup_from_tile_and_edge()
 
     def set_vertex_index_lookup_from_tile_and_vertex(self):
         self.vertex_index_lookup_from_tile_and_vertex = {
             (tile_index, vertex_index): self.vertices.index(vertex)
             for tile_index, tile in enumerate(self.tiles)
-            for vertex_index, vertex in enumerate(self.tiles.vertices)}
+            for vertex_index, vertex in enumerate(tile.vertices)}
 
-    def set_edge_index_lookup_from_tile_and_edge(self):
-        self.edge_index_lookup_from_tile_and_edge = {
-            (tile_index, vertex_index): self.vertices.index(vertex)
-            for tile_index, tile in enumerate(self.tiles)
-            for edge_index, edge in enumerate(self.tiles.edges)}
+#    def set_edge_index_lookup_from_tile_and_edge(self):
+#        self.edge_index_lookup_from_tile_and_edge = {
+#            (tile_index, edge_index): self.edges.index(edge)
+#            for tile_index, tile in enumerate(self.tiles)
+#            for edge_index, edge in enumerate(self.tiles.edges)}
 
 
     # Plotting

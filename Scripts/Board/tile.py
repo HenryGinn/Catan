@@ -1,5 +1,7 @@
 import numpy as np
 
+from Board.edge import Edge
+
 
 class Tile():
 
@@ -26,4 +28,22 @@ class Tile():
     def set_type(self, tile_type):
         self.type = tile_type
         self.color = self.board.tile_definitions[tile_type]["Color"]
+
+    def init_edges_around_tile(self):
+        vertex_offset = self.vertices[1:] + [self.vertices[0]]
+        edges_around_tile = self.init_edges_from_vertex_offset(
+            vertex_offset)
+        return edges_around_tile
+
+    def init_edges_from_vertex_offset(self, vertex_offset):
+        edges_around_tile = [
+            Edge(self.board, vertex_1, vertex_2)
+            for vertex_1, vertex_2 in zip(self.vertices, vertex_offset)]
+        return edges_around_tile
+
+    def get_edges_around_tile(self):
+        vertex_offset = self.vertices[1:] + [self.vertices[0]]
+        edges_neigbouring_tile = [
+            edge for edge in self.board.edges
+            if len(edge.vertices.intersect(vertex_offset)) == 2]
 

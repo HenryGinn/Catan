@@ -2,7 +2,7 @@ class Edge():
 
     def __init__(self, board, vertex_1, vertex_2):
         self.board = board
-        self.vertices = [vertex_1, vertex_2]
+        self.vertices = set([vertex_1, vertex_2])
         self.update_vertex_edges()
 
     def update_vertex_edges(self):
