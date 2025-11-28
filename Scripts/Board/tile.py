@@ -29,21 +29,36 @@ class Tile():
         self.type = tile_type
         self.color = self.board.tile_definitions[tile_type]["Color"]
 
-    def init_edges_around_tile(self):
+    def get_init_edges_around_tile(self):
         vertex_offset = self.vertices[1:] + [self.vertices[0]]
-        edges_around_tile = self.init_edges_from_vertex_offset(
+        edges_around_tile = self.get_init_edges_from_vertex_offset(
             vertex_offset)
         return edges_around_tile
 
-    def init_edges_from_vertex_offset(self, vertex_offset):
+    def get_init_edges_from_vertex_offset(self, vertex_offset):
         edges_around_tile = [
             Edge(self.board, vertex_1, vertex_2)
             for vertex_1, vertex_2 in zip(self.vertices, vertex_offset)]
         return edges_around_tile
 
     def get_edges_around_tile(self):
-        vertex_offset = self.vertices[1:] + [self.vertices[0]]
-        edges_neigbouring_tile = [
+        edges_neighbouring_tile = self.get_edges_neighbouring_tile()
+        midpoint_vectors = self.get_midpoint_vectors(edges_neighbouring_tile)
+        angles = np.arctan2(*midpoint_vectors.T)
+        order = angles.argsort()[[3, 2, 1, 0, 5, 4]]
+        edges_around_tile = edges_neighbouring_tile[order]
+        return edges_around_tile
+
+    def get_midpoint_vectors(self, edges_neighbouring_tile):
+        vectors_to_midpoints = np.array([
+            edge.get_midpoint() - self.vector
+            for edge in edges_neighbouring_tile])
+        return vectors_to_midpoints
+
+    def get_edges_neighbouring_tile(self):
+        edges_neigbouring_tile = np.array([
             edge for edge in self.board.edges
-            if len(edge.vertices.intersect(vertex_offset)) == 2]
+            if (edge.vertices[0] in self.vertices and
+                edge.vertices[1] in self.vertices)])
+        return edges_neigbouring_tile
 

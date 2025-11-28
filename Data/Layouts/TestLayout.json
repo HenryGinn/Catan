@@ -1,78 +1,78 @@
 [
   {
-    "Type": "Wood",
-    "Number": 8
+    "Type": "Ore",
+    "Number": 10
   },
   {
     "Type": "Sheep",
+    "Number": 2
+  },
+  {
+    "Type": "Wood",
+    "Number": 9
+  },
+  {
+    "Type": "Wheat",
+    "Number": 12
+  },
+  {
+    "Type": "Mud",
+    "Number": 6
+  },
+  {
+    "Type": "Sheep",
+    "Number": 4
+  },
+  {
+    "Type": "Mud",
     "Number": 10
+  },
+  {
+    "Type": "Wheat",
+    "Number": 9
+  },
+  {
+    "Type": "Wood",
+    "Number": 11
   },
   {
     "Type": "Desert",
     "Number": null
   },
   {
-    "Type": "Ore",
+    "Type": "Wood",
     "Number": 3
   },
   {
-    "Type": "Sheep",
-    "Number": 5
-  },
-  {
-    "Type": "Wood",
-    "Number": 6
-  },
-  {
     "Type": "Ore",
-    "Number": 11
+    "Number": 8
   },
   {
     "Type": "Wood",
     "Number": 8
   },
   {
-    "Type": "Mud",
-    "Number": 11
-  },
-  {
-    "Type": "Mud",
-    "Number": 6
-  },
-  {
-    "Type": "Sheep",
-    "Number": 10
+    "Type": "Ore",
+    "Number": 3
   },
   {
     "Type": "Wheat",
-    "Number": 2
-  },
-  {
-    "Type": "Ore",
-    "Number": 9
-  },
-  {
-    "Type": "Wood",
     "Number": 4
   },
   {
-    "Type": "Wheat",
+    "Type": "Sheep",
+    "Number": 5
+  },
+  {
+    "Type": "Mud",
     "Number": 5
   },
   {
     "Type": "Wheat",
-    "Number": 4
-  },
-  {
-    "Type": "Mud",
-    "Number": 12
-  },
-  {
-    "Type": "Wheat",
-    "Number": 9
+    "Number": 6
   },
   {
     "Type": "Sheep",
-    "Number": 3
+    "Number": 11
   }
 ]

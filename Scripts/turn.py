@@ -175,7 +175,7 @@ class Turn():
         self.generate_trades_city()
 
     def set_vertices_and_edges(self):
-        edges_indexes = np.nonzero(self.player.geometry_state["Roads"])
+        edges_indexes = np.nonzero(self.player.real_estate["Roads"])
         self.edges = self.game.board.edges[edges_indexes]
         self.vertices = get_vertices_from_edges(self.edges)
 

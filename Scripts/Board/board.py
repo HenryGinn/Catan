@@ -65,8 +65,7 @@ class Board():
         tiles_data = self.load_tiles_data()
         self.tiles = [
             Tile(self, tile_definitions)
-            for tile_definitions in tiles_data]
-        
+            for tile_definitions in tiles_data]        
 
     def load_tiles_data(self):
         path = os.path.join(path_resources, "Tiles Data.json")
@@ -98,21 +97,31 @@ class Board():
 
     def initialise_edges(self):
         self.edges = []
-        for tile in self.tiles:
-            self.add_edges_around_tile(tile)
-        self.edges = np.array(list(set(self.edges)))
+        self.add_edges_around_tiles()
+        self.edges = np.array(self.edges)
+        self.extract_unique_edges()
 
-    def add_edges_around_tile(self, tile):
-        edges_around_tile = tile.init_edges_around_tile()
-        new_edges = [
-            edge for edge in edges_around_tile
-            if edge not in self.edges]
-        self.edges = self.edges + new_edges
+    def add_edges_around_tiles(self):
+        for tile in self.tiles:
+            edges_around_tile = tile.get_init_edges_around_tile()
+            self.edges = self.edges + edges_around_tile
+
+    def extract_unique_edges(self):
+        midpoints = np.array([
+            edge.get_midpoint() for edge in self.edges])
+        _, indexes = np.unique(midpoints, axis=0, return_index=True)
+        self.edges = self.edges[indexes]
 
 
     # Saving
 
     def save_layout(self, name=None):
+        if name is not None:
+            self.save_layout_with_name(name)
+        else:
+            self.log.info("Layout not saved as no name was given")
+
+    def save_layout_with_name(self, name):
         path = self.get_path_tile_data(name)
         tile_data = self.get_tile_data()
         with open(path, "w+") as file:
@@ -136,6 +145,7 @@ class Board():
         if (not hasattr(self, "layout_name")
             or self.layout_name is None):
             self.layout_name = get_name(name)
+
 
     # Loading
 
@@ -192,29 +202,59 @@ class Board():
                 tile.number = None
 
     def input_layout(self, name=None):
-        tile_types = self.get_input_tile_types()
-        self.set_tile_types(tile_types)
+        self.set_tile_types_from_input()
+        self.set_tile_numbers_from_input()
+        self.save_layout(name)
 
-    def get_input_tile_types(self):
-        print(tile_type_prompt)
-        tile_types = [
-            self.get_tile_type_from_input()
-            for index in range(19)]
-        return tile_types
+    def set_tile_types_from_input(self):
+        print(tile_types_prompt)
+        for tile in self.tiles:
+            tile.set_type(self.get_tile_type_from_input())
 
     def get_tile_type_from_input(self):
-        type_input = str(input())
-        if type_input.lower() in tile_type_input_dict:
-            return tile_type_input_dict[type_input.lower()].strip(" ")
-        else:
-            return "Desert"
+        invalid_input = True
+        while invalid_input:
+            type_input = str(input())
+            if type_input.lower() not in tile_type_input_dict:
+                print("Invalid input, try again")
+            else:
+                invalid_input = False
+        return tile_type_input_dict[type_input.lower()]
 
+    def set_tile_numbers_from_input(self):
+        print(tile_numbers_prompt)
+        self.tile_number_input_is_invalid = True
+        while self.tile_number_input_is_invalid:
+            for tile in self.tiles:
+                self.set_tile_number_from_input(tile)
+            self.ensure_valid_tile_numbers_from_input()
+
+    def set_tile_number_from_input(self, tile):
+        if tile.type != "Desert":
+            tile.number = self.get_tile_number_from_input(tile)
+        else:
+            tile.number = None
+
+    def get_tile_number_from_input(self, tile):
+        prompt = f"{tile.type}:".ljust(7)
+        tile_number = int(input(prompt))
+        return tile_number
+
+    def ensure_valid_tile_numbers_from_input(self):
+        input_tile_numbers = sorted([
+            tile.number for tile in self.tiles
+            if tile.number is not None])
+        if input_tile_numbers != sorted(tile_numbers):
+            print(f"Incorrect tile numbers:\n{input_tile_numbers}\n")
+        else:
+            self.tile_number_input_is_invalid = False
+    
 
     # Lookups
 
     def set_lookups(self):
         self.set_vertex_index_lookup_from_tile_and_vertex()
-        #self.set_edge_index_lookup_from_tile_and_edge()
+        self.set_edge_index_lookup_from_tile_and_edge()
 
     def set_vertex_index_lookup_from_tile_and_vertex(self):
         self.vertex_index_lookup_from_tile_and_vertex = {
@@ -222,21 +262,22 @@ class Board():
             for tile_index, tile in enumerate(self.tiles)
             for vertex_index, vertex in enumerate(tile.vertices)}
 
-#    def set_edge_index_lookup_from_tile_and_edge(self):
-#        self.edge_index_lookup_from_tile_and_edge = {
-#            (tile_index, edge_index): self.edges.index(edge)
-#            for tile_index, tile in enumerate(self.tiles)
-#            for edge_index, edge in enumerate(self.tiles.edges)}
+    def set_edge_index_lookup_from_tile_and_edge(self):
+        self.edge_index_lookup_from_tile_and_edge = {
+            (tile_index, edge_index): np.where(self.edges == edge)[0][0]
+            for tile_index, tile in enumerate(self.tiles)
+            for edge_index, edge in enumerate(
+                tile.get_edges_around_tile())}
 
 
     # Plotting
 
-    def show_layout(self):
+    def show_tiles(self):
         self.initialise_plot_show()
         self.plot_layout()
         plt.show()
 
-    def save_layout_plot(self):
+    def save_tiles(self):
         self.initialise_plot_save()
         self.plot_layout()
         path = os.path.join(
@@ -248,7 +289,6 @@ class Board():
         self.add_tiles_to_plot()
         self.add_numbers_to_plot()
         self.add_ports_to_plot()
-        self.add_robber()
         self.set_x_and_y_plot_limits()
 
     def initialise_plot_show(self):
@@ -275,7 +315,7 @@ class Board():
         for tile in self.tiles:
             self.ax.text(
                 *tile.position, tile.number,
-                ha="center", va="center", fontsize=20)
+                ha="center", va="center", fontsize=30)
 
     def add_ports_to_plot(self):
         self.add_port_piers_to_plot()
@@ -298,11 +338,11 @@ class Board():
         for port in self.ports:
             self.ax.add_artist(plt.Text(
                 *port.position, str(port.ratio),
-                ha='center', va='center', fontsize=20))
+                ha='center', va='center', fontsize=30))
 
-    def add_robber(self):
+    def plot_robber(self):
         robber_tile = self.tiles[self.game.robber_index]
-        annulus = Annulus(robber_tile.position, 0.7, 0.15, color="black")
+        annulus = Annulus(robber_tile.position, 0.5, 0.1, color="black")
         self.ax.add_patch(annulus)
 
     def set_x_and_y_plot_limits(self):
@@ -313,36 +353,37 @@ class Board():
         self.ax.set_xlim(min_x, max_x)
         self.ax.set_ylim(min_y, max_y)
 
-    def show_state(self):
+    def show_board(self):
         self.initialise_plot_show()
-        self.plot_state()
+        self.plot_board()
         plt.show()
 
-    def save_state(self):
+    def save_board(self):
         self.initialise_plot_save()
-        self.plot_state()
+        self.plot_board()
         path = os.path.join(
             self.game.path, f"BoardState_{self.game.move:04}.pdf")
         plt.savefig(path)
         self.log.info(f"Saved board state to {path}")
 
-    def plot_state(self):
+    def plot_board(self):
         self.plot_layout()
+        self.plot_roads()
         self.plot_settlements()
         self.plot_cities()
-        self.plot_roads()
+        self.plot_robber()
 
     def plot_settlements(self):
         for player in self.game.players:
             self.plot_vertices(
-                player.geometry_state["Settlements"],
-                player.color, 0.15)
+                player.real_estate["Settlements"],
+                player.color, 0.2)
 
     def plot_cities(self):
         for player in self.game.players:
             self.plot_vertices(
-                player.geometry_state["Cities"],
-                player.color, 0.25)
+                player.real_estate["Cities"],
+                player.color, 0.3)
 
     def plot_vertices(self, indicators, color, size):
         for vertex, indicator in zip(self.vertices, indicators):
@@ -350,13 +391,13 @@ class Board():
                 self.plot_vertex(vertex, color, size)
 
     def plot_vertex(self, vertex, color, size):
-        circle = plt.Circle(vertex.position, size, color=color)
+        circle = plt.Circle(vertex.position, size, color=color, zorder=1.2)
         self.ax.add_patch(circle)
 
     def plot_roads(self):
         for player in self.game.players:
             self.plot_edges(
-                player.geometry_state["Roads"],
+                player.real_estate["Roads"],
                 player.color)
 
     def plot_edges(self, indicators, color):
@@ -369,7 +410,7 @@ class Board():
             vertex.position[i]
             for vertex in edge.vertices]
                   for i in range(2)]
-        self.ax.plot(*values, color=color, linewidth=6)
+        self.ax.plot(*values, color=color, linewidth=9, zorder=1.1)
 
 
     # Other
@@ -431,60 +472,78 @@ class Board():
 
     # Input for interacting with the board
     
-    def get_tile_input(self):
+    def get_tile_indexes(self):
+        tile_number = self.get_tile_number_input()
+        tile_order = self.get_tile_order_input(tile_number)
+        return tile_number, tile_order
+
+    def get_tile_number_input(self):
         tile_number = int(input(tile_number_prompt))
         if tile_number == 7:
-            return self.get_tile_number_desert()
-        else:
-            return self.get_tile_number_non_desert()
+            tile_number = None
+        return tile_number
 
-    def get_tile_number_desert(self):
-        tile_index = [
-            index for index, tile in enumerate(self.tiles)
-            if tile.number is None]
-        return tile_index
+    def get_tile_order_input(self, tile_number):
+        tile_order = 0
+        if tile_number != 7:
+            tile_order = int(input(tile_order_prompt)) - 1
+        return tile_order
 
-    def get_tile_number_non_desert(self):
-        tile_order = int(input(tile_order_prompt)) - 1
+    def get_tile_index_from_indexes(self, tile_number, tile_order):
         tile_index = [
             index for index, tile in enumerate(self.tiles)
             if tile.number == tile_number][tile_order]
         return tile_index
 
-    def get_vertex_input(self):
-        print("Pick a tile that the edge borders")
-        tile_index = self.get_tile_input()
+    def get_vertex_indexes(self):
+        print("Pick a tile that the vertex borders")
+        tile_number, tile_order = self.get_tile_indexes()
+        neighbour_index = int(input(vertex_input_prompt)) - 1
+        return tile_number, tile_order, neighbour_index
+
+    def get_vertex_index_from_indexes(self, tile_number, tile_order, neighbour_index):
+        tile_index = self.get_tile_index_from_indexes(tile_number, tile_order)
         tile = self.tiles[tile_index]
-        vertex_index = int(input(vertex_input_prompt))
-        vertex_index = [
-            index for index, vertex in enumerate(self.vertices)
-            if tile.vertices[vertex_index] is vertex][0]
+        vertex_index = self.vertex_index_lookup_from_tile_and_vertex[
+            (tile_index, neighbour_index)]
         return vertex_index
 
-    def get_edge_input(self):
-        print("Pick a tile the edge borders")
-        tile_index = self.get_tile_input()
-        edge_index = int(input(edge_input_prompt))
+    def get_edge_indexes(self):
+        print("Pick a tile that the edge borders")
+        tile_number, tile_order = self.get_tile_indexes()
+        neighbour_index = int(input(edge_input_prompt)) - 1
+        return tile_number, tile_order, neighbour_index
+
+    def get_edge_index_from_indexes(self, tile_number, tile_order, neighbour_index):
+        tile_index = self.get_tile_index_from_indexes(tile_number, tile_order)
+        tile = self.tiles[tile_index]
+        edge_index = self.edge_index_lookup_from_tile_and_edge[
+            (tile_index, neighbour_index)]
+        return edge_index
     
 
 tile_type_input_keys = {
-    "Wheat ": ["1", "Wheat", "Crops", "W"],
-    "Sheep ": ["2", "Sheep", "Wool", "S"],
-    "Wood  ": ["3", "Wood", "Lumber",  "L"],
-    "Ore   ": ["4", "Ore", "Stone", "Rock", "O", "S", "R"],
-    "Mud   ": ["5", "Mud", "Clay", "Bricks", "M", "C", "B"],
+    "Wheat" : ["1", "Wheat", "Crops", "W"],
+    "Sheep" : ["2", "Sheep", "Wool", "S"],
+    "Wood"  : ["3", "Wood", "Lumber",  "L"],
+    "Ore"   : ["4", "Ore", "Stone", "Rock", "O", "R"],
+    "Mud"   : ["5", "Mud", "Clay", "Bricks", "M", "C", "B"],
     "Desert": ["6", "Desert", "D"]}
 
 tile_type_keys_prompt = (
     '\n'.join(
-        f"{key}   {', '.join(values)}"
+        f"{key.ljust(6)}   {', '.join(values)}"
         for key, values in tile_type_input_keys.items()))
 
-tile_type_prompt = (
+tile_types_prompt = (
     "Enter the tile types going from left to right along the rows.\n"
     "Start at the top and work downwards.\n"
     "Use the following lookup:\n\n"
     f"{tile_type_keys_prompt}\n")
+
+tile_numbers_prompt = (
+    "Enter the tile number in the same order as the tile types were input.\n"
+    "The desert tile will be skipped")
 
 tile_type_input_dict = dict(
     (key.lower(), value)
@@ -493,11 +552,14 @@ tile_type_input_dict = dict(
 
 tile_number_prompt = (
     "What is the number on the tile?\n"
-    "Use 7 for a desert")
+    "Use 7 for a desert\n")
+
 tile_order_prompt = "Does this tile number appear first or second (1 or 2?):\n"
+
 vertex_input_prompt = (
     "Starting with the top of the hexagon as 1,\n"
     "what number is the vertex:\n")
+
 edge_input_prompt = (
     "Starting with the top right edge of the hexagon as 1,\n"
     "what number is the edge:\n")

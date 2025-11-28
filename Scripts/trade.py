@@ -39,13 +39,13 @@ class Trade():
 
     # Each state passed into the neural network must look the same. That
     # means that for each card states being considered there must be a
-    # corresponding geometry state.
+    # corresponding real estate.
     
     def stack_real_estate(self, count):
         for perspective, states in zip(self.player.perspectives, self.states):
             for real_estate in real_estates:
                 states[real_estate] = np.tile(
-                    perspective.base.geometry_state[real_estate], (count, 1))
+                    perspective.base.real_estate[real_estate], (count, 1))
 
 
     # After all player related state stuff is done.

@@ -20,10 +20,10 @@ class PlayerRegular(Player):
             for index in self.perspective_indexes]
 
     def set_initial_states(self):
-        self.set_initial_geometry_state()
+        self.set_initial_real_estate()
 
-    def set_initial_geometry_state(self):
-        self.geometry_state = {
+    def set_initial_real_estate(self):
+        self.real_estate = {
             "Settlements": np.zeros(len(self.game.board.vertices)).astype("int8"),
             "Cities": np.zeros(len(self.game.board.vertices)).astype("int8"),
             "Roads": np.zeros(len(self.game.board.edges)).astype("int8")}
@@ -31,7 +31,7 @@ class PlayerRegular(Player):
     def get_state(self):
         perspective_states = self.get_perspective_states()
         state = {
-            **self.geometry_state,
+            **self.real_estate,
             **perspective_states}
         return state
 
@@ -42,11 +42,11 @@ class PlayerRegular(Player):
         return perspective_states
 
     def set_from_state(self, state):
-        self.load_geometry_from_state(state)
+        self.load_real_estate_from_state(state)
         self.load_perspectives_from_state(state)
 
-    def load_geometry_from_state(self, state):
-        self.geometry_state = {
+    def load_real_estate_from_state(self, state):
+        self.real_estate = {
             key: np.array(state[key])
             for key in ["Settlements", "Cities", "Roads"]}
     
@@ -104,8 +104,8 @@ class PlayerRegular(Player):
 
     def get_resources_gained(self, tile):
         vertex_values = (
-            1 * self.geometry_state["Settlements"] +
-            2 * self.geometry_state["Cities"])
+            1 * self.real_estate["Settlements"] +
+            2 * self.real_estate["Cities"])
         resources_gained = np.sum(vertex_values * tile.vertex_indicators)
         return resources_gained
 

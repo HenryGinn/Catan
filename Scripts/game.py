@@ -68,7 +68,7 @@ class Game():
         self.log = logging.getLogger(self.name)
         self.log.setLevel(logging.DEBUG)
         self.add_console_handler()
-        self.add_file_handler(file_handler_mode)
+        #self.add_file_handler(file_handler_mode)
         self.log.debug(splash)
         self.log.debug(f"Initialised {self.name}")
 
@@ -236,7 +236,17 @@ class Game():
         self.robber_state = np.zeros(19).astype("int8")
         self.robber_state[robber_index] = 1
 
+
     # Game control
+
+    def input_layout(self, *args, **kwargs):
+        self.board.input_layout(*args, **kwargs)
+
+    def load_layout(self, *args, **kwargs):
+        self.board.load_layout(*args, **kwargs)
+
+    def generate_layout(self, *args, **kwargs):
+        self.board.generate_layout(*args, **kwargs)
 
     def next_turn(self):
         self.turn = Turn(self)
@@ -247,9 +257,80 @@ class Game():
 
     def trade_players(self, trade):
         self.turn.trade_players_input(trade)
+
+
+    # Buying real estate
     
-    def trade_assets(self, trade):
-        self.turn.trade_assets_input(trade)
+    def buy_road(self, player_name, *args):
+        """
+        Attempts to buy a road for a particular player.
+
+        Input arguments:
+            player_name: name of the player attempting to buy the road
+            0 additional arguments: tile_index and neighbour_index queried
+            1 additional argument:  index into edge array
+            3 additional arguments: tile_number, tile_order, and neighbour_index input directly
+        """
+        player = self.get_player(player_name)
+        match len(args):
+            case 0: self.buy_road_from_input(player)
+            case 1: self.buy_road_from_index(player, *args)
+            case 3: self.buy_road_from_indexes(player, *args)
+            case _: print(f"Got {len(args)} additional args. Invalid input - see help")
+
+    def buy_road_from_input(self, player):
+        edge_indexes = self.board.get_edge_indexes()
+        self.buy_road_from_indexes(player, *edge_indexes)
+
+    def buy_road_from_indexes(self, player, *edge_indexes):
+        edge_index = self.board.get_edge_index_from_indexes(*edge_indexes)
+        self.buy_road_from_index(player, edge_index)
+
+    def buy_road_from_index(self, player, edge_index):
+        player.real_estate["Roads"][edge_index] = 1
+
+    def buy_settlement(self, player_name, *args):
+        """
+        Attempts to buy a settlement for a particular player.
+
+        Input arguments:
+            player_name: name of the player attempting to buy the road
+            0 additional arguments: tile_index and neighbour_index queried
+            1 additional argument:  index into edge array
+            3 additional arguments: tile_number, tile_order, and neighbour_index input directly
+        """
+        self.buy_vertex(player_name, "Settlements", *args)
+
+    def buy_city(self, player_name, *args):
+        """
+        Attempts to buy a settlement for a particular player.
+
+        Input arguments:
+            player_name: name of the player attempting to buy the road
+            0 additional arguments: tile_index and neighbour_index queried
+            1 additional argument:  index into edge array
+            3 additional arguments: tile_number, tile_order, and neighbour_index input directly
+        """
+        self.buy_vertex(player_name, "Cities", *args)
+
+    def buy_vertex(self, player_name, vertex_type, *args):
+        player = self.get_player(player_name)
+        match len(args):
+            case 0: self.buy_vertex_from_input(player, vertex_type)
+            case 1: self.buy_vertex_from_index(player, vertex_type, *args)
+            case 3: self.buy_vertex_from_indexes(player, vertex_type, *args)
+            case _: print(f"Got {len(args)} additional args. Invalid input - see help")
+
+    def buy_vertex_from_input(self, player, vertex_type):
+        vertex_indexes = self.board.get_vertex_indexes()
+        self.buy_vertex_from_indexes(player, vertex_type, *vertex_indexes)
+
+    def buy_vertex_from_indexes(self, player, vertex_type, *vertex_indexes):
+        vertex_index = self.board.get_vertex_index_from_indexes(*vertex_indexes)
+        self.buy_vertex_from_index(player, vertex_type, vertex_index)
+
+    def buy_vertex_from_index(self, player, vertex_type, vertex_index):
+        player.real_estate[vertex_type][vertex_index] = 1
 
     def play_development(self, trade):
         self.turn.play_development_input(trade)
@@ -278,8 +359,17 @@ class Game():
     
     # Output state
 
-    def save_state(self):
-        self.board.save_state()
+    def save_tiles(self):
+        self.board.save_tiles()
+
+    def show_tiles(self):
+        self.board.show_tiles()
+
+    def save_board(self):
+        self.board.save_board()
+
+    def show_board(self):
+        self.board.show_board()
 
     def get_card_df(self):
         player_dfs = [player.get_card_df() for player in self.players]
